@@ -25,7 +25,3 @@ Company Hierarchy Converter provides a guarded wizard for changing Odoo 19 paren
 - Cross-currency reparenting is not supported.
 - Chart of Accounts materialization is not supported by design. Odoo 19 uses `account.account.company_ids` as a Many2many relationship, and this module only links accounts to the new hierarchy root where visibility requires it.
 - The adoptive-parent scenario requires the **Target Parent** and **Target Adoptee** fields to reference the same standalone company. This keeps the otherwise ambiguous Odoo field contract explicit and auditable.
-# hierarchy_editor
-# hierarchy_editor
-# hierarchy_editor
-# hierarchy_editor

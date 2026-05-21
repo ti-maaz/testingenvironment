@@ -1,6 +1,7 @@
 {
     'name': 'Company Hierarchy Converter',
     'version': '19.0.1.0.0',
+    'author': 'Nabeel Hussain',
     'category': 'Administration',
     'summary': 'Safely convert parent/branch company relationships',
     'depends': ['base', 'account', 'mail'],
