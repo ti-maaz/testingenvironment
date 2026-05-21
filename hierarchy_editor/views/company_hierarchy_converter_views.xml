@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_company_hierarchy_converter_form" model="ir.ui.view">
+        <field name="name">company.hierarchy.converter.form</field>
+        <field name="model">company.hierarchy.converter</field>
+        <field name="arch" type="xml">
+            <form string="Company Hierarchy Converter">
+                <sheet>
+                    <field name="state" invisible="1"/>
+                    <field name="audit_id" invisible="1"/>
+                    <group invisible="state != 'draft'">
+                        <group>
+                            <field name="source_company_id" options="{'no_create': True}"/>
+                            <field name="scenario"/>
+                            <field name="dry_run"/>
+                            <field name="adjust_account_visibility"/>
+                        </group>
+                        <group>
+                            <field name="target_parent_id"
+                                   options="{'no_create': True}"
+                                   invisible="scenario != 'parent_to_branch' and scenario != 'branch_to_other_branch' and scenario != 'branch_to_adoptive_parent'"
+                                   required="scenario == 'parent_to_branch' or scenario == 'branch_to_other_branch' or scenario == 'branch_to_adoptive_parent'"/>
+                            <field name="target_adoptee_id"
+                                   options="{'no_create': True}"
+                                   invisible="scenario != 'branch_to_adoptive_parent'"
+                                   required="scenario == 'branch_to_adoptive_parent'"/>
+                        </group>
+                    </group>
+                    <group invisible="state != 'preflight_done'">
+                        <group>
+                            <field name="source_company_id" readonly="1"/>
+                            <field name="scenario" readonly="1"/>
+                            <field name="target_parent_id" readonly="1"
+                                   invisible="scenario != 'parent_to_branch' and scenario != 'branch_to_other_branch' and scenario != 'branch_to_adoptive_parent'"/>
+                            <field name="target_adoptee_id" readonly="1" invisible="scenario != 'branch_to_adoptive_parent'"/>
+                            <field name="dry_run" readonly="1"/>
+                            <field name="adjust_account_visibility" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="affected_user_count" readonly="1"/>
+                            <field name="affected_account_count" readonly="1"/>
+                            <field name="circular_reference_detected" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Preflight Report" invisible="state != 'preflight_done'">
+                        <field name="preflight_report" nolabel="1" readonly="1"/>
+                    </group>
+                    <div class="alert alert-success" role="alert" invisible="state != 'executed'">
+                        Conversion processing is complete. Open the audit log to review the forensic record.
+                    </div>
+                    <div class="alert alert-danger" role="alert" invisible="state != 'failed'">
+                        Conversion failed and was rolled back. Open the audit log to review the captured traceback.
+                    </div>
+                </sheet>
+                <footer>
+                    <button name="action_preflight" type="object" string="Run Preflight" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_execute" type="object" string="Execute" class="btn-primary" invisible="state != 'preflight_done'"/>
+                    <button name="action_open_audit" type="object" string="Open Audit Log" invisible="not audit_id"/>
+                    <button special="cancel" string="Close" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_company_hierarchy_converter" model="ir.actions.act_window">
+        <field name="name">Hierarchy Converter</field>
+        <field name="res_model">company.hierarchy.converter</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_company_hierarchy_converter_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

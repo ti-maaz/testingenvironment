@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_company_hierarchy_converter_admin,company.hierarchy.converter.admin,model_company_hierarchy_converter,hierarchy_editor.group_hierarchy_converter_admin,1,1,1,1
+access_company_hierarchy_audit_admin_read,company.hierarchy.audit.admin.read,model_company_hierarchy_audit,hierarchy_editor.group_hierarchy_converter_admin,1,0,0,0
