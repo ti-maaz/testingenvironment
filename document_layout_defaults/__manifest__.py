@@ -6,6 +6,7 @@
     'author': 'Custom',
     'depends': ['web', 'base_setup'],
     'data': [
+        'views/report_layout_custom.xml',
         'data/server_action.xml',
     ],
     'post_init_hook': 'post_init_hook',

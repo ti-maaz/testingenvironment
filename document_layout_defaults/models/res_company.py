@@ -4,7 +4,7 @@ from odoo import api, models
 
 _logger = logging.getLogger(__name__)
 
-DEFAULT_LAYOUT_KEY = 'web.external_layout_striped'
+DEFAULT_LAYOUT_KEY = 'document_layout_defaults.external_layout_custom'
 DEFAULT_BACKGROUND = 'Demo logo'
 
 
