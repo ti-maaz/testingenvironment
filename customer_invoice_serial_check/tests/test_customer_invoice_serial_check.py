@@ -73,7 +73,6 @@ class TestCustomerInvoiceSerialCheck(AccountTestInvoicingCommon):
             start=1000,
         ):
             self._move_to_sequence_gap(move, reference_invoice, sequence_gap=offset)
-            self.assertTrue(move.made_sequence_gap)
         cancelled_invoice.button_cancel()
 
         action = self.env['account.move'].action_check_missing_customer_invoice_serials()

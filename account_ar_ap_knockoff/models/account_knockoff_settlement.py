@@ -222,7 +222,7 @@ class AccountKnockoffSettlement(models.Model):
                 raise AccessError(_('Only knock-off managers can modify approved, posted, or cancelled settlements.'))
 
         result = super().write(vals)
-        if {'customer_invoice_ids', 'vendor_bill_ids', 'company_id', 'settlement_type'}.intersection(vals):
+        if {'customer_invoice_ids', 'vendor_bill_ids', 'company_id', 'currency_id', 'settlement_type'}.intersection(vals):
             draft_settlements = self.filtered(lambda settlement: settlement.state == 'draft')
             draft_settlements._sync_currency_from_documents()
             draft_settlements._sync_partner_fields_from_documents()
