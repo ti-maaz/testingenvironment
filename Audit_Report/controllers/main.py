@@ -36,7 +36,7 @@ def _get_cached_template_env(templates_path):
         else:
             match = None
         if match and args:
-            decimals = 0
+            decimals = int(match.group(1))
             value = args[0] or 0.0
             try:
                 number = float(value)

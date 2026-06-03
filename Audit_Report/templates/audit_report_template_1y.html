@@ -173,8 +173,7 @@
     {% endif %}
     {% set fr_net_current_is_amount = financial_review_net_current_is_amount|default(false) %}
     <tr>
-      <td class="text-left">{{ financial_review_net_label|default('Net profit margin') }}</td>
-      <td class="text-right">{% if fr_net_current_is_amount %}{{ "%.2f"|format(net_profit_after_tax) }}{% else %}{% if net_profit_margin < 0 %}({{ "%.2f"|format_percent(net_profit_margin|abs) }}%){% else %}{{ "%.2f"|format_percent(net_profit_margin) }}%{% endif %}{% endif %}</td>
+      <td class="text-left" colspan="2">{{ financial_review_net_label|default('Net profit margin') }} {% if fr_net_current_is_amount %}{{ "%.0f"|format(net_profit_after_tax) }}{% else %}{% if net_profit_margin < 0 %}({{ "%.2f"|format_percent(net_profit_margin|abs) }}%){% else %}{{ "%.2f"|format_percent(net_profit_margin) }}%{% endif %}{% endif %}</td>
     </tr>
   </tbody>
 </table>

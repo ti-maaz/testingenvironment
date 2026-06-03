@@ -794,7 +794,7 @@ class AuditReport(models.TransientModel):
     @api.model
     def _canonical_note_line_display_name(self, value):
         normalized_name = self._note_line_key(value)
-        if re.search(r'\bstaff salaries?\b', normalized_name):
+        if re.search(r'\bstaff salar(?:y|ies)\b', normalized_name):
             return 'Salaries and wages'
         if normalized_name in {
             'security deposit (landlord/rent)',

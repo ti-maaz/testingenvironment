@@ -204,10 +204,7 @@
       {% endif %}
     {% endif %}
     <tr>
-      <td class="text-left">{{ net_profit_margin_label }}</td>
-      <td class="text-center"></td>
-      <td class="text-right">{% if fr_net_current_is_amount %}{{ "%.2f"|format(net_profit_after_tax) }}{% else %}{% if net_profit_margin < 0 %}({{ "%.2f"|format_percent(net_profit_margin|abs) }}%){% else %}{{ "%.2f"|format_percent(net_profit_margin) }}%{% endif %}{% endif %}</td>
-      <td class="text-right">{% if fr_net_prior_is_amount %}{{ "%.2f"|format(prev_net_profit_after_tax) }}{% else %}{% if prev_net_profit_margin < 0 %}({{ "%.2f"|format_percent(prev_net_profit_margin|abs) }}%){% else %}{{ "%.2f"|format_percent(prev_net_profit_margin) }}%{% endif %}{% endif %}</td>
+      <td class="text-left" colspan="4">{{ net_profit_margin_label }} {% if fr_net_current_is_amount %}{{ "%.0f"|format(net_profit_after_tax) }}{% else %}{% if net_profit_margin < 0 %}({{ "%.2f"|format_percent(net_profit_margin|abs) }}%){% else %}{{ "%.2f"|format_percent(net_profit_margin) }}%{% endif %}{% endif %} {% if fr_net_prior_is_amount %}{{ "%.0f"|format(prev_net_profit_after_tax) }}{% else %}{% if prev_net_profit_margin < 0 %}({{ "%.2f"|format_percent(prev_net_profit_margin|abs) }}%){% else %}{{ "%.2f"|format_percent(prev_net_profit_margin) }}%{% endif %}{% endif %}</td>
     </tr>
   </tbody>
 </table>
