@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo auto_sequence="1">
+    <record id="audit_customer_invoices_report" model="account.report">
+        <field name="name">Audit Customer Invoices</field>
+        <field name="filter_journals" eval="True"/>
+        <field name="filter_partner" eval="True"/>
+        <field name="filter_show_draft" eval="True"/>
+        <field name="filter_unfold_all" eval="False"/>
+        <field name="filter_hierarchy">never</field>
+        <field name="filter_period_comparison" eval="False"/>
+        <field name="filter_growth_comparison" eval="False"/>
+        <field name="filter_multi_company">selector</field>
+        <field name="filter_hide_0_lines">never</field>
+        <field name="default_opening_date_filter">this_year</field>
+        <field name="search_bar" eval="True"/>
+        <field name="custom_handler_model_id" ref="model_audit_invoice_bill_report_handler"/>
+        <field name="column_ids">
+            <record id="audit_customer_invoices_col_type" model="account.report.column">
+                <field name="name">Type</field>
+                <field name="expression_label">type</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_state" model="account.report.column">
+                <field name="name">State</field>
+                <field name="expression_label">state</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_payment_state" model="account.report.column">
+                <field name="name">Payment State</field>
+                <field name="expression_label">payment_state</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_partner" model="account.report.column">
+                <field name="name">Partner</field>
+                <field name="expression_label">partner</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_invoice_date" model="account.report.column">
+                <field name="name">Invoice Date</field>
+                <field name="expression_label">invoice_date</field>
+                <field name="figure_type">date</field>
+            </record>
+            <record id="audit_customer_invoices_col_due_date" model="account.report.column">
+                <field name="name">Due Date</field>
+                <field name="expression_label">due_date</field>
+                <field name="figure_type">date</field>
+            </record>
+            <record id="audit_customer_invoices_col_journal" model="account.report.column">
+                <field name="name">Journal</field>
+                <field name="expression_label">journal</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_currency" model="account.report.column">
+                <field name="name">Currency</field>
+                <field name="expression_label">currency</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_untaxed_amount" model="account.report.column">
+                <field name="name">Untaxed Amount</field>
+                <field name="expression_label">untaxed_amount</field>
+            </record>
+            <record id="audit_customer_invoices_col_tax_amount" model="account.report.column">
+                <field name="name">Tax Amount</field>
+                <field name="expression_label">tax_amount</field>
+            </record>
+            <record id="audit_customer_invoices_col_total_amount" model="account.report.column">
+                <field name="name">Total Amount</field>
+                <field name="expression_label">total_amount</field>
+            </record>
+            <record id="audit_customer_invoices_col_residual_amount" model="account.report.column">
+                <field name="name">Residual Amount</field>
+                <field name="expression_label">residual_amount</field>
+            </record>
+            <record id="audit_customer_invoices_col_reference" model="account.report.column">
+                <field name="name">Reference</field>
+                <field name="expression_label">reference</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_company" model="account.report.column">
+                <field name="name">Company</field>
+                <field name="expression_label">company</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_line_description" model="account.report.column">
+                <field name="name">Label</field>
+                <field name="expression_label">line_label</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_line_product" model="account.report.column">
+                <field name="name">Analytic</field>
+                <field name="expression_label">line_analytic</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_line_quantity" model="account.report.column">
+                <field name="name">Quantity</field>
+                <field name="expression_label">line_quantity</field>
+                <field name="figure_type">float</field>
+            </record>
+            <record id="audit_customer_invoices_col_line_uom" model="account.report.column">
+                <field name="name">Start Date</field>
+                <field name="expression_label">line_start_date</field>
+                <field name="figure_type">date</field>
+            </record>
+            <record id="audit_customer_invoices_col_line_unit_price" model="account.report.column">
+                <field name="name">Price</field>
+                <field name="expression_label">line_price</field>
+            </record>
+            <record id="audit_customer_invoices_col_line_discount" model="account.report.column">
+                <field name="name">End Date</field>
+                <field name="expression_label">line_end_date</field>
+                <field name="figure_type">date</field>
+            </record>
+            <record id="audit_customer_invoices_col_line_subtotal" model="account.report.column">
+                <field name="name">VAT Amount</field>
+                <field name="expression_label">line_vat_amount</field>
+            </record>
+            <record id="audit_customer_invoices_col_line_total" model="account.report.column">
+                <field name="name">Amount</field>
+                <field name="expression_label">line_amount</field>
+            </record>
+            <record id="audit_customer_invoices_col_line_account" model="account.report.column">
+                <field name="name">Account</field>
+                <field name="expression_label">line_account</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_line_taxes" model="account.report.column">
+                <field name="name">Taxes</field>
+                <field name="expression_label">line_taxes</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_salesperson" model="account.report.column">
+                <field name="name">Salesperson</field>
+                <field name="expression_label">salesperson</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_payment_terms" model="account.report.column">
+                <field name="name">Payment Terms</field>
+                <field name="expression_label">payment_terms</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_invoice_origin" model="account.report.column">
+                <field name="name">Invoice Origin</field>
+                <field name="expression_label">invoice_origin</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_fiscal_position" model="account.report.column">
+                <field name="name">Fiscal Position</field>
+                <field name="expression_label">fiscal_position</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_customer_invoices_col_auto_post" model="account.report.column">
+                <field name="name">Auto Post</field>
+                <field name="expression_label">auto_post</field>
+                <field name="figure_type">string</field>
+            </record>
+        </field>
+    </record>
+
+    <record id="audit_vendor_bills_report" model="account.report">
+        <field name="name">Audit Vendor Bills</field>
+        <field name="filter_journals" eval="True"/>
+        <field name="filter_partner" eval="True"/>
+        <field name="filter_show_draft" eval="True"/>
+        <field name="filter_unfold_all" eval="False"/>
+        <field name="filter_hierarchy">never</field>
+        <field name="filter_period_comparison" eval="False"/>
+        <field name="filter_growth_comparison" eval="False"/>
+        <field name="filter_multi_company">selector</field>
+        <field name="filter_hide_0_lines">never</field>
+        <field name="default_opening_date_filter">this_year</field>
+        <field name="search_bar" eval="True"/>
+        <field name="custom_handler_model_id" ref="model_audit_invoice_bill_report_handler"/>
+        <field name="column_ids">
+            <record id="audit_vendor_bills_col_type" model="account.report.column">
+                <field name="name">Type</field>
+                <field name="expression_label">type</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_state" model="account.report.column">
+                <field name="name">State</field>
+                <field name="expression_label">state</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_payment_state" model="account.report.column">
+                <field name="name">Payment State</field>
+                <field name="expression_label">payment_state</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_partner" model="account.report.column">
+                <field name="name">Partner</field>
+                <field name="expression_label">partner</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_invoice_date" model="account.report.column">
+                <field name="name">Invoice Date</field>
+                <field name="expression_label">invoice_date</field>
+                <field name="figure_type">date</field>
+            </record>
+            <record id="audit_vendor_bills_col_due_date" model="account.report.column">
+                <field name="name">Due Date</field>
+                <field name="expression_label">due_date</field>
+                <field name="figure_type">date</field>
+            </record>
+            <record id="audit_vendor_bills_col_journal" model="account.report.column">
+                <field name="name">Journal</field>
+                <field name="expression_label">journal</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_currency" model="account.report.column">
+                <field name="name">Currency</field>
+                <field name="expression_label">currency</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_untaxed_amount" model="account.report.column">
+                <field name="name">Untaxed Amount</field>
+                <field name="expression_label">untaxed_amount</field>
+            </record>
+            <record id="audit_vendor_bills_col_tax_amount" model="account.report.column">
+                <field name="name">Tax Amount</field>
+                <field name="expression_label">tax_amount</field>
+            </record>
+            <record id="audit_vendor_bills_col_total_amount" model="account.report.column">
+                <field name="name">Total Amount</field>
+                <field name="expression_label">total_amount</field>
+            </record>
+            <record id="audit_vendor_bills_col_residual_amount" model="account.report.column">
+                <field name="name">Residual Amount</field>
+                <field name="expression_label">residual_amount</field>
+            </record>
+            <record id="audit_vendor_bills_col_reference" model="account.report.column">
+                <field name="name">Reference</field>
+                <field name="expression_label">reference</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_company" model="account.report.column">
+                <field name="name">Company</field>
+                <field name="expression_label">company</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_line_description" model="account.report.column">
+                <field name="name">Label</field>
+                <field name="expression_label">line_label</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_line_product" model="account.report.column">
+                <field name="name">Analytic</field>
+                <field name="expression_label">line_analytic</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_line_quantity" model="account.report.column">
+                <field name="name">Quantity</field>
+                <field name="expression_label">line_quantity</field>
+                <field name="figure_type">float</field>
+            </record>
+            <record id="audit_vendor_bills_col_line_uom" model="account.report.column">
+                <field name="name">Start Date</field>
+                <field name="expression_label">line_start_date</field>
+                <field name="figure_type">date</field>
+            </record>
+            <record id="audit_vendor_bills_col_line_unit_price" model="account.report.column">
+                <field name="name">Price</field>
+                <field name="expression_label">line_price</field>
+            </record>
+            <record id="audit_vendor_bills_col_line_discount" model="account.report.column">
+                <field name="name">End Date</field>
+                <field name="expression_label">line_end_date</field>
+                <field name="figure_type">date</field>
+            </record>
+            <record id="audit_vendor_bills_col_line_subtotal" model="account.report.column">
+                <field name="name">VAT Amount</field>
+                <field name="expression_label">line_vat_amount</field>
+            </record>
+            <record id="audit_vendor_bills_col_line_total" model="account.report.column">
+                <field name="name">Amount</field>
+                <field name="expression_label">line_amount</field>
+            </record>
+            <record id="audit_vendor_bills_col_line_account" model="account.report.column">
+                <field name="name">Account</field>
+                <field name="expression_label">line_account</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_line_taxes" model="account.report.column">
+                <field name="name">Taxes</field>
+                <field name="expression_label">line_taxes</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_salesperson" model="account.report.column">
+                <field name="name">Salesperson</field>
+                <field name="expression_label">salesperson</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_payment_terms" model="account.report.column">
+                <field name="name">Payment Terms</field>
+                <field name="expression_label">payment_terms</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_invoice_origin" model="account.report.column">
+                <field name="name">Invoice Origin</field>
+                <field name="expression_label">invoice_origin</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_fiscal_position" model="account.report.column">
+                <field name="name">Fiscal Position</field>
+                <field name="expression_label">fiscal_position</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="audit_vendor_bills_col_auto_post" model="account.report.column">
+                <field name="name">Auto Post</field>
+                <field name="expression_label">auto_post</field>
+                <field name="figure_type">string</field>
+            </record>
+        </field>
+    </record>
+</odoo>

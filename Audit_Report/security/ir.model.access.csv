@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_audit_report_user,audit.report user,model_audit_report,base.group_user,1,1,1,1
+access_audit_report_document_user,audit.report.document user,model_audit_report_document,base.group_user,1,1,1,1
+access_audit_report_revision_user,audit.report.revision user,model_audit_report_revision,base.group_user,1,1,1,1
+access_audit_report_print_wizard_user,audit.report.print.wizard user,model_audit_report_print_wizard,base.group_user,1,1,1,1
+access_audit_report_soce_pdf_confirmation_user,audit.report.soce.pdf.confirmation user,model_audit_report_soce_pdf_confirmation,base.group_user,1,1,1,1
+access_audit_report_tb_override_line_user,audit.report.tb.override.line user,model_audit_report_tb_override_line,base.group_user,1,1,1,1
+access_audit_report_tb_add_account_wizard_user,audit.report.tb.add.account.wizard user,model_audit_report_tb_add_account_wizard,base.group_user,1,1,1,1
+access_audit_report_lor_extra_line_user,audit.report.lor.extra.line user,model_audit_report_lor_extra_line,base.group_user,1,1,1,1
+access_audit_report_related_party_line_user,audit.report.related.party.line user,model_audit_report_related_party_line,base.group_user,1,1,1,1
+access_audit_report_correction_error_line_user,audit.report.correction.error.line user,model_audit_report_correction_error_line,base.group_user,1,1,1,1

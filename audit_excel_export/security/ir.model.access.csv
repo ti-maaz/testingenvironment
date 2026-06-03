@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_audit_excel_export_wizard_user,audit.excel.export.wizard user,model_audit_excel_export_wizard,base.group_user,1,1,1,1

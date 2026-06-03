@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_bank_transaction_vat_export_wizard_form" model="ir.ui.view">
+        <field name="name">bank.transaction.vat.export.wizard.form</field>
+        <field name="model">bank.transaction.vat.export.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Export Bank Transactions to Excel">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="journal_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_export" string="Export to Excel" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_bank_transaction_vat_export_wizard" model="ir.actions.act_window">
+        <field name="name">Bank VAT Export</field>
+        <field name="res_model">bank.transaction.vat.export.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_bank_transaction_vat_export"
+              name="Bank VAT Export"
+              parent="account.menu_finance_reports"
+              action="action_bank_transaction_vat_export_wizard"
+              sequence="100"/>
+</odoo>

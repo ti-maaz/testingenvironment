@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_company_form_shareholders_tab" model="ir.ui.view">
+        <field name="name">res.company.form.shareholders.tab</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//page[@name='other_information']" position="after">
+                <page name="shareholder_information" string="Shareholder Information">
+                    <group>
+                        <group>
+                            <field name="company_share"/>
+                        </group>
+                    </group>
+
+                    <!-- Table Header -->
+                    <div class="o_row fw-bold text-muted mb-2 border-bottom pb-2">
+                        <div class="o_col-3">Company Shareholder</div>
+                        <div class="o_col-2">Nationality</div>
+                        <div class="o_col-2 text-center">No. of Shares</div>
+                        <div class="o_col-2 text-center">Share Value</div>
+                        <div class="o_col-3 text-end">Total Share</div>
+                    </div>
+
+                    <!-- Shareholder Rows -->
+                    <group class="o_row mb-1">
+                        <div class="o_col-3">
+                            <field name="shareholder_1" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2">
+                            <field name="nationality_1" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="number_of_shares_1" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="share_value_1" nolabel="1"/>
+                        </div>
+                        <div class="o_col-3 text-end">
+                            <field name="total_share_1" nolabel="1" readonly="1"/>
+                        </div>
+                    </group>
+
+                    <group class="o_row mb-1">
+                        <div class="o_col-3">
+                            <field name="shareholder_2" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2">
+                            <field name="nationality_2" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="number_of_shares_2" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="share_value_2" nolabel="1"/>
+                        </div>
+                        <div class="o_col-3 text-end">
+                            <field name="total_share_2" nolabel="1" readonly="1"/>
+                        </div>
+                    </group>
+
+                    <group class="o_row mb-1">
+                        <div class="o_col-3">
+                            <field name="shareholder_3" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2">
+                            <field name="nationality_3" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="number_of_shares_3" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="share_value_3" nolabel="1"/>
+                        </div>
+                        <div class="o_col-3 text-end">
+                            <field name="total_share_3" nolabel="1" readonly="1"/>
+                        </div>
+                    </group>
+
+                    <group class="o_row mb-1">
+                        <div class="o_col-3">
+                            <field name="shareholder_4" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2">
+                            <field name="nationality_4" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="number_of_shares_4" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="share_value_4" nolabel="1"/>
+                        </div>
+                        <div class="o_col-3 text-end">
+                            <field name="total_share_4" nolabel="1" readonly="1"/>
+                        </div>
+                    </group>
+
+                    <group class="o_row mb-1">
+                        <div class="o_col-3">
+                            <field name="shareholder_5" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2">
+                            <field name="nationality_5" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="number_of_shares_5" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="share_value_5" nolabel="1"/>
+                        </div>
+                        <div class="o_col-3 text-end">
+                            <field name="total_share_5" nolabel="1" readonly="1"/>
+                        </div>
+                    </group>
+
+                    <group class="o_row mb-1">
+                        <div class="o_col-3">
+                            <field name="shareholder_6" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2">
+                            <field name="nationality_6" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="number_of_shares_6" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="share_value_6" nolabel="1"/>
+                        </div>
+                        <div class="o_col-3 text-end">
+                            <field name="total_share_6" nolabel="1" readonly="1"/>
+                        </div>
+                    </group>
+
+                    <group class="o_row mb-1">
+                        <div class="o_col-3">
+                            <field name="shareholder_7" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2">
+                            <field name="nationality_7" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="number_of_shares_7" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="share_value_7" nolabel="1"/>
+                        </div>
+                        <div class="o_col-3 text-end">
+                            <field name="total_share_7" nolabel="1" readonly="1"/>
+                        </div>
+                    </group>
+
+                    <group class="o_row mb-1">
+                        <div class="o_col-3">
+                            <field name="shareholder_8" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2">
+                            <field name="nationality_8" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="number_of_shares_8" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="share_value_8" nolabel="1"/>
+                        </div>
+                        <div class="o_col-3 text-end">
+                            <field name="total_share_8" nolabel="1" readonly="1"/>
+                        </div>
+                    </group>
+
+                    <group class="o_row mb-1">
+                        <div class="o_col-3">
+                            <field name="shareholder_9" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2">
+                            <field name="nationality_9" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="number_of_shares_9" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="share_value_9" nolabel="1"/>
+                        </div>
+                        <div class="o_col-3 text-end">
+                            <field name="total_share_9" nolabel="1" readonly="1"/>
+                        </div>
+                    </group>
+
+                    <group class="o_row mb-1">
+                        <div class="o_col-3">
+                            <field name="shareholder_10" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2">
+                            <field name="nationality_10" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="number_of_shares_10" nolabel="1"/>
+                        </div>
+                        <div class="o_col-2 text-center">
+                            <field name="share_value_10" nolabel="1"/>
+                        </div>
+                        <div class="o_col-3 text-end">
+                            <field name="total_share_10" nolabel="1" readonly="1"/>
+                        </div>
+                    </group>
+
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
