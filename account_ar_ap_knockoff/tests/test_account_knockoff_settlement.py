@@ -344,6 +344,12 @@ class TestAccountKnockoffSettlement(AccountTestInvoicingCommon):
         currency_usd = self.env.ref('base.USD')
         currency_eur = self.env.ref('base.EUR')
         
+        # Activate currencies if not already active
+        if not currency_usd.active:
+            currency_usd.active = True
+        if not currency_eur.active:
+            currency_eur.active = True
+        
         # Ensure exchange rates exist for the test date
         rate_date = fields.Date.to_date('2026-05-01')
         self.env['res.currency.rate'].create([

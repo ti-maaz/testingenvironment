@@ -39,6 +39,8 @@ class TestCustomerInvoiceSerialCheck(AccountTestInvoicingCommon):
         format_string, format_values = reference_move._get_sequence_format_param(reference_move.name)
         format_values['seq'] = reference_move.sequence_number + sequence_gap
         move.name = format_string.format(**format_values)
+        # Invalidate recordset to force recomputation of made_sequence_gap
+        move.invalidate_recordset(['made_sequence_gap'])
 
     def test_missing_customer_invoice_serial_action_opens_gap_invoices(self):
         regular_invoice = self._create_invoice()
