@@ -409,10 +409,14 @@ class AccountBankRecodeWizard(models.TransientModel):
                     'account_id': suspense_account.id,
                 })
 
+        # Invalidate the recordset to ensure changes are picked up
+        moves_to_draft.invalidate_recordset()
+        statement_lines.invalidate_recordset()
+        
         # Re-post moves that were posted
         if posted_moves:
             posted_moves.action_post()
-
+        
         # Post chatter messages
         self._message_unreconcile_changes(unreconcile_changes)
 
