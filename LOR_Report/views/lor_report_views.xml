@@ -200,7 +200,7 @@
 
     <menuitem id="lor_report_generate_menu"
               name="Generate LOR"
-              parent="accountant.menu_accounting"
+              parent="account.menu_finance"
               action="lor_report_wizard_action"
               sequence="96"/>
 

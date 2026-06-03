@@ -3,6 +3,7 @@
     'version': '19.0.1.0.0',
     'summary': 'Check missing posted customer invoice serial numbers',
     'category': 'Accounting/Accounting',
+    'author': 'TI Associates',
     'license': 'LGPL-3',
     'depends': ['account'],
     'data': [

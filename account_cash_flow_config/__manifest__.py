@@ -7,6 +7,7 @@
         This module provides configuration options for managing account cash flow reports.
     """,
     'author': 'TI Associates',
+    'license': 'LGPL-3',
     'depends': ['account'],
     'data': [
         'views/account_account_view.xml',

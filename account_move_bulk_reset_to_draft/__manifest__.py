@@ -3,6 +3,7 @@
     'version': '19.0.1.0.0',
     'summary': 'Bulk reset or delete journal entries from the Action menu',
     'category': 'Accounting/Accounting',
+    'author': 'TI Associates',
     'license': 'LGPL-3',
     'depends': ['account'],
     'data': [
