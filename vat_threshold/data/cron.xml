@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Cron Job for Daily Revenue Recompute at 7:00 AM -->
+<record id="cron_recompute_revenue_daily" model="ir.cron">
+    <field name="name">Recompute All Revenue Data Daily at 7:00 AM</field>
+    <field name="model_id" ref="model_vat_threshold"/>
+    <field name="user_id" ref="base.user_root"/>
+    <field name="state">code</field>
+    <field name="code">model.action_recompute_all_records()</field>
+    <field name="interval_number">1</field>
+    <field name="interval_type">days</field>
+    <field name="active" eval="True"/>
+    <field name="priority">5</field>
+</record>
+
+    <!-- Cron Job for Daily VAT Threshold Check at 7:00 AM -->
+    <record id="cron_check_vat_threshold" model="ir.cron">
+        <field name="name">Check VAT Threshold Daily at 7:00 AM</field>
+        <field name="model_id" ref="model_vat_threshold"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_check_vat_threshold()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+        <field name="priority">10</field>
+    </record>
+
+    <!-- Cron Job for Sending Daily Email Report at 7:05 AM -->
+    <record id="cron_send_daily_report" model="ir.cron">
+        <field name="name">Send Daily VAT Threshold Email Report at 7:05 AM</field>
+        <field name="model_id" ref="model_vat_threshold"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_send_daily_report()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+        <field name="priority">15</field>
+    </record>
+</odoo>

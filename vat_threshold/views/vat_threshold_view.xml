@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="vat_threshold_view_tree" model="ir.ui.view">
+        <field name="name">vat.threshold.tree</field>
+        <field name="model">vat.threshold</field>
+        <field name="arch" type="xml">
+            <list string="VAT Threshold Management" decoration-danger="threshold_action in ('register', 'cancel')" decoration-warning="threshold_action in ('register_warning', 'voluntary_register', 'cancel_warning')" decoration-success="threshold_action == 'none'">
+                <header>
+                    <button name="action_recompute_all_records" string="Recompute Values" type="object" class="btn-primary" groups="vat_threshold.group_custom_module_vat_threshold,base.group_system"/>
+                    <button name="action_open_settings" string="Email Settings" type="object" class="btn-secondary" groups="base.group_system"/>
+                </header>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="company_id"/>
+                <field name="date_from" optional="show"/>
+                <field name="date_to" optional="show"/>
+                <field name="rolling_total_sales" widget="monetary" string="Rolling Sales (9 Months)"/>
+                <field name="total_sales" widget="monetary" optional="hide"/>
+                <field name="is_vat_registered"/>
+                <field name="threshold_action"/>
+                <field name="email_sent"/>
+                <field name="vat_verified"/>
+                <field name="last_check_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="vat_threshold_view_form" model="ir.ui.view">
+        <field name="name">vat.threshold.form</field>
+        <field name="model">vat.threshold</field>
+        <field name="arch" type="xml">
+            <form string="VAT Threshold">
+                <header>
+                    <button name="action_verify_vat" string="Mark as Verified" type="object" class="btn-success" invisible="vat_verified" groups="vat_threshold.group_custom_module_vat_threshold,base.group_system"/>
+                    <button name="action_reset_email" string="Reset Email Status" type="object" class="btn-warning" invisible="not email_sent" groups="vat_threshold.group_custom_module_vat_threshold,base.group_system"/>
+                    <field name="threshold_action" widget="statusbar" statusbar_visible="none,voluntary_register,register_warning,register,cancel_warning,cancel"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Company Information">
+                            <field name="company_id"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_name"/>
+                            <field name="is_vat_registered"/>
+                            <field name="vat_verified" groups="vat_threshold.group_custom_module_vat_threshold,base.group_system"/>
+                        </group>
+                        <group string="Check Status">
+                            <field name="last_check_date"/>
+                            <field name="email_sent"/>
+                            <field name="email_sent_date"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Rolling Period Section (9 Months) - Used for VAT Threshold -->
+                    <group string="Rolling Period (9 Months) - VAT Threshold Calculation">
+                        <group>
+                            <field name="rolling_period_months" readonly="1"/>
+                            <field name="date_from" readonly="1"/>
+                            <field name="date_to" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="rolling_revenue_uae_clients" widget="monetary"/>
+                            <field name="rolling_revenue_international_clients" widget="monetary"/>
+                            <field name="rolling_revenue_related_party" widget="monetary"/>
+                            <field name="rolling_total_sales" widget="monetary" class="oe_inline fw-bold"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Total Revenue (All Time) -->
+                    <group string="Total Revenue (All Time)" collapsible="True">
+                        <group>
+                            <field name="revenue_uae_clients" widget="monetary"/>
+                            <field name="revenue_international_clients" widget="monetary"/>
+                            <field name="revenue_related_party" widget="monetary"/>
+                        </group>
+                        <group>
+                            <field name="total_sales" widget="monetary" class="oe_inline"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Threshold Action Required">
+                        <field name="threshold_action"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="vat_threshold_view_search" model="ir.ui.view">
+        <field name="name">vat.threshold.search</field>
+        <field name="model">vat.threshold</field>
+        <field name="arch" type="xml">
+            <search string="Search VAT Threshold">
+                <field name="company_id"/>
+                <field name="company_name"/>
+                <filter name="filter_action_required" string="Action Required" domain="[('threshold_action', '!=', 'none')]"/>
+                <filter name="filter_register_warning" string="Reg Warning" domain="[('threshold_action', '=', 'register_warning')]"/>
+                <filter name="filter_voluntary_register" string="Voluntary VAT" domain="[('threshold_action', '=', 'voluntary_register')]"/>
+                <filter name="filter_register" string="Register VAT" domain="[('threshold_action', '=', 'register')]"/>
+                <filter name="filter_cancel_warning" string="Cancel Warning" domain="[('threshold_action', '=', 'cancel_warning')]"/>
+                <filter name="filter_cancel" string="Cancel VAT" domain="[('threshold_action', '=', 'cancel')]"/>
+                <filter name="filter_email_sent" string="Email Sent" domain="[('email_sent', '=', True)]"/>
+                <filter name="filter_email_not_sent" string="Email Not Sent" domain="[('email_sent', '=', False)]"/>
+                <filter name="filter_vat_registered" string="VAT Registered" domain="[('is_vat_registered', '=', True)]"/>
+                <filter name="filter_vat_not_registered" string="Not VAT Registered" domain="[('is_vat_registered', '=', False)]"/>
+                <filter name="filter_verified" string="VAT Verified" domain="[('vat_verified', '=', True)]"/>
+                <filter name="filter_not_verified" string="Not Verified" domain="[('vat_verified', '=', False)]"/>
+                <group>
+                    <filter string="Company" name="group_company" context="{'group_by': 'company_id'}"/>
+                    <filter string="Action Required" name="group_action" context="{'group_by': 'threshold_action'}"/>
+                    <filter string="VAT Status" name="group_vat_status" context="{'group_by': 'is_vat_registered'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="vat_threshold_action" model="ir.actions.act_window">
+        <field name="name">VAT Threshold Management</field>
+        <field name="res_model">vat.threshold</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="vat_threshold_view_search"/>
+        <field name="context">{}</field>
+        <field name="group_ids" eval="[(6, 0, [ref('vat_threshold.group_custom_module_vat_threshold'), ref('base.group_system')])]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No VAT threshold records found.
+            </p>
+            <p>
+                Click "Check Threshold" to analyze company revenue and VAT status.
+            </p>
+        </field>
+    </record>
+
+    <!-- Server Action: Create Missing Company Records -->
+    <record id="action_create_missing_companies" model="ir.actions.server">
+        <field name="name">Create Missing Company Records</field>
+        <field name="model_id" ref="model_vat_threshold"/>
+        <field name="binding_model_id" ref="model_vat_threshold"/>
+        <field name="group_ids" eval="[(4, ref('base.group_system'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_create_missing_company_records()</field>
+    </record>
+
+    <!-- Server Action: Recompute All Records -->
+    <record id="action_recompute_all_records" model="ir.actions.server">
+        <field name="name">Recompute All Revenue Data</field>
+        <field name="model_id" ref="model_vat_threshold"/>
+        <field name="binding_model_id" ref="model_vat_threshold"/>
+        <field name="group_ids" eval="[(6, 0, [ref('vat_threshold.group_custom_module_vat_threshold'), ref('base.group_system')])]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_recompute_all_records()</field>
+    </record>
+
+    <!-- Server Action: Batch Mark as VAT Verified -->
+    <record id="action_batch_mark_verified" model="ir.actions.server">
+        <field name="name">Mark as VAT Verified</field>
+        <field name="model_id" ref="model_vat_threshold"/>
+        <field name="binding_model_id" ref="model_vat_threshold"/>
+        <field name="group_ids" eval="[(6, 0, [ref('vat_threshold.group_custom_module_vat_threshold'), ref('base.group_system')])]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_batch_mark_verified()</field>
+    </record>
+
+    <!-- Server Action: Batch Mark as VAT Unverified -->
+    <record id="action_batch_mark_unverified" model="ir.actions.server">
+        <field name="name">Mark as VAT Unverified</field>
+        <field name="model_id" ref="model_vat_threshold"/>
+        <field name="binding_model_id" ref="model_vat_threshold"/>
+        <field name="group_ids" eval="[(6, 0, [ref('vat_threshold.group_custom_module_vat_threshold'), ref('base.group_system')])]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_batch_mark_unverified()</field>
+    </record>
+
+    <record id="Audit_Report.account_report_menu" model="ir.ui.menu">
+        <field name="group_ids" eval="[(4, ref('vat_threshold.group_custom_module_vat_threshold'))]"/>
+    </record>
+
+    <!-- Menu Items - Under Audit Reports -->
+    <menuitem id="menu_vat_threshold_records" 
+              name="VAT Threshold" 
+              parent="Audit_Report.account_report_menu" 
+              action="vat_threshold_action" 
+              sequence="130"
+              groups="vat_threshold.group_custom_module_vat_threshold,base.group_system"/>
+</odoo>
