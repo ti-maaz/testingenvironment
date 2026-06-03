@@ -1,0 +1,48 @@
+                <tr class="investment-note-schedule-row">
+                  <td colspan="{{ notes_colspan }}">
+                    <table class="investment-note-table">
+                      <colgroup>
+                        <col class="investment-note-col-fund">
+                        <col class="investment-note-col-currency">
+                        <col class="investment-note-col-shares">
+                        <col class="investment-note-col-nav">
+                        <col class="investment-note-col-fcy">
+                        <col class="investment-note-col-rate">
+                        <col class="investment-note-col-aed">
+                      </colgroup>
+                      <thead>
+                        <tr>
+                          <th class="text-left">Fund Name</th>
+                          <th class="text-left">Currency</th>
+                          <th class="text-left">No. of Shares</th>
+                          <th class="text-left">NAV/Unit</th>
+                          <th class="text-left">Total Value<br>(FCY)</th>
+                          <th class="text-left">Exchange<br>Rate</th>
+                          <th class="text-left">Value in<br>AED</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for _row in range(5) %}
+                          <tr>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                          </tr>
+                        {% endfor %}
+                        <tr class="investment-note-total-row">
+                          <td>Total</td>
+                          <td>&nbsp;</td>
+                          <td>&nbsp;</td>
+                          <td>&nbsp;</td>
+                          <td>&nbsp;</td>
+                          <td>&nbsp;</td>
+                          <td>&nbsp;</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>

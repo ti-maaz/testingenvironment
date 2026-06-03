@@ -1,0 +1,3406 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body class="single-year">
+    {% set auditor_template = freezone_selection or 'default' %}
+    {% set is_default = auditor_template == 'default' %}
+    {% set is_ifza = auditor_template == 'ifza' %}
+    {% set is_dmcc = auditor_template == 'dmcc' %}
+    {% set is_dmcc_company_freezone = freezone == 'Dubai Multi Commodities Centre Free Zone' %}
+    {% set director_count = signature_names|length if signature_names else 0 %}
+    {% set director_is_single = director_count == 1 %}
+    {% set director_label = 'Director' if director_is_single else 'Directors' %}
+    {% set director_label_lower = 'director' if director_is_single else 'directors' %}
+    {% set partner_label = 'Partner' if director_is_single else 'Partners' %}
+    {% set director_have_has = 'has' if director_is_single else 'have' %}
+    {% set director_is_are = 'is' if director_is_single else 'are' %}
+    {% set director_focus = 'focuses' if director_is_single else 'focus' %}
+    {% set director_decision_maker = 'decision maker' if director_is_single else 'decision makers' %}
+    {% set director_rest = 'rests' if director_is_single else 'rest' %}
+    {% set director_recognize = 'recognizes' if director_is_single else 'recognize' %}
+    {% set director_confirm = 'confirms' if director_is_single else 'confirm' %}
+    {% set director_possessive_lower = 'director’s' if director_is_single else 'directors’' %}
+	<!-- Title Page -->
+	{% if not sections_to_render or 'title_page' in sections_to_render %}
+	<Section class="title_page page">
+    <div class="license-container">
+        <p class="license">License No: {{ license }}</p>
+    </div>
+    <div class="company-info">
+        <p class="company-name">{{ company_name|upper }}</p>
+        <p class="company-location">{{ freezone or '' }},{% if company.city %} {{company.city}}{% endif %}, United Arab Emirates</p>
+        <p class="financial-period">{{ report_title }}</p>
+    </div>
+	</Section>
+	{% endif %}
+
+	<!-- Table of Contents -->
+{% if not sections_to_render or 'table_of_contents' in sections_to_render %}
+<section class="table_of_contents page">
+  <header class="report-header">
+    <div class="report-header-line">
+      <br/>
+      {{ company_name|upper }}</div>
+    <div class="report-header-line">{{ freezone or '' }}, {% if company.city %}{{company.city}}{% endif %}, United Arab Emirates</div>
+  </header>
+  <div class="toc-header">
+      <p class="toc-title">Table of Contents</p>
+      <p class="toc-subtitle">for the {{ report_ended_label }} {{ report_period_end }}</p>
+  </div>
+  
+  <table class="toc-table">
+      <thead>
+          <tr>
+              <th class="toc-item-header"></th>
+              <th class="toc-page-header no-underline_bold">Pages</th>
+          </tr>
+      </thead>
+      <tbody>
+        {% for entry in toc_entries %}
+          <tr>
+              <td class="toc-item">{{ entry.label }}</td>
+              <td class="toc-page">{{ entry.page_range }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+  </table>
+</section>
+{% endif %}
+
+<!-- Entity Information -->
+{% if not sections_to_render or 'entity_information' in sections_to_render %}
+<section class="entity_information page">
+  <div class="entity-header">
+      <p class="entity-title">Entity Information</p>
+      <p class="entity-subtitle">for the {{ report_ended_label }} {{ report_period_end }}</p>
+  </div>
+  
+  <br>
+  {% set entity_owner_count = owner_display_names|length if owner_display_names else (1 if owner else 0) %}
+  {% if entity_owner_count <= 1 %}
+    {% set entity_row_gap = 50 %}
+  {% elif entity_owner_count == 2 %}
+    {% set entity_row_gap = 50 %}
+  {% elif entity_owner_count == 3 %}
+    {% set entity_row_gap = 70 %}
+  {% else %}
+    {% set entity_row_gap = 85 %}
+  {% endif %}
+  <table class="entity-table" style="--entity-row-gap: {{ entity_row_gap }}px;">
+    {% if owner_display_names %}
+      {% set owner_label = 'Owner' if owner_display_names|length == 1 else 'Owners' %}
+      <tr class="entity-owner-row{% if entity_owner_count > 4 %} entity-owner-row-spacious{% endif %}">
+            <td class="entity-label">{{ owner_label }}:</td>
+            <td>        </td>
+            <td class="entity-value">{{ owner_display_names|join('<br/>')|safe }}</td>
+        </tr>
+    {% else %}
+      <tr class="entity-owner-row{% if entity_owner_count > 4 %} entity-owner-row-spacious{% endif %}">
+            <td class="entity-label">Owner:</td>
+            <td>        </td>
+            <td class="entity-value">{{ owner }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+          <td class="entity-label">Office Address:</td>
+          <td>        </td>
+          <td class="entity-value">{{ company.street }}{% if company.city %}, <span class="entity-city">{{ company.city }}</span>{% endif %}<span class="entity-country">, United Arab Emirates</span></td>
+      </tr>
+      <tr>
+          <td class="entity-label">Trade License No:</td>
+          <td>        </td>
+          <td class="entity-value">{{ license }}</td>
+      </tr>
+      <tr>
+          <td class="entity-label">Auditor:</td>
+          <td>        </td>
+          <td class="entity-value">{% if is_dmcc %}Assurance Corp Audit and Accounting{% else %}Assurance Corp Audit and Accounting – Dubai Branch{% endif %}</td>
+      </tr>
+  </table>
+  </section>
+{% endif %}
+	
+
+	{% if not sections_to_render or 'report_of_directors' in sections_to_render %}
+	<section class="report_of_directors page{% if not gap_report_of_directors %} no-gap{% endif %}">
+    <p class="bold_ directors-header-title"> Report of {{ director_label }} </p>
+      <p class="directors-header-subtitle"> For the {{ report_ended_label }} {{date_end.strftime("%d %B %Y") if date_end else ''}} (in AED)</p>
+      
+    <p class="gap">
+      The {{ director_label }} {{ director_have_has }} pleasure in presenting the report and the audited
+      financial statements for the {{ report_period_word }} ended {{date_end.strftime("%d %B %Y") if date_end else ''}}.</p>
+
+    <p class="gap">
+      The {{ director_label }} {{ director_focus }} on studying the UAE and global market. At the same
+      time, maximizing revenue was another key focus point, primarily achieved
+      by providing the best service in the industry.
+    </p>
+
+    <p class="bold_">Business activity:</p>
+    <p class="gap">The business activity of the Entity is {{ business_activity_providing_prefix }}{{ business_activity }}{{ business_activity_services_suffix }}.</p>
+
+    <p class="bold_">Financial review:</p>
+    <p class="gap">
+      The Entity continues its core business performance with the confidence
+      that it has the ability to stand and grow. The table below summarizes the
+      results for the {{ report_period_word }} ended {{date_end.strftime("%d %B %Y") if date_end else ''}}.
+    </p>
+
+    {% set show_direct_cost = cost_of_revenue_total %}
+<table class="statement-table financial-review-table statement-table-1y">
+  <thead>
+    <tr>
+      <th class="text-left"></th>
+      <th class="text-right financial-review-aed">In AED</th>
+    </tr>
+    <tr>
+      <th class="text-left"></th>
+      <th class="text-right">{{ date_end.year if date_end else '' }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="text-left">Revenue</td>
+      <td class="text-right">{{ "%.2f"|format(revenue_total) }}</td>
+    </tr>
+    {% if show_direct_cost %}
+      <tr>
+        <td class="text-left">{{ gross_profit_margin_label }}</td>
+        <td class="text-right">{% if gross_profit_margin < 0 %}({{ "%.2f"|format_percent(gross_profit_margin|abs) }}%){% else %}{{ "%.2f"|format_percent(gross_profit_margin) }}%{% endif %}</td>
+      </tr>
+    {% endif %}
+    {% set fr_net_current_is_amount = financial_review_net_current_is_amount|default(false) %}
+    <tr>
+      <td class="text-left">{{ financial_review_net_label|default('Net profit margin') }}</td>
+      <td class="text-right">{% if fr_net_current_is_amount %}{{ "%.2f"|format(net_profit_after_tax) }}{% else %}{% if net_profit_margin < 0 %}({{ "%.2f"|format_percent(net_profit_margin|abs) }}%){% else %}{{ "%.2f"|format_percent(net_profit_margin) }}%{% endif %}{% endif %}</td>
+    </tr>
+  </tbody>
+</table>
+
+    <br/>
+    <p class="bold_">The future outlook:</p>
+    <p class="gap">
+      With the continuity of providing and adopting suitable marketing
+      strategies we are confident that the Entity will grow in a prudent and
+      balanced manner taking into consideration the need for growth and
+      profitability.
+    </p>
+    <p class="bold_">Role of the {{ director_label }} / {{ partner_label }}:</p>
+    <p class="gap">
+      The {{ director_label }} {{ director_is_are }} the Entity’s principal {{ director_decision_maker }}. The overall
+      responsibility for leading and supervising the Entity and of its business
+      including setting the strategies and policies of the Entity and monitor
+      the performance of the Entity’s business, guide and supervise its
+      management {{ director_rest }} with the {{ director_label_lower }}.
+    </p>
+    <p class="bold_">Risk management and internal control systems:</p>
+    <p class="gap">
+      The Entity is committed to the ongoing process of identifying risk
+      factors, analyzing the risks and deciding upon measures of risk handling
+      and risk control, with a view to achieving sustainability of business
+      operations,
+      employment and surpluses. The Entity’s risk management framework
+      identifies, assesses, manages and reports risks on a consistent and reliable basis.
+      The {{ director_label }} {{ director_recognize }} the responsibility to ensure the existence of the
+      system of internal control and for reviewing its continued effectiveness.
+    </p>
+    <p class="bold_">Going concern:</p>
+    {% if replace_going_concern_paragraph %}
+    {% for paragraph in liquidation_going_concern_paragraphs %}
+    <p class="gap">{{ paragraph }}</p>
+    {% endfor %}
+    {% else %}
+    <p class="gap">
+      The attached financial statements have been prepared on a going concern
+      basis. Whilst preparing the financial statements, the {{ director_label_lower }} {{ director_have_has }} made
+      an assessment of the Entity’s ability to continue as a going concern. The
+      {{ director_label }} {{ director_have_has }} not come across any evidence that causes the management to
+      believe that material uncertainties related to the events or conditions existed, which may cast significant
+      doubt on the Entity’s ability to continue as a going concern.</p>
+    {% endif %}
+    <p class="bold_">Events after period end:</p>
+    <p class="gap"> In the opinion of the {{ director_label_lower }}, no transaction or event of a material and
+      unusual nature, favorable or unfavorable has arisen in the interval
+      between the end of the financial period and the date of this report, that
+      is likely to affect, substantially the result of the operations or the
+      financial position of the Entity.
+    </p>
+
+    <p class="bold_">Auditors:</p>
+    <p class="gap">
+      {% if is_default %}Assurance Corp Audit and Accounting – Dubai Branch trading as Redbond &amp; Co Accountants{% elif is_ifza %}Assurance Corp Audit and Accounting – Dubai Branch{% else %}Assurance Corp Audit and Accounting{% endif %}, United Arab Emirates are willing to continue in
+      office and they will be re-appointed.
+    </p>
+    
+<!-- <div class="page-break"></div> -->
+
+    <p class="bold_">Statement of {{ director_possessive_lower }} responsibilities:</p>
+    <p class="gap">
+      The applicable requirements require the {{ director_label_lower }} to prepare the financial
+      statements for each financial period which presents fairly in all material
+      respects, the financial position of the Entity and its financial
+      performance for the period then ended.
+    </p>
+    <p class="gap">
+      The audited financial statements for the period under review have been
+      prepared in conformity and in compliance with the relevant statutory
+      requirements and other governing laws. The {{ director_label }} {{ director_confirm }} that
+      sufficient care has been taken for the maintenance of proper and adequate
+      accounting records that disclose with reasonable accuracy at any time, the
+      financial position of the Entity and enables the management to ensure that
+      the financial statements comply with the requirements of applicable
+      statute. The {{ director_label }} also {{ director_confirm }} that appropriate accounting policies
+      have been selected and applied consistently in order that the financial
+      statements reflect fairly the form and substance of the transactions
+      carried out during the period under review and reasonably present the
+      Entity’s financial conditions and results of its operations.
+    </p>
+    <p class="gap">
+      These financial statements were approved by the Board and signed by the
+      authorized representative of the Entity.
+    </p>
+    {% for _ in range(signature_break_lines_report_of_directors or 0) %}
+        <br>
+    {% endfor %}
+    <div class="signature-blocks">
+      {% if signature_names %}
+        {% for name in signature_names %}
+          <div class="signature-block">
+            {% if loop.first %}
+              <p>…………………………</p>
+              <p class="uppercase">{{ name }}</p>
+              <p class="uppercase">{{ company_name|upper }}</p>
+              <p>Date: {{ generated_date_display }}</p>
+            {% else %}
+              <p>…………………………</p>
+              <p class="uppercase">{{ name }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="signature-block">
+          <p>…………………………</p>
+          <p class="uppercase"></p>
+          <p class="uppercase">{{ company_name|upper }}</p>
+          <p>Date: {{ generated_date_display }}</p>
+        </div>
+      {% endif %}
+    </div>
+    
+	</section>
+	{% endif %}
+
+	{% if not sections_to_render or 'independent_auditor_report' in sections_to_render %}
+	<section class="independent_auditor_report page{% if not gap_independent_auditor_report %} no-gap{% endif %}">
+		<p class="bold_ auditor-header-title">Independent Auditor Report</p>
+		<p class="auditor-header-subtitle">For the {{ report_ended_label }} {{date_end.strftime("%d %B %Y") if date_end else ''}} (in AED)</p>
+		
+		<p class="bold_">Opinion:</p>
+		<p class="gap">
+		We have audited the financial statements of <span class="no-underline_bold">{{ company_name|upper }}</span> (the Entity),
+		which comprise the statement of financial position as at {{date_end.strftime("%d %B %Y") if date_end else ''}},
+		and the statement of profit or loss, statement of changes in equity and
+		statement of cash flows for the {{ report_period_word }} then ended, and notes to the
+		financial statements, including a summary of significant accounting
+		policies and explanatory information.
+		</p>
+		
+		<p class="gap">
+		In our opinion, the accompanying financial statements present fairly, in
+		all material respects of the financial position of the Entity as at {{date_end.strftime("%d %B %Y") if date_end else ''}}
+    and its financial performance and its cash flows for the
+		period then ended in accordance with International Financial Reporting
+		Standards (IFRSs).
+		</p>
+		
+		<p class="bold">Basis for Opinion:</p>
+		<p class="gap">
+		We conducted our audit in accordance with International Standards on
+		Auditing (ISAs). Our responsibilities under those standards are further
+		described in the Auditor’s Responsibilities for the Audit of the Financial
+		Statements section of our report. We are independent of the Entity in
+		accordance with the ethical requirements that are relevant to our audit of
+		the financial statements in the United Arab Emirates, and we have
+		fulfilled our other ethical responsibilities in accordance with these
+		requirements. We believe that the audit evidence we have obtained is
+		sufficient and appropriate to provide a basis for our opinion.
+		</p>
+
+		{% if show_other_matter %}
+		<p class="bold">Other Matter:</p>
+		<p class="gap">The financial statements of <strong>{{ other_matter_company_name or company_name }}</strong> (the Entity) for the {{ other_matter_period_word }} ended {{ other_matter_date_display }} were unaudited. Our opinion does not extend to the comparative information.</p>
+		{% endif %}
+
+		{% if show_emphasis_of_matter %}
+		<p class="bold">Emphasis of Matter:</p>
+		{% for item in emphasis_note_items %}
+		<p class="gap">
+		We draw attention to Note ({{ item.note_ref }}) of the financial statements, which describes {{ item.matter_text }}.
+		Our opinion is not modified in respect of this matter.
+		</p>
+		{% endfor %}
+		{% endif %}
+		
+		<p class="gap">
+		<span class="bold">Responsibilities of Management and Those Charged with Governance for the
+		Financial Statements: </span> Management is responsible for the preparation and
+		fair presentation of the financial statements in accordance with IFRSs,
+		and for such internal control as management determines is necessary to
+		enable the preparation of financial statements that are free from material
+		misstatement, whether due to fraud or error.
+		</p>
+		
+		<p class="gap">
+		In preparing the financial statements, management is responsible for
+		assessing the Entity’s ability to continue as a going concern, disclosing,
+		as applicable, matters related to going concern and using the going
+		concern basis of accounting unless management either intends to liquidate
+		the Entity or to cease operations, or has no realistic alternative but to
+		do so.
+		</p>
+		
+		<p class="gap">
+		Those charged with governance are responsible for overseeing the Entity’s
+		financial reporting process.
+		</p>
+		
+		<p class="bold">
+		Auditor’s Responsibilities for the Audit of the Financial Statements:
+		</p>
+		<p class="gap"> Our objectives are to obtain reasonable assurance about whether the
+		financial statements as a whole are free from
+		material misstatement, whether due to fraud or error, and to issue an
+		auditor’s report that includes our opinion. Reasonable assurance is a high
+		level of assurance but is not a guarantee that an audit conducted in
+		accordance with ISAs will always detect a material misstatement when it
+		exists. Misstatements can arise from fraud or error and are considered
+		material if, individually or in the aggregate, they could reasonably be
+		expected to influence the economic decisions of users taken on the basis
+		of these financial statements.
+		</p>
+		
+		<p>
+		As part of an audit in accordance with ISA, we exercise professional
+		judgment and maintain professional skepticism throughout the audit. We
+		also:
+		</p>
+    <ul class="audit-bullets tight">
+      <li>Identify and assess the risks of material misstatement of the financial statements, whether due to fraud or error, design and perform audit procedures responsive to those risks, and obtain audit evidence that is sufficient and appropriate to provide a basis for our opinion. The risk of not detecting a material misstatement resulting from fraud is higher than for one resulting from error, as fraud may involve collusion, forgery, intentional omissions, misrepresentations, or the override of internal control.</li>
+      {% if show_unaudited_prior_year %}
+      <br>
+      	<p class="bold">
+		Auditor’s Responsibilities for the Audit of the Financial Statements (continued):
+		</p>
+      {% endif %}
+      <li>Obtain an understanding of internal control relevant to the audit in order to design audit procedures that are appropriate in the circumstances, but not for the purpose of expressing an opinion on the effectiveness of the Entity’s internal control.</li>
+      <li>Evaluate the appropriateness of accounting policies used and the reasonableness of accounting estimates and related disclosures made by management.</li>
+      {% if not show_unaudited_prior_year %}
+      <br>
+      	<p class="bold">
+		Auditor’s Responsibilities for the Audit of the Financial Statements (continued):
+		</p>
+      {% endif %}
+      <li>Conclude on the appropriateness of management’s use of the going concern basis of accounting and, based on the audit evidence obtained, whether a material uncertainty exists related to events or conditions that may cast significant doubt on the Entity’s ability to continue as a going concern. If we conclude that a material uncertainty exists, we are required to draw attention in our auditor’s report to the related disclosures in the financial statements or, if such disclosures are inadequate, to modify our opinion.</li>
+      <li>Our conclusions are based on the audit evidence obtained up to the date of our auditor's report. However, future events or conditions may cause the entity to cease to continue as going concern.</li>
+    </ul>		
+		
+		<p class="gap">
+		We communicate with management and those charged with governance
+		regarding, among other matters, the planned scope and timing of the audit
+		and significant audit findings, including any significant deficiencies in
+		internal control that we identify during our audit.
+		</p>
+		
+		<p class="bold">Report on other legal and regulatory requirements.</p>
+		<p>
+		As required by the provisions of {{ implementing_regulations_freezone or freezone }},
+	as amended from time to time we further
+		confirm that,
+		</p>
+		<ul class="audit-bullets tight">
+		  <li>We have obtained all the information and explanations which we consider necessary for our audit,</li>
+		  <li>The financial statements have been prepared and comply in all material respects with the applicable provisions of {{ implementing_regulations_freezone or freezone }} as amended from time to time, and the Memorandum and Articles of Association of the Entity,</li>
+		  <li>Proper books of accounts have been maintained by the Entity,</li>
+		  <li>The contents of the Report of {{ director_label }} which relates to the financial statements are in agreement with the Entity’s books of account, and</li>
+		  <li>Based on the information that has been made available to us nothing has come to our attention which causes us to believe that the Entity has contravened, during the financial year ended {{date_end.strftime("%d %B %Y") if date_end else ''}} any of the applicable provisions of {{ implementing_regulations_freezone or freezone }} as amended from time to time or of its Memorandum and Articles of Association which would materially affect its activities or its financial position as at {{date_end.strftime("%d %B %Y") if date_end else ''}}.</li>
+		</ul>
+	
+  <div>
+    <br>
+    <br>
+    <br>
+    <br>
+		<p>{% if is_default %}………………………………….………………………………….………………………{% else %}…………………………{% endif %}</p>
+		<p> {% if is_default %}Assurance Corp Audit and Accounting – Dubai Branch trading as Redbond &amp; Co Accountants<br/>Dubai, United Arab Emirates{% elif is_ifza %}Abdulla Saeed Hamad Aljneibi<br/>Reg. No. 820<br/>Assurance Corp Audit and Accounting – Dubai Branch <br/> Dubai, United Arab Emirates{% else %}Abdulla Saeed Hamad Aljneibi<br/>Reg. No. 820<br/>Assurance Corp Audit and Accounting<br/>United Arab Emirates{% endif %} </p>
+		<p>Date: {{ generated_date_display }}</p>
+	</div>
+		
+	</section>
+	{% endif %}
+	<!-- Balance Sheet Page -->
+	{% if not sections_to_render or 'balance_sheet_page' in sections_to_render %}
+	<section class="balance_sheet_page page">
+    <p class="bold_ balance-header-title">Statement of the Financial Position</p>
+    <p class="balance-header-subtitle">As at {{date_end.strftime("%d %B %Y") if date_end else ''}} (in AED) </p>
+    <table class="statement-table statement-table-1y">
+  <thead>
+    <tr>
+      <th class="text-left"></th>
+      <th class="text-center notes-col">Notes</th>
+      <th class="text-right">{{ date_end.year if date_end else '' }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% set non_current_codes = ['1101', '1102', '1103', '1104', '1105', '1106', '1107', '1108', '1109', '1110', '1111'] %}
+    {% set current_codes = ['1201', '1207', '1202', '1203', '1204', '1206'] %}
+    {% set equity_codes = ['3101'] %}
+    {% set non_current_liability_codes = ['2101', '2102', '2103', '2104', '2105', '2106', '2107'] %}
+    {% set current_liability_codes = ['2201', '2202', '2203', '2204'] %}
+
+    {% set ns = namespace(
+      non_current_rows=[],
+      current_rows=[],
+      equity_rows=[],
+      non_current_liability_rows=[],
+      current_liability_rows=[]
+    ) %}
+
+    {% for code in non_current_codes %}
+      {% set current = current_group_totals.get(code, 0.0) %}
+      {% if current %}
+        {% set ns.non_current_rows = ns.non_current_rows + [{
+          'code': code,
+          'label': main_head_labels.get(code, code),
+          'current': current
+        }] %}
+      {% endif %}
+    {% endfor %}
+    {% for code in current_codes %}
+      {% set current = current_group_totals.get(code, 0.0) %}
+      {% if code == '1203' %}
+        {% set current = current + current_group_totals.get('1205', 0.0) %}
+      {% endif %}
+      {% if current %}
+        {% set ns.current_rows = ns.current_rows + [{
+          'code': code,
+          'label': main_head_labels.get(code, code),
+          'current': current
+        }] %}
+      {% endif %}
+    {% endfor %}
+    {% for code in equity_codes %}
+      {% set current = current_group_totals.get(code, 0.0) %}
+      {% if current %}
+        {% set ns.equity_rows = ns.equity_rows + [{
+          'code': code,
+          'label': main_head_labels.get(code, code),
+          'current': current
+        }] %}
+      {% endif %}
+    {% endfor %}
+    {% for code in non_current_liability_codes %}
+      {% set current = current_group_totals.get(code, 0.0) %}
+      {% if current %}
+        {% set ns.non_current_liability_rows = ns.non_current_liability_rows + [{
+          'code': code,
+          'label': main_head_labels.get(code, code),
+          'current': current
+        }] %}
+      {% endif %}
+    {% endfor %}
+    {% set other_payables_current = current_group_totals.get('2201', 0.0)
+      + current_group_totals.get('2202', 0.0)
+      + current_group_totals.get('2203', 0.0)
+      + current_group_totals.get('2204', 0.0) %}
+    {% if other_payables_current %}
+      {% set ns.current_liability_rows = ns.current_liability_rows + [{
+        'code': 'other_payables',
+        'label': 'Other payables',
+        'current': other_payables_current
+      }] %}
+    {% endif %}
+
+    {% if ns.non_current_rows or ns.current_rows or total_assets is not none %}
+      <tr class="section-row"><td colspan="3">Assets</td></tr>
+      {% if ns.non_current_rows %}
+        <tr class="subsection-row"><td colspan="3">Non-current assets</td></tr>
+        {% for row in ns.non_current_rows %}
+          <tr>
+            <td class="text-left">{{ row.label|rcase }}</td>
+            <td class="text-center">{{ note_numbers.get(row.code, '') }}</td>
+            <td class="text-right">{{ "%.2f"|format(row.current) }}</td>
+          </tr>
+        {% endfor %}
+        {% if non_current_assets_total %}
+          <tr class="total-row italic-total">
+            <td class="text-left">Total non-current assets</td>
+            <td class="text-center"></td>
+            <td class="text-right"><span class="amount-line amount-line-single">{{ "%.2f"|format(non_current_assets_total) }}</span></td>
+          </tr>
+        {% endif %}
+      {% endif %}
+
+      {% if ns.current_rows %}
+        <tr class="subsection-row"><td colspan="3">Current assets</td></tr>
+        {% for row in ns.current_rows %}
+          <tr>
+            <td class="text-left">{{ row.label|rcase }}</td>
+            <td class="text-center">{{ note_numbers.get(row.code, '') }}</td>
+            <td class="text-right">{{ "%.2f"|format(row.current) }}</td>
+          </tr>
+        {% endfor %}
+        {% if current_assets_total and non_current_assets_total %}
+          <tr class="total-row italic-total">
+            <td class="text-left">Total current assets</td>
+            <td class="text-center"></td>
+            <td class="text-right"><span class="amount-line amount-line-single">{{ "%.2f"|format(current_assets_total) }}</span></td>
+          </tr>
+        {% endif %}
+      {% endif %}
+
+      <tr class="grand-total-row italic-total">
+        <td class="text-left">Total assets</td>
+        <td class="text-center"></td>
+        <td class="text-right"><span class="amount-line amount-line-double">{{ "%.2f"|format(total_assets) }}</span></td>
+      </tr>
+    {% endif %}
+
+    {% if ns.equity_rows or ns.non_current_liability_rows or ns.current_liability_rows or share_capital_total is not none or total_of_equity_and_liabilities is not none %}
+      <tr class="section-row"><td colspan="3">Equity and liabilities</td></tr>
+      {% if total_equity or retained_earnings_balance or owner_current_account_equity or statutory_reserves_equity or share_capital_total is not none %}
+        <tr class="subsection-row"><td colspan="3">Equity</td></tr>
+        {% if show_shareholder_note %}
+          <tr>
+            <td class="text-left">Share capital</td>
+            <td class="text-center">{{ note_numbers.get('3101', '') }}</td>
+            <td class="text-right">{{ "%.2f"|format(share_capital_total or 0.0) }}</td>
+          </tr>
+        {% endif %}
+        {% if retained_earnings_balance %}
+          <tr>
+            <td class="text-left">Retained earnings</td>
+            <td class="text-center">{{ note_numbers.get('retained_earnings', '') }}</td>
+            <td class="text-right">{{ "%.2f"|format(retained_earnings_balance) }}</td>
+          </tr>
+        {% endif %}
+        {% if show_owner_current_account_equity_row %}
+          <tr>
+            <td class="text-left">Owner current account</td>
+            <td class="text-center"></td>
+            <td class="text-right">{{ "%.2f"|format(owner_current_account_equity) }}</td>
+          </tr>
+        {% endif %}
+        {% if statutory_reserves_equity %}
+          <tr>
+            <td class="text-left">Statutory reserves</td>
+            <td class="text-center"></td>
+            <td class="text-right">{{ "%.2f"|format(statutory_reserves_equity) }}</td>
+          </tr>
+        {% endif %}
+        {% if total_equity is not none %}
+          <tr class="total-row italic-total">
+            <td class="text-left">Total equity</td>
+            <td class="text-center"></td>
+            <td class="text-right"><span class="amount-line amount-line-single">{{ "%.2f"|format(total_equity) }}</span></td>
+          </tr>
+        {% endif %}
+      {% endif %}
+
+      {% if ns.non_current_liability_rows %}
+        <tr class="subsection-row"><td colspan="3">Non-current liabilities</td></tr>
+        {% for row in ns.non_current_liability_rows %}
+          <tr>
+            <td class="text-left">{{ row.label|rcase }}</td>
+            <td class="text-center">{{ note_numbers.get(row.code, '') }}</td>
+            <td class="text-right">{{ "%.2f"|format(-row.current) }}</td>
+          </tr>
+        {% endfor %}
+        {% if non_current_liabilities_total %}
+          <tr class="total-row italic-total">
+            <td class="text-left">Total non-current liabilities</td>
+            <td class="text-center"></td>
+            <td class="text-right"><span class="amount-line amount-line-single">{{ "%.2f"|format(-non_current_liabilities_total) }}</span></td>
+          </tr>
+        {% endif %}
+      {% endif %}
+
+      {% if ns.current_liability_rows %}
+        <tr class="subsection-row"><td colspan="3">Current liabilities</td></tr>
+        {% for row in ns.current_liability_rows %}
+          <tr>
+            <td class="text-left">{{ row.label|rcase }}</td>
+            <td class="text-center">{{ note_numbers.get(row.code, '') }}</td>
+            <td class="text-right">{{ "%.2f"|format(-row.current) }}</td>
+          </tr>
+        {% endfor %}
+        {% if current_liabilities_total %}
+          <tr class="total-row italic-total">
+            <td class="text-left">Total current liabilities</td>
+            <td class="text-center"></td>
+            <td class="text-right"><span class="amount-line amount-line-single">{{ "%.2f"|format(-current_liabilities_total) }}</span></td>
+          </tr>
+        {% endif %}
+      {% endif %}
+
+      {% if total_liabilities is not none and current_liabilities_total and non_current_liabilities_total %}
+        <tr class="total-row">
+          <td class="text-left">Total liabilities</td>
+          <td class="text-center"></td>
+          <td class="text-right"><span class="amount-line amount-line-single">{{ "%.2f"|format(total_liabilities) }}</span></td>
+        </tr>
+      {% endif %}
+
+      <tr class="grand-total-row">
+        <td class="text-left">Total equity and liabilities</td>
+        <td class="text-center"></td>
+        <td class="text-right"><span class="amount-line amount-line-double">{{ "%.2f"|format(total_of_equity_and_liabilities) }}</span></td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+
+
+    <br>
+    <br>
+    <br>
+		<p class="bold">The accompanying notes 1 to {{ last_note_number }} form an integral part of these financial
+		statements.
+		</p>
+		
+
+    {% for _ in range(signature_break_lines_balance_sheet or 0) %}
+        <br>
+    {% endfor %}
+    <div class="signature-blocks">
+		  {% if signature_names %}
+		    {% for name in signature_names %}
+		      <div class="signature-block">
+		        {% if loop.first %}
+		          <p>…………………………</p>
+		          <p class="uppercase">{{ name }}</p>
+			          <p class="uppercase">{{ company_name|upper }}</p>
+		          <p>Date: {{ generated_date_display }}</p>
+		        {% else %}
+		          <p>…………………………</p>
+		          <p class="uppercase">{{ name }}</p>
+		        {% endif %}
+		      </div>
+		    {% endfor %}
+		  {% else %}
+		    <div class="signature-block">
+		      <p>…………………………</p>
+		      <p class="uppercase"></p>
+			      <p class="uppercase">{{ company_name|upper }}</p>
+		      <p>Date: {{ generated_date_display }}</p>
+		    </div>
+		  {% endif %}
+		</div>
+	</section>
+	{% endif %}
+
+	<!-- Profit and Loss Page -->
+	{% if not sections_to_render or 'profit_loss' in sections_to_render %}
+	<section class="profit_loss page">
+    <p class="bold_ profit-header-title">Statement of Profit and Loss</p>
+    <p class="profit-header-subtitle">For the {{ report_ended_label }} {{date_end.strftime("%d %B %Y") if date_end else ''}} (in AED)</p>
+    {% set show_direct_cost = cost_of_revenue_total %}
+<table class="statement-table statement-table-1y">
+  <thead>
+    <tr>
+      <th class="text-left"></th>
+      <th class="text-center notes-col">Notes</th>
+      <th class="text-right">{{ date_end.year if date_end else '' }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="text-left bold_ no-underline">Revenue</td>
+      <td class="text-center">{{ note_numbers.get('pl_revenue', '') }}</td>
+      <td class="text-right">{{ "%.2f"|format(revenue_total) }}</td>
+    </tr>
+    {% if show_direct_cost %}
+      <tr>
+        <td class="text-left bold_ no-underline">Direct cost</td>
+        <td class="text-center">{{ note_numbers.get('pl_cost', '') }}</td>
+        <td class="text-right">{{ "%.2f"|format(-cost_of_revenue_total) }}</td>
+      </tr>
+    {% endif %}
+    {% if show_direct_cost and gross_profit %}
+      <tr class="total-row">
+        <td class="text-left bold_ no-underline">Gross profit</td>
+        <td class="text-center"></td>
+        <td class="text-right"><span class="amount-line amount-line-top-single">{{ "%.2f"|format(gross_profit) }}</span></td>
+      </tr>
+    {% endif %}
+    {% if operating_expenses_total is not none %}
+      <tr>
+        <td class="text-left bold_ no-underline">Operating expenses</td>
+        <td class="text-center">{{ note_numbers.get('pl_opex', '') }}</td>
+        <td class="text-right">{{ "%.2f"|format(-operating_expenses_total) }}</td>
+      </tr>
+    {% endif %}
+
+    {% set investment_gain_loss_display = "%.2f"|format((-investment_gain_loss_total) or 0.0) %}
+    {% set other_income_display = "%.2f"|format(other_income_total or 0.0) %}
+    {% set zero_displays = ('-', '0', '(0)', '0.00', '-0.00') %}
+    {% set show_investment_gain_loss = investment_gain_loss_display not in zero_displays %}
+    {% if show_investment_gain_loss %}
+      <tr>
+        <td class="text-left bold_ no-underline">Gain / (loss) on investment</td>
+        <td class="text-center">{{ note_numbers.get('pl_investment_gain_loss', '') }}</td>
+        <td class="text-right">{{ investment_gain_loss_display }}</td>
+      </tr>
+    {% endif %}
+    {% set show_other_income = other_income_display not in zero_displays %}
+    {% if show_other_income %}
+      <tr>
+        <td class="text-left bold_ no-underline">Other income</td>
+        <td class="text-center"></td>
+        <td class="text-right">{{ other_income_display }}</td>
+      </tr>
+    {% endif %}
+    {% set show_tax = tax_amount %}
+    {% if net_profit_before_tax is not none %}
+      <tr class="{{ 'grand-total-row' if not show_tax else 'total-row' }}">
+        <td class="text-left bold_ no-underline">{{ net_profit_before_tax_label }}</td>
+        <td class="text-center"></td>
+        <td class="text-right">
+          {% if show_tax %}
+            <span class="amount-line amount-line-top-single">{{ "%.2f"|format(net_profit_before_tax) }}</span>
+          {% else %}
+            <span class="amount-line amount-line-double">{{ "%.2f"|format(net_profit_before_tax) }}</span>
+          {% endif %}
+        </td>
+      </tr>
+    {% endif %}
+    {% if show_tax %}
+      <tr>
+        <td class="text-left bold_ no-underline">Corporate tax provision</td>
+        <td class="text-center"></td>
+        <td class="text-right">{{ "%.2f"|format(-tax_amount) }}</td>
+      </tr>
+    {% endif %}
+    {% if show_tax and net_profit_after_tax is not none %}
+      <tr class="grand-total-row">
+        <td class="text-left bold_ no-underline">{{ net_profit_after_tax_label }}</td>
+        <td class="text-center"></td>
+        <td class="text-right"><span class="amount-line amount-line-double">{{ "%.2f"|format(net_profit_after_tax) }}</span></td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+
+
+    <br>
+    <br>
+    <p class="bold">The accompanying notes 1 to {{ last_note_number }} form an integral part of these financial
+		statements.
+		</p>
+		
+    {% for _ in range(signature_break_lines_profit_loss or 0) %}
+        <br>
+    {% endfor %}
+    <div class="signature-blocks">
+		  {% if signature_names %}
+		    {% for name in signature_names %}
+		      <div class="signature-block">
+		        {% if loop.first %}
+		          <p>…………………………</p>
+		          <p class="uppercase">{{ name }}</p>
+			          <p class="uppercase">{{ company_name|upper }}</p>
+		          <p>Date: {{ generated_date_display }}</p>
+		        {% else %}
+		          <p>…………………………</p>
+		          <p class="uppercase">{{ name }}</p>
+		        {% endif %}
+		      </div>
+		    {% endfor %}
+		  {% else %}
+		    <div class="signature-block">
+		      <p>…………………………</p>
+		      <p class="uppercase"></p>
+			      <p class="uppercase">{{ company_name|upper }}</p>
+		      <p>Date: {{ generated_date_display }}</p>
+		    </div>
+		  {% endif %}
+		</div>
+	</section>
+	{% endif %}
+
+    {% if show_other_comprehensive_income_page and (not sections_to_render or 'other_comprehensive_income' in sections_to_render) %}
+    <section class="other_comprehensive_income page">
+      <p class="bold_ profit-header-title">Statement of Other Comprehensive Income</p>
+      <p class="profit-header-subtitle">For the {{ report_ended_label }} {{date_end.strftime("%d %B %Y") if date_end else ''}} (in AED)</p>
+      <table class="statement-table statement-table-1y">
+        <thead>
+          <tr>
+            <th class="text-left"></th>
+            <th class="text-center notes-col"></th>
+            <th class="text-right">{{ date_end.year if date_end else '' }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-left bold_ no-underline">{{ oci_profit_line_label }}</td>
+            <td class="text-center"></td>
+            <td class="text-right">{{ "%.2f"|format(oci_profit_line_current) }}</td>
+          </tr>
+          <tr>
+            <td class="text-left bold_ no-underline">Other comprehensive income</td>
+            <td class="text-center"></td>
+            <td class="text-right">{{ "%.2f"|format(oci_other_comprehensive_income_current) }}</td>
+          </tr>
+          <tr class="grand-total-row">
+            <td class="text-left bold_ no-underline">{{ oci_total_comprehensive_label }}</td>
+            <td class="text-center"></td>
+            <td class="text-right"><span class="amount-line amount-line-double">{{ "%.2f"|format(oci_total_comprehensive_current) }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br>
+      <br>
+      <p class="bold">The accompanying notes 1 to {{ last_note_number }} form an integral part of these financial
+		statements.
+		</p>
+		
+    {% for _ in range(signature_break_lines_profit_loss or 0) %}
+        <br>
+    {% endfor %}
+    <div class="signature-blocks">
+		  {% if signature_names %}
+		    {% for name in signature_names %}
+		      <div class="signature-block">
+		        {% if loop.first %}
+		          <p>…………………………</p>
+		          <p class="uppercase">{{ name }}</p>
+			          <p class="uppercase">{{ company_name|upper }}</p>
+		          <p>Date: {{ generated_date_display }}</p>
+		        {% else %}
+		          <p>…………………………</p>
+		          <p class="uppercase">{{ name }}</p>
+		        {% endif %}
+		      </div>
+		    {% endfor %}
+		  {% else %}
+		    <div class="signature-block">
+		      <p>…………………………</p>
+		      <p class="uppercase"></p>
+			      <p class="uppercase">{{ company_name|upper }}</p>
+		      <p>Date: {{ generated_date_display }}</p>
+		    </div>
+		  {% endif %}
+		</div>
+    </section>
+    {% endif %}
+
+    <!-- Changes in Equity Page -->
+    {% if not sections_to_render or 'changes_in_equity' in sections_to_render %}
+    <section class="changes_in_equity page">
+      <p class="bold_ equity-header-title">Statement of Changes in Equity</p>
+      <p class="equity-header-subtitle">For the {{ report_ended_label }} {{date_end.strftime("%d %B %Y") if date_end else ''}} (in AED)</p>
+      {% set show_equity_section = soce_rows %}
+      {% if show_equity_section %}
+        {% set soce_table_class = 'statement-table soce-table' %}
+        {% if soce_column_count == 6 %}
+          {% set soce_table_class = soce_table_class + ' soce-6-cols' %}
+        {% elif soce_column_count == 5 %}
+          {% set soce_table_class = soce_table_class + ' soce-5-cols' %}
+        {% elif soce_column_count == 4 %}
+          {% set soce_table_class = soce_table_class + ' soce-4-cols' %}
+        {% elif soce_column_count == 3 %}
+          {% set soce_table_class = soce_table_class + ' soce-3-cols' %}
+        {% endif %}
+        <table class="{{ soce_table_class }}">
+          {% if soce_column_count == 6 %}
+            <colgroup>
+              <col style="width: 35%;">
+              <col style="width: 13%;">
+              <col style="width: 13%;">
+              <col style="width: 13%;">
+              <col style="width: 13%;">
+              <col style="width: 13%;">
+            </colgroup>
+          {% endif %}
+          <thead>
+            <tr>
+              <th class="text-left"></th>
+              {% if show_share_capital_column %}
+                <th class="text-right soce-head">Share<br>capital</th>
+              {% endif %}
+              {% if show_owner_current_account_column %}
+                <th class="text-right soce-head">Owner current<br>account</th>
+              {% endif %}
+              <th class="text-right soce-head">Retained<br>earnings</th>
+              {% if show_statutory_reserves_column %}
+                <th class="text-right soce-head">Statutory<br>reserves</th>
+              {% endif %}
+              <th class="text-right soce-head">Total<br>equity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in soce_rows %}
+              {% set is_final = loop.last %}
+              {% set use_amount_line = row.get('use_amount_line') %}
+              {% set row_class = '' %}
+              {% if row.is_balance %}
+                {% set row_class = 'soce-balance' %}
+                {% if loop.first %}
+                  {% set row_class = row_class + ' soce-opening' %}
+                {% elif is_final %}
+                  {% set row_class = row_class + ' soce-final' %}
+                {% else %}
+                  {% set row_class = row_class + ' soce-subtotal' %}
+                {% endif %}
+              {% endif %}
+              <tr class="{{ row_class }}">
+                <td class="text-left{{ ' soce-total-comprehensive-label' if 'Total comprehensive' in (row.label or '') else '' }}{{ ' soce-owner-current-movement-label' if 'Net movement in owner current' in (row.label or '') else '' }}">
+                  {% if 'Total comprehensive' in (row.label or '') %}
+                    {% set soce_period_label = report_period_word %}
+                    {% set soce_profit_label = '(loss)' if (row.retained_earnings or 0.0) < 0 else 'profit' %}
+                    Total comprehensive {{ soce_profit_label }} for the {{ soce_period_label }}
+                  {% else %}
+                    {{ row.label }}
+                  {% endif %}
+                </td>
+                {% if show_share_capital_column %}
+                  <td class="text-right">
+                    {% if row.share_capital is not none %}
+                      {% if is_final %}
+                        <span class="amount-line amount-line-double">{{ "%.2f"|format(row.share_capital) }}</span>
+                      {% elif row.is_balance %}
+                        <span class="amount-line amount-line-single">{{ "%.2f"|format(row.share_capital) }}</span>
+                      {% elif use_amount_line %}
+                        <span class="amount-line amount-line-single">{{ "%.2f"|format(row.share_capital) }}</span>
+                      {% else %}
+                        {{ "%.2f"|format(row.share_capital) }}
+                      {% endif %}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                {% endif %}
+                {% if show_owner_current_account_column %}
+                  <td class="text-right">
+                    {% if row.owner_current_account is not none %}
+                      {% if is_final %}
+                        <span class="amount-line amount-line-double">{{ "%.2f"|format(row.owner_current_account) }}</span>
+                      {% elif row.is_balance %}
+                        <span class="amount-line amount-line-single">{{ "%.2f"|format(row.owner_current_account) }}</span>
+                      {% elif use_amount_line %}
+                        <span class="amount-line amount-line-single">{{ "%.2f"|format(row.owner_current_account) }}</span>
+                      {% else %}
+                        {{ "%.2f"|format(row.owner_current_account) }}
+                      {% endif %}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                {% endif %}
+                <td class="text-right">
+                  {% if row.retained_earnings is not none %}
+                    {% if is_final %}
+                      <span class="amount-line amount-line-double">{{ "%.2f"|format(row.retained_earnings) }}</span>
+                    {% elif row.is_balance %}
+                      <span class="amount-line amount-line-single">{{ "%.2f"|format(row.retained_earnings) }}</span>
+                    {% elif use_amount_line %}
+                      <span class="amount-line amount-line-single">{{ "%.2f"|format(row.retained_earnings) }}</span>
+                    {% else %}
+                      {{ "%.2f"|format(row.retained_earnings) }}
+                    {% endif %}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                {% if show_statutory_reserves_column %}
+                  <td class="text-right">
+                    {% if row.statutory_reserves is not none %}
+                      {% if is_final %}
+                        <span class="amount-line amount-line-double">{% if row.statutory_reserves < 0 %}({{ "%.2f"|format(row.statutory_reserves|abs) }}){% else %}{{ "%.2f"|format(row.statutory_reserves) }}{% endif %}</span>
+                      {% elif row.is_balance %}
+                        <span class="amount-line amount-line-single">{% if row.statutory_reserves < 0 %}({{ "%.2f"|format(row.statutory_reserves|abs) }}){% else %}{{ "%.2f"|format(row.statutory_reserves) }}{% endif %}</span>
+                      {% elif use_amount_line %}
+                        <span class="amount-line amount-line-single">{% if row.statutory_reserves < 0 %}({{ "%.2f"|format(row.statutory_reserves|abs) }}){% else %}{{ "%.2f"|format(row.statutory_reserves) }}{% endif %}</span>
+                      {% else %}
+                        {% if row.statutory_reserves < 0 %}({{ "%.2f"|format(row.statutory_reserves|abs) }}){% else %}{{ "%.2f"|format(row.statutory_reserves) }}{% endif %}
+                      {% endif %}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                {% endif %}
+                <td class="text-right">
+                  {% if row.total_equity is not none %}
+                    {% if is_final %}
+                      <span class="amount-line amount-line-double">{{ "%.2f"|format(row.total_equity) }}</span>
+                    {% elif row.is_balance %}
+                      <span class="amount-line amount-line-single">{{ "%.2f"|format(row.total_equity) }}</span>
+                    {% elif use_amount_line %}
+                      <span class="amount-line amount-line-single">{{ "%.2f"|format(row.total_equity) }}</span>
+                    {% else %}
+                      {{ "%.2f"|format(row.total_equity) }}
+                    {% endif %}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+
+      <br>
+      <br>
+
+      <p class="bold">The accompanying notes 1 to {{ last_note_number }} form an integral part of these financial
+		statements.
+		</p>
+		
+    {% for _ in range(signature_break_lines_changes_in_equity or 0) %}
+        <br>
+    {% endfor %}
+    <div class="signature-blocks">
+		  {% if signature_names %}
+		    {% for name in signature_names %}
+		      <div class="signature-block">
+		        {% if loop.first %}
+		          <p>…………………………</p>
+		          <p class="uppercase">{{ name }}</p>
+			          <p class="uppercase">{{ company_name|upper }}</p>
+		          <p>Date: {{ generated_date_display }}</p>
+		        {% else %}
+		          <p>…………………………</p>
+		          <p class="uppercase">{{ name }}</p>
+		        {% endif %}
+		      </div>
+		    {% endfor %}
+		  {% else %}
+		    <div class="signature-block">
+		      <p>…………………………</p>
+		      <p class="uppercase"></p>
+			      <p class="uppercase">{{ company_name|upper }}</p>
+		      <p>Date: {{ generated_date_display }}</p>
+		    </div>
+		  {% endif %}
+		</div>
+	</section>
+    {% endif %}
+
+	<!-- Cash Flow Page -->
+	{% if not sections_to_render or 'cash_flows' in sections_to_render %}
+	<section class="cash_flows page">
+    <p class="bold_ cashflow-header-title">Statement of Cash Flows</p>
+    <p class="cashflow-header-subtitle">For the {{ report_ended_label }} {{date_end.strftime("%d %B %Y") if date_end else ''}} (in AED)</p>
+      <table class="statement-table statement-table-1y">
+  <thead>
+    <tr>
+      <th class="text-left"></th>
+      <th class="text-center notes-col"></th>
+      <th class="text-right">{{ date_end.year if date_end else '' }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% set show_operating = True %}
+    {% set show_adjustments = current_depreciation_total
+      or current_amortization_total
+      or prior_year_adjustment
+      or bad_debt_expense_addback
+      or gain_on_disposal_adjustment
+      or end_service_benefits_adjustment
+      or interest_paid_addback %}
+    {% set show_working_capital = change_in_current_assets
+      or change_in_current_liabilities %}
+    {% set show_investing = current_property
+      or show_investing_activity_cashflow_row
+      or show_non_current_asset_cashflow_row
+      or show_intangible_asset_cashflow_row
+      or show_security_deposit_cashflow_row
+      or net_cash_generated_from_investing_activities %}
+    {% set show_financing = paid_up_capital
+      or dividend_paid
+      or show_owner_current_account_cashflow_row
+      or show_related_party_loan_cashflow_row
+      or show_financing_activity_cashflow_row
+      or show_non_current_liability_cashflow_row
+      or show_deposit_cashflow_row
+      or show_interest_paid_cashflow_row
+      or net_cash_generated_from_financing_activities %}
+
+    {% if show_operating %}
+      <tr class="section-row"><td colspan="3">Cash flows from operating activities</td></tr>
+      {% if True %}
+        <tr>
+          {% set cf_period_label = report_period_word or 'period' %}
+          {% set cf_net_label = 'Net profit for the ' ~ cf_period_label %}
+          {% if (cashflow_net_profit_amount or 0) < 0 %}
+            {% set cf_net_label = 'Net (loss) for the ' ~ cf_period_label %}
+          {% endif %}
+          <td class="text-left">{{ cf_net_label }}</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(cashflow_net_profit_amount) if cashflow_net_profit_amount else "-" }}</td>
+        </tr>
+      {% endif %}
+      {% if show_adjustments %}
+        <tr>
+          <td class="text-left">Adjustments for:</td>
+          <td class="text-center"></td>
+          <td class="text-right"></td>
+        </tr>
+      {% endif %}
+      {% if prior_year_adjustment %}
+        <tr>
+          <td class="text-left">Prior year adjustment</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(prior_year_adjustment) }}</td>
+        </tr>
+      {% endif %}
+      {% if bad_debt_expense_addback %}
+        <tr>
+          <td class="text-left">Bad debt expense</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(bad_debt_expense_addback) }}</td>
+        </tr>
+      {% endif %}
+      {% if gain_on_disposal_adjustment %}
+        <tr>
+          <td class="text-left">Gain on disposal</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(gain_on_disposal_adjustment) }}</td>
+        </tr>
+      {% endif %}
+      {% if current_depreciation_total %}
+        <tr>
+          <td class="text-left">Depreciation</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(current_depreciation_total) }}</td>
+        </tr>
+      {% endif %}
+      {% if current_amortization_total %}
+        <tr>
+          <td class="text-left">Amortization</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(current_amortization_total) }}</td>
+        </tr>
+      {% endif %}
+      {% if end_service_benefits_adjustment %}
+        <tr>
+          <td class="text-left">End of service benefits</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(end_service_benefits_adjustment) }}</td>
+        </tr>
+      {% endif %}
+      {% if interest_paid_addback %}
+        <tr>
+          <td class="text-left">Finance cost</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(interest_paid_addback) }}</td>
+        </tr>
+      {% endif %}
+      {% if True %}
+        <tr class="total-row cf-before-wc">
+          <td class="text-left">Operating cash flows before changes in working capital</td>
+          <td class="text-center"></td>
+          <td class="text-right"><span class="amount-line amount-line-single">{{ "%.2f"|format(operating_cashflow_before_working_capital) if operating_cashflow_before_working_capital else "-" }}</span></td>
+        </tr>
+      {% endif %}
+      {% if True %}
+        <tr>
+          <td class="text-left bold">Changes in working capital</td>
+          <td class="text-center"></td>
+          <td class="text-right"></td>
+        </tr>
+      {% endif %}
+      {% if True %}
+        <tr>
+          <td class="text-left">(Increase) / decrease in current assets</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(change_in_current_assets) if change_in_current_assets else "-" }}</td>
+        </tr>
+      {% endif %}
+      {% if True %}
+        <tr>
+          <td class="text-left">Increase / (decrease) in current liabilities</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(change_in_current_liabilities) if change_in_current_liabilities else "-" }}</td>
+        </tr>
+      {% endif %}
+      {% if corporate_tax_paid %}
+        <tr>
+          <td class="text-left">Corporate tax paid</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(corporate_tax_paid) }}</td>
+        </tr>
+      {% endif %}
+      {% if end_service_benefits_paid %}
+        <tr>
+          <td class="text-left">End of service benefits paid</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(end_service_benefits_paid) }}</td>
+        </tr>
+      {% endif %}
+      {% if True %}
+        <tr class="total-row cf-net-ops">
+          {% set net_ops_label = 'Net cash generated from operations' %}
+          {% if (net_cash_generated_from_operations or 0) < 0 %}
+            {% set net_ops_label = 'Net cash (used in) operations' %}
+          {% endif %}
+          <td class="text-left">{{ net_ops_label }}</td>
+          <td class="text-center"></td>
+          <td class="text-right"><span class="amount-line amount-line-single">{{ "%.2f"|format(net_cash_generated_from_operations) if net_cash_generated_from_operations else "-" }}</span></td>
+        </tr>
+      {% endif %}
+    {% endif %}
+
+    {% if show_investing %}
+      <tr class="section-row"><td colspan="3">Cash flows from investing activities</td></tr>
+      {% if current_property %}
+        <tr>
+          <td class="text-left">Property, plant and equipment</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(current_property) }}</td>
+        </tr>
+      {% endif %}
+      {% if current_long_term_investments %}
+        <tr>
+          <td class="text-left">Long term investments</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(current_long_term_investments) }}</td>
+        </tr>
+      {% endif %}
+      {% if show_investing_activity_cashflow_row %}
+        <tr>
+          <td class="text-left">Investing activities</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(investing_activity_cashflow) }}</td>
+        </tr>
+      {% endif %}
+      {% if show_non_current_asset_cashflow_row %}
+        <tr>
+          <td class="text-left">Non current assets</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(non_current_asset_cashflow) }}</td>
+        </tr>
+      {% endif %}
+      {% if show_intangible_asset_cashflow_row %}
+        <tr>
+          <td class="text-left">Intangible assets</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(current_intangible_assets) }}</td>
+        </tr>
+      {% endif %}
+      {% if show_security_deposit_cashflow_row %}
+        <tr>
+          <td class="text-left">Security deposit</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(security_deposit) }}</td>
+        </tr>
+      {% endif %}
+      {% if net_cash_generated_from_investing_activities %}
+        <tr class="total-row cf-investing">
+          {% set net_investing_label = 'Net cash generated from investing activities' %}
+          {% if (net_cash_generated_from_investing_activities or 0) < 0 %}
+            {% set net_investing_label = 'Net cash (used in) investing activities' %}
+          {% endif %}
+          <td class="text-left">{{ net_investing_label }}</td>
+          <td class="text-center"></td>
+          <td class="text-right"><span class="amount-line amount-line-single">{{ "%.2f"|format(net_cash_generated_from_investing_activities) }}</span></td>
+        </tr>
+      {% endif %}
+    {% endif %}
+
+    {% if show_financing %}
+      <tr class="section-row"><td colspan="3">Cash flows from financing activities</td></tr>
+      {% if paid_up_capital %}
+        <tr>
+          <td class="text-left">Paid up capital</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(paid_up_capital) }}</td>
+        </tr>
+      {% endif %}
+      {% if dividend_paid %}
+        <tr>
+          <td class="text-left">Dividend paid</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(dividend_paid) }}</td>
+        </tr>
+      {% endif %}
+      {% if show_owner_current_account_cashflow_row %}
+        <tr>
+          <td class="text-left">Owner current account</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(owner_current_account) }}</td>
+        </tr>
+      {% endif %}
+      {% if show_related_party_loan_cashflow_row %}
+        <tr>
+          <td class="text-left">Loan from related party</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(related_party_loan) }}</td>
+        </tr>
+      {% endif %}
+      {% if show_financing_activity_cashflow_row %}
+        <tr>
+          <td class="text-left">Financing activities</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(financing_activity_cashflow) }}</td>
+        </tr>
+      {% endif %}
+      {% if show_non_current_liability_cashflow_row %}
+        <tr>
+          <td class="text-left">Non current liabilities</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(non_current_liability_cashflow) }}</td>
+        </tr>
+      {% endif %}
+      {% if show_deposit_cashflow_row %}
+        <tr>
+          <td class="text-left">Deposit</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(deposit_cashflow) }}</td>
+        </tr>
+      {% endif %}
+      {% if show_interest_paid_cashflow_row %}
+        <tr>
+          <td class="text-left">Interest paid</td>
+          <td class="text-center"></td>
+          <td class="text-right">{{ "%.2f"|format(interest_paid) }}</td>
+        </tr>
+      {% endif %}
+      <tr class="total-row">
+        {% set net_financing_label = 'Net cash generated from financing activities' %}
+        {% if (net_cash_generated_from_financing_activities or 0) < 0 %}
+          {% set net_financing_label = 'Net cash (used in) financing activities' %}
+        {% endif %}
+        <td class="text-left">{{ net_financing_label }}</td>
+        <td class="text-center"></td>
+        <td class="text-right"><span class="amount-line amount-line-single">{{ "%.2f"|format(net_cash_generated_from_financing_activities) }}</span></td>
+      </tr>
+    {% endif %}
+
+    <tr>
+      <td class="text-left bold_ no-underline bold">Net increase in cash and cash equivalents</td>
+      <td class="text-center"></td>
+      <td class="text-right">{{ "%.2f"|format(net_cash_and_cash_equivalents) }}</td>
+    </tr>
+    <tr>
+      <td class="text-left">Cash and cash equivalents, beginning of the {{ report_period_word or 'period' }}</td>
+      <td class="text-center"></td>
+      <td class="text-right">{% if cash_beginning_year %}{{ "%.2f"|format(cash_beginning_year) }}{% else %}-{% endif %}</td>
+    </tr>
+    <tr class="grand-total-row cash-flow-ending">
+      <td class="text-left">Cash and cash equivalents, end of the {{ report_period_word or 'period' }}</td>
+      <td class="text-center"></td>
+      <td class="text-right"><span class="amount-line amount-line-double">{{ "%.2f"|format(cash_end_of_year) }}</span></td>
+    </tr>
+  </tbody>
+</table>
+
+
+      <br>
+      <br>
+
+      <p class="bold">The accompanying notes 1 to {{ last_note_number }} form an integral part of these financial
+		statements.
+		</p>
+		
+    {% for _ in range(signature_break_lines_cash_flows or 0) %}
+        <br>
+    {% endfor %}
+    <div class="signature-blocks">
+		  {% if signature_names %}
+		    {% for name in signature_names %}
+		      <div class="signature-block">
+		        {% if loop.first %}
+		          <p>…………………………</p>
+		          <p class="uppercase">{{ name }}</p>
+			          <p class="uppercase">{{ company_name|upper }}</p>
+		          <p>Date: {{ generated_date_display }}</p>
+		        {% else %}
+		          <p>…………………………</p>
+		          <p class="uppercase">{{ name }}</p>
+		        {% endif %}
+		      </div>
+		    {% endfor %}
+		  {% else %}
+		    <div class="signature-block">
+		      <p>…………………………</p>
+		      <p class="uppercase"></p>
+			      <p class="uppercase">{{ company_name|upper }}</p>
+		      <p>Date: {{ generated_date_display }}</p>
+		    </div>
+		  {% endif %}
+		</div>
+	</section>
+	{% endif %}
+
+  {% if not sections_to_render or 'notes_to_financial_statements' in sections_to_render %}
+  <section class="notes_to_financial_statements page{% if not gap_notes_to_financial_statements %} no-gap{% endif %}{% if ignore_notes_last_page_margins %} notes-ignore-bottom-margin{% endif %}">
+    <p class="bold_ notes-header-title">Notes to the Financial Statements</p>
+    <p class="notes-header-subtitle">For the {{ report_ended_label }} {{date_end.strftime("%d %B %Y") if date_end else ''}} (in AED)</p>
+
+    {% set note_no = namespace(i=1) %}
+    
+    
+<div class="gap notes-legal">
+      {% set sub = namespace(i=1) %}
+      <p class="note-line note-title">
+        <span class="note-num">{{ note_no.i }}</span>
+        <span class="note-text">Legal status and business activities</span>
+      </p>
+      <p class="note-line note-item">
+        <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+        <span class="note-text">{{ company_name|upper }} is registered with the {{freezone}}, {{company.city}}, United Arab Emirates under license no. {{license}} established
+      on {{ (company.incorporation_date or incorporation_date or date_start).strftime("%d %B %Y") if (company.incorporation_date or incorporation_date or date_start) else '' }}{% if shareholder_display_text %} in the name of {{ shareholder_display_text }}{% endif %}.</span>
+      </p>
+      {% set sub.i = sub.i + 1 %}
+    
+      <p class="note-line note-item">
+        <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+        <span class="note-text">The business activity of the Entity is {{ business_activity_providing_prefix }}{{ business_activity }}{{ business_activity_services_suffix }}.</span>
+      </p>
+      {% set sub.i = sub.i + 1 %}
+    
+      <p class="note-line note-item">
+        <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+        <span class="note-text">The registered office of the Entity is located at {{company.street}}, {{company.city}}, United Arab Emirates.</span>
+      </p>
+      {% set sub.i = sub.i + 1 %}
+      <p class="note-line note-item">
+        <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+        <span class="note-text">The management and control are vested with {{ management_director_text }}, {{ management_director_title }}.</span>
+      </p>
+      {% set sub.i = sub.i + 1 %}
+    
+      <p class="note-line note-item">
+        <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+        <span class="note-text">These financial statements incorporate the operating results of license no: {{license}}.</span>
+      </p>
+      {% for item in emphasis_note_lines %}
+      <p class="note-line note-item">
+        <span class="note-num">{{ item.note_ref }}</span>
+        <span class="note-text">{{ item.note_text }}</span>
+      </p>
+      {% endfor %}
+      {% set note_no.i = note_no.i + 1 %}
+  </div>
+    
+
+<div>
+    {% set sub = namespace(i=1) %}
+    <p class="note-line note-title">
+      <span class="note-num">{{ note_no.i }}</span>
+      <span class="note-text">General information</span>
+    </p>
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Statement of compliance</strong><br>
+      </span>
+    </p>
+    <p class="gap">These financial statements have been prepared in accordance with
+      International Financial Reporting Standards (&quot;IFRSs”) as issued by
+      the International Accounting Standards Board (&quot;IASB&quot;) and
+      applicable requirements of the laws of the United Arab Emirates (UAE).</p>
+    {% set sub.i = sub.i + 1 %}
+    
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Basis of preparation</strong><br>
+      </span>
+    </p>
+    {% if usd_statement %}
+    <p class="gap">These financial statements have been presented in United States Dollar (USD) which is the presentation currency of the Entity. The functional currency of the Entity is United Arab Emirates Dirhams (A&#69;D). Items included in these financial statements are measured using the currency of the primary economic environment in which the Entity operates (&quot;the functional currency&quot;).</p>
+    {% else %}
+<p class="gap">These financial statements have been presented in United Arab Emirates
+      Dirhams (AED) which is the functional and presentation currency of the
+      Entity. Items included in these financial statements are measured using
+      the currency of the primary economic environment in which the Entity
+      operates (&quot;the functional currency&quot;).</p>
+    {% endif %}
+    {% set sub.i = sub.i + 1 %}
+    
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Basis of measurement</strong><br>
+      </span>
+    </p>
+    <p class="gap">These financial statements have been prepared based on historical cost
+      convention except as otherwise disclosed in respective accounting
+      policies.</p>
+
+    {% set note_no.i = note_no.i + 1 %}
+  </div>
+    
+
+<div class="notes-standards">
+    {% set sub = namespace(i=1) %}
+    <p class="note-line note-title">
+      <span class="note-num">{{ note_no.i }}</span>
+      <span class="note-text">Standards, amendments and interpretations</span>
+    </p>
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Standard issued but not yet effective</strong><br>
+      </span>
+    </p>
+    <p>There are other number of standards, amendments to published standards,
+      and interpretations that have been issued by the IASB and are effective in
+      future periods that the Entity has decided not to adopt early.</p>
+    {% set sub.i = sub.i + 1 %}
+
+    <table class="note-standards-table">
+      <thead>
+        <tr>
+          <th class="text-left"></th>
+          <th class="text-right">Effective for periods<br>beginning on or after</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Amendments to IAS 21 &#x27;The Effects of Changes in Foreign Exchange Rates Lack of Exchangeability.</td>
+          <td class="text-right">January 01, 2025</td>
+        </tr>
+        <tr>
+          <td>IFRS S1 ‘General requirements for Disclosure of Sustainability-related Financial Information.’</td>
+          <td class="text-right">July 01, 2025</td>
+        </tr>
+        <tr>
+          <td>IFRS S2 ‘Climate-Related Disclosures.’</td>
+          <td class="text-right">July 01, 2025</td>
+        </tr>
+        <tr>
+          <td>Amendments to IFRS 7 Financial Instruments: Disclosures Amendments regarding the classification and measurement of financial instruments.</td>
+          <td class="text-right">January 01, 2026</td>
+        </tr>
+        <tr>
+          <td>Amendments to IFRS 9 Financial Instruments Amendments regarding the classification and measurement of financial instruments</td>
+          <td class="text-right">January 01, 2026</td>
+        </tr>
+        <tr>
+          <td>IFRS 17 Insurance Contracts.</td>
+          <td class="text-right">January 01, 2026</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="gap">
+      The management anticipates that the adoption of the above standards,
+      amendments, and interpretations in future periods will have no material
+      impact on the financial statements other than in presentation/disclosure.
+    </p>
+
+    {% set note_no.i = note_no.i + 1 %}
+  </div>
+
+  <!-- <div class="page-break"></div> -->
+    <p class="note-line note-title">
+      <span class="note-num">{{ note_no.i }}</span>
+      <span class="note-text">Summary of significant accounting policies</span>
+    </p>
+    <div class="notes-policies">
+      {% set sub = namespace(i=1) %}
+      <p class="note-line note-item">
+        <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+        <span class="note-text"><strong>Accounting judgments, estimates, and assumptions</strong><br>
+        </span>
+      </p>
+      <p class="gap">To prepare the financial statements in accordance with IFRSs requires
+        management to make judgments and estimates that affect the amounts
+        reported in the financial statements and related notes. Judgments and
+        estimates are continually evaluated and are based on historical experience
+        and other factors, including expectations of future events that are
+        believed to be reasonable under the circumstances. Actual results may
+        ultimately differ from these estimates.</p>
+    
+    
+
+      <p class="note-line note-subheading">
+        <span class="note-num">a.</span>
+        <span class="note-text">Critical management judgments in applying accounting policies</span>
+      </p>
+      <p class="gap">
+        In the process of applying the accounting policies, management has made
+        the following judgments, apart from those involving estimation, which have
+        the most significant effect on the amounts recognized in the financial
+        statements:
+      </p>
+
+      
+      <p class="just_underline">Recognition of provisions and contingencies</p>
+      <p class="gap">
+        Judgment is exercised by management to distinguish between provisions and
+        contingencies in accordance with International Accounting Standard (IAS)
+        37 &#x27;Provision, Contingent Liabilities and Contingent Assets&#x27;.
+      </p>
+
+    <p class="note-line note-subheading">
+      <span class="note-num">b.</span>
+      <span class="note-text">Key sources of estimation uncertainty</span>
+    </p>
+    <p class="gap">
+      The following are the key assumptions concerning the future, and other key
+      sources of estimation uncertainty at the end of the reporting period, that
+      have a significant risk of causing a material adjustment to the carrying
+      amounts of assets and liabilities within the next reporting period.
+    </p>
+    <p class="just_underline">
+      Property, plant and equipment – useful lives, the pattern of economic
+      benefits and impairment
+    </p>
+    <p class="gap">
+      Estimates with respect to residual values and useful lives and the pattern
+      of flow of economic benefits are based on the analysis of the management
+      of the Entity. Further, the Entity reviews the value of assets for
+      possible impairment on an annual basis. Any change in the estimates in the
+      future might affect the carrying amount of the respective item of tangible
+      fixed assets, with a corresponding effect on the depreciation charge and
+      impairment.
+    </p>
+    <p class="just_underline">
+      Determining the lease term of contracts with renewal and termination
+      options.
+    </p>
+    <p class="gap">
+      The Entity determines the lease term as the non-cancellable term of the
+      lease, together with any period covered by an option to extend the lease
+      if it is reasonably certain to be exercised, or any period covered by an
+      option to terminate the lease, if it is reasonably certain not to be
+      exercised.
+    </p>
+    <p class="gap">
+      The Entity has several lease contracts that include extension and
+      termination options. The Entity applies judgment in evaluating whether it
+      is reasonably certain whether or not to exercise the option to renew or
+      terminate the lease. That is, it considers all relevant factors that
+      create an economic incentive for it to exercise either the renewal or
+      termination. After the commencement date, the Entity reassesses the lease
+      term if there is a significant event or change in circumstances that are
+      within its control and affect its ability to exercise or not to exercise
+      the option to renew or to terminate (e.g. construction of significant
+      leasehold improvements or significant customization to the leased asset).
+    </p>
+    
+    <p class="gap">
+      Lease liabilities are measured at the present value of the contractual
+      payments due to the lessor over the lease term, with the discount rate
+      determined by reference to the interest rate inherent in the lease unless
+      this is not readily determined, in which case the Entity&#x27;s
+      incremental borrowing rate on commencement of the lease is used.
+    </p>
+    
+    <p class="just_underline">Impairment of trade receivables</p>
+    <p class="gap">
+      An adequate amount of allowance for impairment is provided for specific
+      groups of accounts, where objective evidence of impairment exists.
+    </p>
+    <p class="gap">
+      The Entity evaluates the amount of allowance for impairment based on
+      available facts and circumstances affecting the collectability of the
+      accounts, including, but not limited to, the length of the Entity&#x27;s
+      relationship with the customers (including related parties), the
+      customers&#x27; current credit status, the average age of accounts,
+      collection experience and historical loss experience. When measuring
+      expected credit losses (ECLs) the Entity uses reasonable and supportable
+      forward-looking information, which is based on assumptions for the future
+      movement of different economic drivers and how these drivers will affect
+      each other.
+    </p>
+
+
+    <p class="just_underline">Retirement benefit obligation</p>
+    <p class="gap">
+      Retirement benefit obligation is provided as per the UAE labour laws which
+      management believes results in a fair reflection of liability as at the
+      reporting date.
+    </p>
+
+
+
+    <p class="just_underline">Impairment of non-financial assets</p>
+    <p class="gap">
+      The Entity has considered all impairment indicators arising and any
+      significant uncertainties around its property and equipment, and right-of-
+      use assets especially arising front any change in lease terms and
+      concluded that there is no material impact.
+    </p>
+    
+    
+    <p class="just_underline">Expected credit losses and impairment of financial assets</p>
+    <p class="gap">
+      The Entity has applied management overlays on the existing ECL models by
+      applying probability weightage scenarios on the relevant macroeconomic
+      factors relative to the economic climate of the respective market in which
+      it operates. The Entity has also assessed the exposures in potentially
+      affected sectors for any indicators of impairment and concluded that there
+      is no material impact.
+    </p>
+    
+    <p class="just_underline">Commitments and contingent liabilities</p>
+    <p class="gap">
+      The Entity has assessed the impact of any operational disruptions,
+      including any contractual challenges and changes in business or commercial
+      relationships among the customers and suppliers, to identify any potential
+      increases in commitments and contingent liabilities, and no issues were
+      noted.
+    </p>
+    
+    <p class="just_underline">Going concern</p>
+    <p class="gap">
+      The Entity has assessed its ability to continue as a going concern in
+      light of the current economic conditions and all available information
+      about future risks and uncertainties. To make this assessment the Entity
+      has made projections that cover its future performance, capital, and
+      liquidity. The Entity&#x27;s current projections show it has ample
+      resources to continue in operational existence and its going concern
+      position remains largely unaffected and unchanged from the previous year
+      end. As a result, these Financial Statements have been prepared on
+      a going concern basis.
+    </p>
+    </div>
+    {% set sub.i = sub.i + 1 %}
+    
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Property, plant, and equipment</strong></span>
+    </p>
+
+    <p class="note-line note-subheading">
+      <span class="note-num">a.</span>
+      <span class="note-text">Recognition and depreciation</span>
+    </p>
+    <p class="gap">
+      Property and equipment (except freehold land) are stated at cost less
+      accumulated depreciation and accumulated impairment loss, (if any). The
+      cost of property and equipment are depreciated using the straight-line
+      method over their estimated useful life.
+    </p>
+    
+    <p class="note-line note-subheading">
+      <span class="note-num">b.</span>
+      <span class="note-text">Subsequent costs</span>
+    </p>
+    <p class="gap">
+      Subsequent costs are included in the asset’s carrying amount or are
+      recognized as a separate asset, as appropriate, only when it is probable
+      that future economic benefits associated with the item will flow to the
+      Entity and the cost of the item can be measured reliably.
+    </p>
+    <p class="gap">
+      All other repairs and maintenance are charged to the statement of
+      comprehensive income during the period in which these are incurred.
+    </p>
+    <p class="gap">
+      The estimated useful lives and residual values are reviewed at the end of
+      each reporting period, with the effect of any changes in estimates being
+      accounted for on a prospective basis.
+    </p>
+
+    <!-- <div class="page-break"></div> -->
+    
+    <p class="note-line note-subheading">
+      <span class="note-num">c.</span>
+      <span class="note-text">Disposal</span>
+    </p>
+    <p class="gap">
+      An item of tangible fixed assets, including the related accumulated
+      depreciation and impairment losses, if any, is derecognized upon disposal
+      or when no future economic benefits are expected to arise from the
+      continued use of the asset.
+    </p>
+    
+    <p class="gap">
+      Any gain or loss arising on derecognition of the asset (calculated as the
+      difference between the net disposal proceeds and the carrying amount of
+      the item) is included in the statement of comprehensive income in the
+      period the item is derecognized.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Right-of-use assets</strong></span>
+    </p>
+    <p class="gap">
+      The Entity measures the right-of-use assets at cost (present value of the
+      future lease payments discounted using the discount rate implicit in the
+      lease and initial cost) and subsequently measured at cost less accumulated
+      depreciation and impairment losses adjusted for any remeasurement of the
+      lease liability.
+    </p>
+    <p class="gap">
+      The cost of the right-of-use assets are depreciated using the
+      straight-line method over their respective lease periods and discounted
+      using the incremental borrowing rate prevalent at the date of inception of
+      the lease.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+    
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Inventories</strong></span>
+    </p>
+    <p class="gap">
+      Inventories are valued at lower of weighted average cost or estimated net
+      realizable value
+    </p>
+    <p class="gap">
+      Cost comprises all purchase costs, costs of conversion, and other costs
+      incurred in bringing the inventories to their present location and
+      condition. The cost of finished products includes the cost of materials,
+      labour, production, and attributable overhead expenses. Net realizable value
+      signifies the estimated selling price in the ordinary course of business,
+      less net estimated costs of completion, and estimated selling expenses.
+    </p>
+    <p class="gap">
+      Provision is made for slow-moving and obsolete items wherever necessary
+      and is recognized in the statement of comprehensive income.
+    </p>
+    
+    <p class="gap">
+      Net sales of by-products is deducted from the total cost of the main
+      product and the closing inventory of the main product has been valued
+      accordingly.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+    
+    
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Trade and other receivables</strong></span>
+    </p>
+    <p class="gap">
+      These are recognized and carried at the original invoice amount being the
+      fair value. Provision is made on the basis of lifetime ECLs that result
+      from all possible default events over the expected life of the trade and
+      other receivables. Bad debts are written off when considered
+      irrecoverable.
+    </p>
+    
+    <p class="gap">
+      Exchange gains or losses arising in respect of trade and other receivables
+      in foreign currency are added to their respective carrying amounts.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Prepayments</strong></span>
+    </p>
+    <p class="gap">
+      These relate to costs paid by the Entity as a result of past events whose
+      benefits are to be recovered in future periods. It is recognized as an
+      asset initially. Subsequently, it is expensed out when benefits are
+      recovered in the period when period has occurred.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+    
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Cash and cash equivalents</strong></span>
+    </p>
+    <p class="gap">
+      Cash and cash equivalents include cash on hand, deposits held at call with
+      financial institutions, other short-term, highly liquid investments with
+      original maturities of three months or less that are readily convertible
+      into known amounts of cash and which are subject to an insignificant risk
+      of change in value less short-term borrowings from banks.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+    
+    <!-- <div class="page-break"></div> -->
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Trade and other payables</strong></span>
+    </p>
+    <p class="gap">
+      Trade and other payables are carried at amortized cost which is the fair
+      value of the consideration to be paid in the future for goods and services
+      received, whether or not billed to the Entity.
+    </p>
+    
+    <p class="gap">
+      Exchange gains or losses arising in respect of trade and other payables in
+      foreign currency are added to their respective carrying amounts.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Lease liability</strong></span>
+    </p>
+    <p class="gap">
+      The Entity measures the lease liability at the present value of the future
+      lease payments discounted using the discount rate implicit in the lease.
+      Subsequently, the lease liability is adjusted for interest and lease
+      payments, as well as the impact of lease modifications, amongst others.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+
+
+    <!-- <div class="page-break"></div>  -->
+
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Financial instruments</strong></span>
+    </p>
+    <p class="note-line note-subheading">
+      <span class="note-num">a.</span>
+      <span class="note-text">Financial assets</span>
+    </p>
+
+    <p class="just_underline">Initial recognition and measurement</p>
+    <p class="gap">
+      The classification of financial assets at initial recognition depends on
+      the financial asset’s contractual cash flow characteristics and the
+      Entity&#x27;s business model for managing them. With the exception of
+      trade receivables that do not contain a significant financing component or
+      for which the Entity has applied the practical expedient, the Entity
+      initially measures a financial asset at its fair value plus, in the case
+      of a financial asset not at fair value through profit or loss, transaction
+      costs. Trade receivables that do not contain a significant financing
+      component or for which the Entity has applied the practical expedient are
+      measured at the transaction price determined under IFRS 15.
+    </p>
+
+    <p class="gap">
+      In order for a financial asset to be classified and measured at amortized
+      cost or fair value through OCI, it needs to give rise to cash flows that
+      are ‘solely payments of principal and interest (SPPI)’ on the principal
+      amount outstanding. This assessment is referred to as the SPPI test and is
+      performed at an instrument level.
+    </p>
+    
+    <p class="gap">
+      The Entity’s business model for managing financial assets refers to how it
+      manages its financial assets in order to generate cash flows. The business
+      model determines whether cash flows will result from collecting
+      contractual cash flows, selling the financial assets, or both.
+    </p>
+    
+    
+    <p class="gap">
+      Purchases or sales of financial assets that require delivery of assets
+      within a time frame established by regulation or convention in the
+      marketplace (regular way trades) are recognized on the trade date, i.e.,
+      the date that the Entity commits to purchase or sell the asset.
+    </p>
+    
+    <p class="just_underline">Subsequent measurement</p>
+    <p>
+      For purposes of subsequent measurement, financial assets are classified
+      into four categories:
+    </p>
+    <ul class="audit-bullets tight gap">
+      <li>Financial assets at amortized cost (debt instruments)</li>
+      <li>
+        Financial assets at fair value through OCI with recycling of cumulative
+        gains and losses (debt instruments)
+      </li>
+      <li>
+        Financial assets designated at fair value through OCI with no recycling
+        of cumulative gains and losses upon derecognition (equity instruments)
+      </li>
+      <li>Financial assets at fair value through profit or loss</li>
+    </ul>
+    
+    <p>
+      The Entity measures financial assets at amortized cost if both of the
+      following conditions are met:
+    </p>
+    <ul class="audit-bullets tight gap">
+      <li>
+        The financial asset is held within a business model with the objective
+        to hold financial assets in order to collect contractual cash flows.
+      </li>
+      <li>
+        The contractual terms of the financial asset give rise on specified
+        dates to cash flows that are solely outstanding payments of principal
+        and interest on the principal amount.
+      </li>
+    </ul>
+    
+    <p class="gap">
+      Financial assets at amortized cost are subsequently measured using the
+      effective interest rate (EIR) method and are subject to impairment. Gains
+      and losses are recognized in profit or loss when the asset is
+      derecognized, modified or impaired.
+    </p>
+
+    <p class="gap">
+      The Entity’s financial assets at amortized cost include trade and other
+      receivables, shareholder&#x27;s current account, and cash and cash equivalents.</p>
+    
+    <p class="just_underline">Financial assets at fair value through OCI (debt instruments)</p>
+    <p>
+      The Entity measures debt instruments at fair value through OCI if both of
+      the following conditions are met:
+    </p>
+    <ul class="audit-bullets tight gap">
+      <li>
+        The financial asset is held within a business model with the objective
+        of both holding to collect contractual cash flows and selling; and
+      </li>
+      <li>
+        The contractual terms of the financial asset give rise on specified
+        dates to cash flows that are solely outstanding payments of principal
+        and interest on the principal amount.
+      </li>
+    </ul>
+
+    <p class="gap">
+      For debt instruments at fair value through OCI, interest income, foreign
+      exchange revaluation and impairment losses or reversals are recognized in
+      the statement of profit or loss and computed in the same manner as for
+      financial assets measured at amortized cost.
+    </p>
+
+    <p class="gap">
+      The remaining fair value changes are recognized in OCI. Upon
+      derecognition, the cumulative fair value change recognized in OCI is
+      recycled to profit or loss.
+    </p>
+
+    <p class="just_underline">
+      Financial assets designated at fair value through OCI (equity instruments)
+    </p>
+    <p class="gap">
+      Upon initial recognition, the Entity can elect to classify irrevocably its
+      equity investments as equity instruments designated at fair value through
+      OCI when they meet the definition of equity under IAS 32 Financial
+      Instruments: Presentation and are not held for trading. The classification
+      is determined on an instrument-by- instrument basis.
+    </p>
+    
+    <p class="gap">
+      Gains and losses on these financial assets are never recycled to profit or
+      loss. Dividends are recognized as other income in the statement of profit
+      or loss when the right of payment has been established, except when the
+      Entity benefits from such proceeds as a recovery of part of the cost of
+      the financial asset, in which case, such gains are recorded in OCI. Equity
+      instruments designated at fair value through OCI are not subject to
+      impairment assessment.
+    </p>
+    
+    <p class="just_underline">Financial assets at fair value through profit or loss</p>
+    <p class="gap">
+      Financial assets at fair value through profit or loss include financial
+      assets held for trading, financial assets designated upon initial
+      recognition a fair value through profit or loss, or financial assets
+      mandatorily required to be measured at fair value. Financial assets are
+      classified as held for trading if they are acquired for the purpose of
+      selling or repurchasing in the near term. Derivatives, including separated
+      embedded derivatives, are also classified as held for trading unless they are designated as effective
+      hedging instruments. Financial assets with cash flows that are not solely
+      payments of principal and interest are classified and measured at fair
+      value through profit or loss, irrespective of the business model.
+      Notwithstanding the criteria for debt instruments to be classified at
+      amortized cost or at fair value through OCI, as described above, debt
+      instruments may be designated at fair value through profit or loss on
+      initial recognition if doing so eliminates, or significantly reduces, an
+      accounting mismatch.
+    </p>
+    
+    <p class="gap">
+      Financial assets at fair value through profit or loss are carried in the
+      statement of financial position at fair value with net changes in fair
+      value recognized in the statement of profit or loss.
+    </p>
+    
+    <p class="just_underline">Derecognition</p>
+    <p>
+      A financial asset (or, where applicable, a part of a financial asset or
+      part of a group of similar financial assets) is primarily derecognized (i.e., removed from the Entity’s statement of
+      financial position) when:
+    </p>
+    <ul class="audit-bullets tight">
+      <li>The rights to receive cash flows from the asset have expired; or</li>
+      <li>
+        The Entity has transferred its rights to receive cash flows from the
+        asset or has assumed an obligation to pay the received cash flows in
+        full without material delay to a third party under a ‘pass-through’
+        arrangement; and either
+      </li>
+    </ul>
+    <p><strong>(a)</strong>
+      the Entity has transferred substantially all the risks and rewards of the
+      asset, or
+    </p> 
+    <p class="gap"><strong>(b)</strong>
+    the Entity has neither transferred nor retained substantially all the
+      risks and rewards of the asset but has transferred control of the asset.
+    </p>
+    
+    <p class="gap">
+      When the Entity has transferred its rights to receive cash flows from an
+      asset or has entered into a pass-through arrangement, it evaluates if, and
+      to what extent, it has retained the risks and rewards of ownership. When
+      it has neither transferred nor retained substantially all the risks and
+      rewards of the asset, nor transferred control of the asset, the Entity
+      continues to recognize the transferred asset to the extent of its
+      continuing involvement. In that case, the Entity also recognizes an
+      associated liability. The transferred asset and the associated liability
+      are measured on a basis that reflects the rights and obligations that the
+      Entity has retained.
+    </p>
+    
+    <p class="gap">
+      Continuing involvement that takes the form of a guarantee over the
+      transferred asset is measured at the lower of the original carrying amount
+      of the asset and the maximum amount of consideration that the Entity could
+      be required to repay.
+    </p>
+    
+    <p class="gap">
+      All financial liabilities are recognized initially at fair value and, in
+      the case of loans and borrowings and payables, net of directly
+      attributable transaction costs.
+    </p>
+    
+    <p class="note-line note-subheading">
+      <span class="note-num">b.</span>
+      <span class="note-text">Financial liabilities</span>
+    </p>
+    <p class="just_underline">Initial recognition and measurement</p>
+    <p class="gap">
+      Financial liabilities are classified, at initial recognition, as financial
+      liabilities at fair value through profit or loss, loans and borrowings,
+      payables, or as derivatives designated as hedging instruments in an
+      effective hedge, as appropriate.
+    </p>
+    
+    <p class="just_underline">Subsequent measurement</p>
+    <p>
+      The measurement of financial liabilities depends on their classification,
+      as described below:
+    </p>
+
+    <ul class="audit-bullets tight gap">
+      <li>Financial liabilities at fair value through profit or loss</li>
+      <li>
+        Financial liabilities at fair value through profit or loss include
+        financial liabilities held for trading and financial liabilities
+        designated upon initial recognition as at fair value through profit or
+        loss.
+      </li>
+      <li>
+        Gains or losses on liabilities held for trading are recognized in the
+        statement of profit or loss.
+      </li>
+    </ul>
+    
+    <p class="gap">
+      Financial liabilities designated upon initial recognition at fair value
+      through profit or loss are designated at the initial date of recognition,
+      and only if the criteria in IFRS 9 are satisfied. The Entity has not
+      designated any financial liability as at fair value through profit or
+      loss.
+    </p>
+
+    <p class="just_underline">Loans and borrowings</p>
+    <p class="gap">
+      After initial recognition, interest-bearing loans and borrowings are
+      subsequently measured at amortized cost using the EIR method. Gains and
+      losses are recognized in profit or loss when the liabilities are
+      derecognized as well as through the EIR amortization process.
+    </p>
+    
+    
+    <p class="gap">
+      Amortized cost is calculated by taking into account any discount or
+      premium on acquisition and fees or costs that are an integral part of the
+      EIR. The EIR amortization is included as finance costs in the statement of
+      profit or loss. This category generally applies to interest-bearing loans
+      and borrowings.
+    </p>
+    
+    <p class="just_underline">Derecognition</p>
+    <p class="gap">
+      A financial liability is derecognized when the obligation under the
+      liability is discharged or cancelled or expires. When an existing
+      financial liability is replaced by another from the same lender on
+      substantially different terms, or the terms of an existing liability are
+      substantially modified, such an exchange or modification is treated as the
+      derecognition of the original liability and the recognition of a new’
+      liability. The difference in the respective carrying amounts is recognized
+      in the statement of profit or loss.
+    </p>
+    
+    <p class="gap">
+      The accounting policies associated with individual items are disclosed in
+      relevant notes.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+    
+    
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Offsetting financial assets and financial liabilities</strong></span>
+    </p>
+    <p class="gap">
+      Financial assets and financial liabilities are offset, and only the net
+      amount is reported in the statement of financial position when there is a
+      legally enforceable right to offset the recognized amount, and the Entity
+      intends to either settle on a net basis or to realize the asset and settle
+      the liability simultaneously. The legally enforceable right must not be
+      contingent on future events and must be enforceable in the normal course
+      of business and in the event of default, insolvency, or bankruptcy of the
+      Entity or counterparty.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+    
+    <!-- <div class="page-break"></div> -->
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Impairment of assets</strong></span>
+    </p>
+    <p class="note-line note-subheading">
+      <span class="note-num">a.</span>
+      <span class="note-text">Financial assets</span>
+    </p>
+    <p>
+      Further disclosures relating to the impairment of financial assets are
+      also provided in the following notes:
+    </p>
+    <ul class="audit-bullets tight gap">
+      <li>Disclosures for significant assumptions</li>
+      <li>Debt instruments at fair value through OCI</li>
+      <li>Trade receivables, including contract assets</li>
+    </ul>
+    
+    <p class="gap">
+      The Entity recognizes an allowance for expected credit losses (ECLs) for
+      all debt instruments not held at fair value through profit or loss. ECLs
+      are based on the difference between the contractual cash flows due in
+      accordance with the contract and all the cash flows that the Entity
+      expects to receive, discounted at an approximation of the original
+      effective interest rate. The expected cash flow will include cash flows
+      from the sale of collateral held or other credit enhancements that are
+      integral to the contractual terms.
+    </p>
+    
+    <p class="gap">
+      ECLs are recognized in three stages. For credit exposures, for which there
+      has not been a significant increase in credit risk since initial
+      recognition, ECLs are provided for credit losses that result from default
+      events that are possible within the next 12 months (a 12-month ECL).
+    </p>
+
+    <p class="gap">
+      For those credit exposures for which there has been a significant increase
+      in credit risk since initial recognition, a loss allowance is required for
+      credit losses expected over the remaining life of the exposure,
+      irrespective of the timing of the default (a lifetime ECL). The third
+      stage covers financial assets that have objective evidence of impairment
+      as at the reporting date.
+    </p>
+    
+    <p class="gap">
+      For trade receivables and contract assets, the Entity applies a simplified
+      approach in calculating ECLs. Therefore, the Entity does not track changes
+      in credit risk, but instead recognizes a loss allowance based on lifetime
+      ECLs at each reporting date. The Entity has established a provision matrix
+      that is based on its historical credit loss experience, adjusted for
+      forward-looking factors specific to the debtors and the economic
+      environment.
+    </p>
+    
+    <p class="gap">
+      For debt instruments at fair value through OCI, the Entity applies the low
+      credit risk simplification. At every reporting date, the Entity evaluates
+      whether the debt instrument is considered to have low credit risk using
+      all reasonable and supportable information that is available without undue
+      cost or effort. In making that evaluation, the Entity reassesses the
+      internal credit rating of the debt instrument. In addition, the Entity
+      considers that there has been a significant increase in credit risk when
+      contractual payments are more than 30 days past due, which starts from the
+      date of receipt of the statement.
+    </p>
+    
+    <p class="gap">
+      The Entity considers a financial asset in default when contractual
+      payments are 90 days past due. However, in certain cases, the Entity may
+      also consider a financial asset to be in default when internal or external
+      information indicates that the Entity is unlikely to receive the
+      outstanding contractual amounts in full before taking into
+      account any credit enhancements held by the Entity. A financial asset is
+      written off when there is no reasonable expectation of recovering the
+      contractual cash flows.
+    </p>
+
+    <!-- <div class="page-break"></div> -->
+    
+    <p class="note-line note-subheading">
+      <span class="note-num">b.</span>
+      <span class="note-text">Non-financial assets</span>
+    </p>
+    <p class="gap">
+      The carrying amount of the Entity&#x27;s assets are reviewed at each
+      reporting date to determine whether there is any indication of impairment.
+      If such indication exists, the recoverable amount of such assets is
+      estimated. An impairment loss is recognized wherever the carrying amount
+      of the asset exceeds the recoverable amount.
+      Impairment losses are recognized in the statement of comprehensive income.
+      A previously recognized impairment loss is reversed only if there has been
+      a change in the estimates used to determine the asset&#x27;s recoverable
+      amount since the last impairment loss was recognized. In such a case, the
+      carrying amount of the asset is increased to its recoverable amount. The
+      increased amount cannot exceed the carrying amount that would have been
+      determined, net of depreciation, had no impairment loss been recognized
+      for the assets in the prior year. Such reversal is recognized in the
+      profit and loss account.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+    
+    <!-- <div class="page-break"></div> -->
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Provisions and contingencies</strong></span>
+    </p>
+    <p class="gap">
+      Provisions are recognized when present obligations will probably lead to
+      an outflow of economic resources, and they can be estimated reliably even
+      if the timing or amount of the outflow may still be uncertain. A present
+      obligation arises from the presence of a legal or constructive obligation
+      that has resulted from past events.
+    </p>
+    
+    <p class="gap">
+      Provisions are measured at the estimated expenditure required to settle
+      the present obligation, based on the most reliable evidence available at
+      the end of the reporting period, including the risks and uncertainties
+      associated with the present obligation. Where there are a number of
+      similar obligations, the likelihood that an outflow will be required in
+      settlement is determined by considering the class of obligations as a
+      whole.
+    </p>
+    
+    <p class="gap">
+      When the time value of money is material, long-term provisions are
+      discounted to their present values using a pre-tax rate that reflects
+      market assessments and the risks specific to the obligation. The increase
+      in the provision due to the passage of time is recognized as interest
+      expense. Provisions are reviewed at the end of each reporting period and
+      adjusted to reflect the current best estimate. In those cases where the
+      possible outflow of economic resources as a result of present obligations
+      is considered improbable or remote, or the amount to be provided for
+      cannot be measured reliably, no liability is recognized in the financial
+      statements. Similarly, possible inflows of economic benefits to the Entity
+      that do not yet meet the recognition criteria of an asset are considered
+      contingent assets, hence, are not recognized in the financial statements.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+  
+
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Revenue recognition</strong></span>
+    </p>
+    <p class="gap">
+      The Entity recognizes revenue based on distinct criteria for its diverse
+      activities, including commercial enterprises, investments, institutions
+      and management. For commercial enterprises, revenue from the sale of goods
+      is recognized upon the transfer of significant risks and rewards, while
+      services revenue is recognized as services are performed.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+    
+    <!-- <div class="page-break"></div> -->
+
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Related party relationships and transactions</strong></span>
+    </p>
+    <p class="gap">
+      Related party transactions are transfers of resources, services or
+      obligations between the Entity and its related parties, regardless of
+      whether a price is charged.
+    </p>
+    
+    <p>
+      Parties are related if one party has the ability to control the other
+      party or exercise significant influence over the other party in making
+      financial and operating decisions. These parties include:
+    </p>
+    <ol class="audit-alpha">
+      <li>
+        individuals owning, directly or indirectly through one or more
+        intermediaries, control or are controlled by, or under common control.
+      </li>
+      <li>associates.</li>
+      <li>
+        individuals owning, directly or indirectly, an interest in the voting
+        power of the Entity that gives them significant influence and close
+        members of the family of any such individual; and,
+      </li>
+      <li>the director and key executives.</li>
+    </ol>
+    <p class="gap">
+      In considering each possible related party relationship, attention is
+      directed to the substance of the relationship and not merely on the legal
+      form.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+    
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Foreign currency transactions</strong></span>
+    </p>
+    <p class="gap">
+      These financial statements are presented in UAE Dirhams (AED) which is
+      also the functional currency of the Entity.
+    </p>
+    
+    <p class="gap">
+      Foreign currency transactions are initially recorded, in the functional
+      currency by applying to the foreign currency amount the exchange rate
+      between the functional currency and the foreign currency on the date of
+      the transaction. At the end of the reporting period, foreign currency
+      monetary items are reported using the closing rate.
+    </p>
+    
+    <p class="gap">
+      Exchange differences arising on the settlement of monetary items at rates
+      different from those at which they were initially recorded during the
+      reporting period or reported in previous financial statements are
+      recognized as income or expense in the year in which they arise.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+    
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Value added tax (VAT)</strong></span>
+    </p>
+    <p>
+      Revenue, expenses, and assets are recognized at amounts net of value-added
+      tax except:
+    </p>
+    <ul class="audit-bullets tight gap">
+      <li>
+        Where VAT incurred on the purchase of assets or services is not
+        recoverable from the taxation authority, in which case the VAT is
+        recognized as part of cost of acquisition of the asset or part of the
+        expense item, as applicable.
+      </li>
+      <li>
+        Where receivables and payables are stated with the amount of VAT
+        included.
+      </li>
+    </ul>
+    
+    <p class="gap">
+      The net amount of VAT recoverable from or payable to the taxation
+      authority is included as part of receivable or payables in the statement
+      of financial position.
+    </p>
+    {% set sub.i = sub.i + 1 %}
+
+    <!-- <div class="page-break"></div> -->
+    
+    <p class="note-line note-item">
+      <span class="note-num">{{ note_no.i }}.{{ sub.i }}</span>
+      <span class="note-text"><strong>Corporate Tax (CT)</strong></span>
+    </p>
+    {% set ct_period_label = report_period_word %}
+    {% set ct_period_end_display = date_end.strftime("%B %d") if date_end else '' %}
+    {% set ct_start_date = company.corporate_tax_start_date or date_start %}
+    {% set ct_start_display = ct_start_date.strftime("%B %d, %Y") if ct_start_date else '' %}
+    {% if usd_statement %}
+    <p>
+      These financial statements are presented in United States Dollars (USD), while the functional currency of the Entity is UAE Dirhams (UAE).
+      Foreign currency transactions are initially recorded, in the functional currency by applying to the foreign currency amount the exchange rate between the functional currency and the foreign currency on the date of the transaction. At the end of the reporting period, foreign currency monetary items are reported using the closing rate.
+      Exchange differences arising on the settlement of monetary items at rates different from those at which they were initially recorded during the reporting period or reported in previous financial statements are recognized as income or expense in the year in which they arise.
+    </p>
+    {% else %}
+<p>
+      On December 09, 2022, the UAE. Ministry of Finance (MoF) released Federal
+      Decree Law No. 47 of 2022 on the Taxation of Corporations and Businesses,
+      Corporate Tax Law (CT Law) to enact a new CT regime in the UAE. The new CT
+      regime is effective for the accounting periods beginning on or after June
+      01, 2023.{% if show_ct_first_tax_year_line %} As the Entity’s {{ ct_period_label }} end is {{ ct_period_end_display }}, accordingly, the
+      first tax year for the Entity will begin from {{ ct_start_display }}. The new CT
+      Law confirms the rate of 9% to be applied to taxable income exceeding AED
+      375,000.{% endif %}
+    </p>
+    {% endif %}
+    {% set sub.i = sub.i + 1 %}
+
+    {% set note_no.i = note_no.i + 1 %}
+  </section>
+  {% endif %}
+
+  {% if not sections_to_render or 'notes_to_financial_statements' in sections_to_render %}
+  <section class="notes_to_financial_statements page{% if not gap_notes_to_financial_statements %} no-gap{% endif %}">
+	<!-- Notes -->
+		
+
+    {% set share_note_number = note_numbers.get('3101') %}
+    {% set correction_error_note_number = note_numbers.get('correction_error') %}
+    {% set retained_earnings_note_number = note_numbers.get('retained_earnings') %}
+    {% set operating_expense_note_number = note_numbers.get('pl_opex') %}
+    {% if note_sections %}
+      {% set notes_colspan = 4 if show_prior_year else 3 %}
+      <table class="statement-table has-prior note-sections-table">
+        <colgroup>
+          <col style="width: 64%;">
+          <col style="width: 8%;">
+          {% if show_prior_year %}
+            <col style="width: 14%;">
+            <col style="width: 14%;">
+          {% else %}
+            <col style="width: 28%;">
+          {% endif %}
+        </colgroup>
+        {% set notes_year_header = namespace(shown=False) %}
+        {% for note in note_sections %}
+          {% set is_correction_error_note = correction_error_note_number and note.number == correction_error_note_number %}
+          {% set is_share_note = share_note_number and note.number == share_note_number %}
+          {% set is_ppe_note = ppe_note_number and note.number == ppe_note_number %}
+          {% set is_intangible_note = intangible_note_number and note.number == intangible_note_number %}
+          {% set is_investment_note = note.get('is_investment_note') %}
+          {% if not notes_year_header.shown and not is_correction_error_note and not is_share_note and not is_ppe_note and not is_intangible_note %}
+            {% set notes_year_header.shown = True %}
+            {% if loop.index0 != 0 %}
+      </table>
+      <table class="statement-table has-prior note-sections-table">
+        <colgroup>
+          <col style="width: 64%;">
+          <col style="width: 8%;">
+          {% if show_prior_year %}
+            <col style="width: 14%;">
+            <col style="width: 14%;">
+          {% else %}
+            <col style="width: 28%;">
+          {% endif %}
+        </colgroup>
+            {% endif %}
+          <thead class="note-sections-year-header-block">
+            {% if show_prior_year_marker %}
+            <tr class="note-sections-restated-header">
+              <th class="text-left"></th>
+              <th class="text-center"></th>
+              <th class="text-right"></th>
+              <th class="text-right note-restated-marker">{{ prior_year_marker_label }}</th>
+            </tr>
+            {% endif %}
+            <tr class="note-sections-year-header">
+              <th class="text-left"></th>
+              <th class="text-center"></th>
+              <th class="text-right">{{ date_end.year if date_end else '' }}</th>
+              {% if show_prior_year %}
+                <th class="text-right">{{ date_end.year - 1 if date_end else '' }}</th>
+              {% endif %}
+            </tr>
+          </thead>
+          {% endif %}
+          {% if is_correction_error_note %}
+            {% include 'audit_report_correction_error_note_block.html' %}
+          {% elif is_share_note %}
+          <tbody class="note-block share-capital-note">
+              <tr class="note-block-title">
+                <td colspan="{{ notes_colspan }}"><span class="note-heading-num">{{ share_note_number }}</span><span class="note-heading-text">Share capital</span></td>
+              </tr>
+              <tr class="share-capital-summary">
+                <td colspan="{{ notes_colspan }}">
+                  Authorized share capital of the Entity is AED {{ (authorized_share_capital or 0.0)|share_amount }}
+                  divided into {{ total_shares_count or 0 }} shares of AED {{ (share_value_default or 0.0)|share_amount }} each.
+                </td>
+              </tr>
+              <tr class="share-capital-summary">
+                <td colspan="{{ notes_colspan }}">
+                  The capital of the Entity is {{ share_capital_paid_status or 'paid' }} and is represented and distributed in the following manner:
+                </td>
+              </tr>
+              <tr>
+                <td colspan="{{ notes_colspan }}">
+                  <table class="share-capital-table">
+                    <thead>
+                      <tr>
+                        <th class="text-left">Name of Member</th>
+                        <th class="text-right">Share<br>Value</th>
+                        <th class="text-right">No of<br>Shares</th>
+                        <th class="text-right">Share<br>capital</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for row in share_rows %}
+                        <tr>
+                          <td class="text-left"><strong>{{ row.name }}</strong></td>
+                          <td class="text-right">{{ (row.value or 0.0)|share_amount }}</td>
+                          <td class="text-right">{{ row.shares or 0 }}</td>
+                          <td class="text-right">{{ (row.total or 0.0)|share_amount }}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+              {% if show_share_capital_conversion_note %}
+              <tr class="share-capital-summary">
+                <td colspan="{{ notes_colspan }}">
+                  The shares were originally valued at {{ share_conversion_currency }} {{ "%.2f"|format(share_conversion_original_value) }} each, which have been converted to AED using an exchange rate of {{ "%.2f"|format(share_conversion_exchange_rate) }}.
+                </td>
+              </tr>
+              {% endif %}
+              {% if show_share_capital_transfer_note %}
+              <tr class="share-capital-summary">
+                <td colspan="{{ notes_colspan }}">
+                  On {{ share_transfer_date.strftime("%d %B %Y") if share_transfer_date else '' }}, {{ share_transfer_from }} transferred {{ "%.0f"|format(share_transfer_shares) }} shares equivalent to {{ "%.2f"|format_percent(share_transfer_percentage) }}% of the shares to {{ share_transfer_to }}.
+                </td>
+              </tr>
+              {% endif %}
+          </tbody>
+            {% elif retained_earnings_note_number and note.number == retained_earnings_note_number %}
+          <tbody class="note-block retained-earnings-note">
+              <tr class="note-block-title">
+                <td colspan="{{ notes_colspan }}"><span class="note-heading-num">{{ retained_earnings_note_number }}</span><span class="note-heading-text">Retained earnings</span></td>
+              </tr>
+              {% set retained_period_label = report_period_word %}
+              {% set retained_comp_status = '(loss)' if retained_earnings < 0 else 'profit' %}
+              <tr>
+                <td class="text-left note-line-item">Balance at the beginning of the {{ retained_period_label }}</td>
+                <td class="text-center"></td>
+                <td class="text-right">{% if prev_retained_earnings_balance %}{% if prev_retained_earnings_balance < 0 %}({{ "%.0f"|format(prev_retained_earnings_balance|abs) }}){% else %}{{ "%.0f"|format(prev_retained_earnings_balance) }}{% endif %}{% else %}-{% endif %}</td>
+                {% if show_prior_year %}
+                  <td class="text-right">{% if prev_prev_retained_earnings_balance %}{% if prev_prev_retained_earnings_balance < 0 %}({{ "%.0f"|format(prev_prev_retained_earnings_balance|abs) }}){% else %}{{ "%.0f"|format(prev_prev_retained_earnings_balance) }}{% endif %}{% else %}-{% endif %}</td>
+                {% endif %}
+              </tr>
+              {% if not (prior_year_adjustment or (show_prior_year and prev_prior_year_adjustment) or notes_statutory_reserves_movement or (show_prior_year and notes_prev_statutory_reserves_movement) or dividend_paid or (show_prior_year and prior_dividend_paid)) %}
+              </tbody>
+              <tbody class="note-block retained-earnings-note retained-total-pair">
+              {% endif %}
+              <tr{% if not (prior_year_adjustment or (show_prior_year and prev_prior_year_adjustment) or notes_statutory_reserves_movement or (show_prior_year and notes_prev_statutory_reserves_movement) or dividend_paid or (show_prior_year and prior_dividend_paid)) %} class="retained-total-pair-start"{% endif %}>
+                <td class="text-left note-line-item">Total comprehensive {{ retained_comp_status }} for the {{ retained_period_label }}</td>
+                <td class="text-center"></td>
+                <td class="text-right">{% if retained_earnings < 0 %}({{ "%.0f"|format(retained_earnings|abs) }}){% else %}{{ "%.0f"|format(retained_earnings) }}{% endif %}</td>
+                {% if show_prior_year %}
+                  <td class="text-right">{% if prev_retained_earnings < 0 %}({{ "%.0f"|format(prev_retained_earnings|abs) }}){% else %}{{ "%.0f"|format(prev_retained_earnings) }}{% endif %}</td>
+                {% endif %}
+              </tr>
+              {% if prior_year_adjustment or (show_prior_year and prev_prior_year_adjustment) %}
+              {% if not (notes_statutory_reserves_movement or (show_prior_year and notes_prev_statutory_reserves_movement) or dividend_paid or (show_prior_year and prior_dividend_paid)) %}
+              </tbody>
+              <tbody class="note-block retained-earnings-note retained-total-pair">
+              {% endif %}
+              <tr{% if not (notes_statutory_reserves_movement or (show_prior_year and notes_prev_statutory_reserves_movement) or dividend_paid or (show_prior_year and prior_dividend_paid)) %} class="retained-total-pair-start"{% endif %}>
+                <td class="text-left note-line-item">Prior year adjustment</td>
+                <td class="text-center"></td>
+                <td class="text-right">
+                  {% if prior_year_adjustment %}
+                    {% if prior_year_adjustment < 0 %}({{ "%.0f"|format(prior_year_adjustment|abs) }}){% else %}{{ "%.0f"|format(prior_year_adjustment) }}{% endif %}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                {% if show_prior_year %}
+                  <td class="text-right">
+                    {% if prev_prior_year_adjustment %}
+                      {% if prev_prior_year_adjustment < 0 %}({{ "%.0f"|format(prev_prior_year_adjustment|abs) }}){% else %}{{ "%.0f"|format(prev_prior_year_adjustment) }}{% endif %}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                {% endif %}
+              </tr>
+              {% endif %}
+              {% if notes_statutory_reserves_movement or (show_prior_year and notes_prev_statutory_reserves_movement) %}
+              {% if not (dividend_paid or (show_prior_year and prior_dividend_paid)) %}
+              </tbody>
+              <tbody class="note-block retained-earnings-note retained-total-pair">
+              {% endif %}
+              <tr{% if not (dividend_paid or (show_prior_year and prior_dividend_paid)) %} class="retained-total-pair-start"{% endif %}>
+                <td class="text-left note-line-item">Transferred to statutory reserves</td>
+                <td class="text-center"></td>
+                <td class="text-right">
+                  {% if notes_statutory_reserves_movement %}
+                    ({{ "%.0f"|format(notes_statutory_reserves_movement|abs) }})
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                {% if show_prior_year %}
+                  <td class="text-right">
+                    {% if notes_prev_statutory_reserves_movement %}
+                      ({{ "%.0f"|format(notes_prev_statutory_reserves_movement|abs) }})
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                {% endif %}
+              </tr>
+              {% endif %}
+              {% if dividend_paid or (show_prior_year and prior_dividend_paid) %}
+              </tbody>
+              <tbody class="note-block retained-earnings-note retained-total-pair">
+              <tr class="retained-total-pair-start">
+                <td class="text-left note-line-item">Dividend paid</td>
+                <td class="text-center"></td>
+                <td class="text-right">
+                  {% if dividend_paid %}
+                    {% if dividend_paid < 0 %}({{ "%.0f"|format(dividend_paid|abs) }}){% else %}{{ "%.0f"|format(dividend_paid) }}{% endif %}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                {% if show_prior_year %}
+                  <td class="text-right">
+                    {% if prior_dividend_paid %}
+                      {% if prior_dividend_paid < 0 %}({{ "%.0f"|format(prior_dividend_paid|abs) }}){% else %}{{ "%.0f"|format(prior_dividend_paid) }}{% endif %}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                {% endif %}
+              </tr>
+              {% endif %}
+              <tr class="total-row">
+                <td class="text-left note-line-item">Balance as at {{date_end.strftime("%d %B") if date_end else ''}}</td>
+                <td class="text-center"></td>
+                <td class="text-right"><span class="amount-line amount-line-double">{% if retained_earnings_balance < 0 %}({{ "%.0f"|format(retained_earnings_balance|abs) }}){% else %}{{ "%.0f"|format(retained_earnings_balance) }}{% endif %}</span></td>
+                {% if show_prior_year %}
+                  <td class="text-right"><span class="amount-line amount-line-double">{% if prev_retained_earnings_balance < 0 %}({{ "%.0f"|format(prev_retained_earnings_balance|abs) }}){% else %}{{ "%.0f"|format(prev_retained_earnings_balance) }}{% endif %}</span></td>
+                {% endif %}
+              </tr>
+          </tbody>
+            {% elif is_ppe_note %}
+          <tbody class="note-block ppe-note-block">
+              <tr class="note-block-title">
+                <td colspan="{{ notes_colspan }}"><span class="note-heading-num">{{ note.number }}</span><span class="note-heading-text">{{ note.label|rcase }}</span></td>
+              </tr>
+              <tr>
+                <td colspan="{{ notes_colspan }}">
+                  <table class="ppe-note-table" style="--ppe-value-column-count: {{ ppe_note_columns|length }}; --ppe-label-column-width: {{ '52%' if ppe_note_columns|length <= 2 else ('46%' if ppe_note_columns|length == 3 else '40%') }};">
+                    <colgroup>
+                      <col class="ppe-note-col-label">
+                      {% for _column in ppe_note_columns %}
+                        <col class="ppe-note-col-value">
+                      {% endfor %}
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th class="text-left"></th>
+                        {% for column in ppe_note_columns %}
+                          <th class="text-center">
+                            {{ column.label|rcase if column.code != 'total' else 'Total' }}<br>
+                            <span class="ppe-note-currency">AED</span>
+                          </th>
+                        {% endfor %}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for schedule in ppe_note_schedules %}
+                        {% for row in schedule.rows %}
+                          <tr class="ppe-row ppe-row-{{ row.row_type }}{% if row.get('css_class') %} {{ row.get('css_class') }}{% endif %}">
+                            <td class="text-left ppe-note-label">{{ row.label }}</td>
+                            {% for value in row['values'] %}
+                              <td class="text-right ppe-note-value">
+                                {% if row.row_type == 'section' %}
+                                {% else %}
+                                  <span class="ppe-note-amount">
+                                    {% if value is none %}
+                                      -
+                                    {% elif value %}
+                                      {% if value < 0 %}({{ "%.0f"|format(value|abs) }}){% else %}{{ "%.0f"|format(value) }}{% endif %}
+                                    {% else %}
+                                      -
+                                    {% endif %}
+                                  </span>
+                                {% endif %}
+                              </td>
+                            {% endfor %}
+                          </tr>
+                        {% endfor %}
+                        {% if not loop.last %}
+                          <tr class="ppe-row ppe-row-gap">
+                            <td colspan="{{ 1 + (ppe_note_columns|length) }}"></td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+          </tbody>
+            {% elif is_intangible_note %}
+          <tbody class="note-block intangible-note-block">
+              <tr class="note-block-title">
+                <td colspan="{{ notes_colspan }}"><span class="note-heading-num">{{ note.number }}</span><span class="note-heading-text">{{ note.label|rcase }}</span></td>
+              </tr>
+              <tr>
+                <td colspan="{{ notes_colspan }}">
+                  <table class="ppe-note-table" style="--ppe-value-column-count: {{ intangible_note_columns|length }}; --ppe-label-column-width: {{ '52%' if intangible_note_columns|length <= 2 else ('46%' if intangible_note_columns|length == 3 else '40%') }};">
+                    <colgroup>
+                      <col class="ppe-note-col-label">
+                      {% for _column in intangible_note_columns %}
+                        <col class="ppe-note-col-value">
+                      {% endfor %}
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th class="text-left"></th>
+                        {% for column in intangible_note_columns %}
+                          <th class="text-center">
+                            {{ column.label|rcase if column.code != 'total' else 'Total' }}<br>
+                            <span class="ppe-note-currency">AED</span>
+                          </th>
+                        {% endfor %}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for schedule in intangible_note_schedules %}
+                        {% for row in schedule.rows %}
+                          <tr class="ppe-row ppe-row-{{ row.row_type }}{% if row.get('css_class') %} {{ row.get('css_class') }}{% endif %}">
+                            <td class="text-left ppe-note-label">{{ row.label }}</td>
+                            {% for value in row['values'] %}
+                              <td class="text-right ppe-note-value">
+                                {% if row.row_type == 'section' %}
+                                {% else %}
+                                  <span class="ppe-note-amount">
+                                    {% if value is none %}
+                                      -
+                                    {% elif value %}
+                                      {% if value < 0 %}({{ "%.0f"|format(value|abs) }}){% else %}{{ "%.0f"|format(value) }}{% endif %}
+                                    {% else %}
+                                      -
+                                    {% endif %}
+                                  </span>
+                                {% endif %}
+                              </td>
+                            {% endfor %}
+                          </tr>
+                        {% endfor %}
+                        {% if not loop.last %}
+                          <tr class="ppe-row ppe-row-gap">
+                            <td colspan="{{ 1 + (intangible_note_columns|length) }}"></td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+          </tbody>
+            {% else %}
+              {% for segment in note.line_segments or [] %}
+          <tbody class="note-block note-block-segment{% if operating_expense_note_number and note.number == operating_expense_note_number %} operating-expense-note{% endif %}{% if note.get('is_investment_note') %} investment-note{% endif %}{% if loop.first %} note-block-segment-first{% endif %}{% if loop.last %} note-block-segment-last{% endif %}">
+                {% if segment.show_title %}
+                <tr class="note-block-title">
+                  <td colspan="{{ notes_colspan }}"><span class="note-heading-num">{{ note.number }}</span><span class="note-heading-text">{{ note.label|rcase }}</span></td>
+                </tr>
+                {% endif %}
+                {% for line in segment.lines %}
+                  <tr{% if line.get('row_class') %} class="{{ line.get('row_class') }}"{% endif %}>
+                    <td class="text-left note-line-item">{{ line.name|rcase }}</td>
+                    <td class="text-center"></td>
+                    <td class="text-right">
+                      {% set current_display = line.get('current_display') %}
+                      {% if current_display is none %}
+                        {% if note.get('preserve_sign') %}
+                          {% set current_display = ("(" ~ ("%.2f"|format(line.current|abs)) ~ ")") if line.current < 0 else "%.2f"|format(line.current) %}
+                        {% else %}
+                          {% set current_display = "%.2f"|format(line.current|abs) %}
+                        {% endif %}
+                      {% endif %}
+                      {% if line.get('current_wrap_class') %}
+                        <span class="{{ line.get('current_wrap_class') }}">{{ current_display }}</span>
+                      {% else %}
+                        {{ current_display }}
+                      {% endif %}
+                    </td>
+                    {% if show_prior_year %}
+                      <td class="text-right">
+                        {% set prev_display = line.get('prev_display') %}
+                        {% if prev_display is none %}
+                          {% if note.get('preserve_sign') %}
+                            {% set prev_display = ("(" ~ ("%.2f"|format(line.prev|abs)) ~ ")") if line.prev < 0 else "%.2f"|format(line.prev) %}
+                          {% else %}
+                            {% set prev_display = "%.2f"|format(line.prev|abs) %}
+                          {% endif %}
+                        {% endif %}
+                        {% if line.get('prev_wrap_class') %}
+                          <span class="{{ line.get('prev_wrap_class') }}">{{ prev_display }}</span>
+                        {% else %}
+                          {{ prev_display }}
+                        {% endif %}
+                      </td>
+                    {% endif %}
+                  </tr>
+                {% endfor %}
+                {% if segment.show_total %}
+                <tr class="grand-total-row">
+                  <td class="text-left"></td>
+                  <td class="text-center"></td>
+                  <td class="text-right"><span class="amount-line amount-line-double">{% if note.get('preserve_sign') %}{% if note.total_current < 0 %}({{ "%.2f"|format(note.total_current|abs) }}){% else %}{{ "%.2f"|format(note.total_current) }}{% endif %}{% else %}{{ "%.2f"|format(note.total_current|abs) }}{% endif %}</span></td>
+                  {% if show_prior_year %}
+                    <td class="text-right"><span class="amount-line amount-line-double">{% if note.get('preserve_sign') %}{% if note.total_prev < 0 %}({{ "%.2f"|format(note.total_prev|abs) }}){% else %}{{ "%.2f"|format(note.total_prev) }}{% endif %}{% else %}{{ "%.2f"|format(note.total_prev|abs) }}{% endif %}</span></td>
+                  {% endif %}
+                </tr>
+                {% endif %}
+                {% if (show_investment_note_schedule|default(true)) and segment.show_total and note.get('is_investment_note') %}
+                  {% include 'audit_report_investment_note_block.html' %}
+                {% endif %}
+                {% if loop.last and note.get('paragraphs') %}
+                {% for paragraph in note.get('paragraphs') or [] %}
+                <tr class="note-paragraph-row">
+                  <td colspan="{{ notes_colspan }}">{{ paragraph }}</td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+          </tbody>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+      </table>
+    {% endif %}
+
+		
+		
+    
+		{% if show_related_parties_note %}
+		  {% set related_parties_note_number = note_numbers.get('related_parties') %}
+		  <p class="note-number-title">
+		    {% if related_parties_note_number %}
+		      <span class="note-title-num">{{ related_parties_note_number }}</span>
+		    {% endif %}
+		    <span class="note-title-text">Transactions with related parties</span>
+		  </p>
+		  <p class="gap">
+		  The related parties comprise of chief executive officer, directors,
+		  executives and associated entities due to common directorship /
+		  partnership. Nature, description and aggregate amount of transactions with
+		  related parties, other than remuneration to the chief executive, directors
+		  and executives of the Entity under their terms of employment to these
+		  financial statements, were as follows:
+		  </p>
+		  {% if related_parties_note_number %}
+		  <p class="note-line note-item note-subheading">
+		    <span class="note-num">{{ related_parties_note_number }}.1</span>
+		    <span class="note-text">Transactions with related parties</span>
+		  </p>
+		  {% endif %}
+		  {% if show_prior_year %}
+		    <table class="related-parties-table">
+		      <colgroup>
+		        <col style="width: 28%;">
+		        <col style="width: 18%;">
+		        <col style="width: 18%;">
+		        <col style="width: 8%;">
+		        <col style="width: 14%;">
+		        <col style="width: 14%;">
+		      </colgroup>
+		      <thead>
+		        {% if show_prior_year_marker %}
+		        <tr class="rp-restated-row">
+		          <th class="rp-title" colspan="4"></th>
+		          <th class="text-right"></th>
+		          <th class="text-right rp-restated-label">{{ prior_year_marker_label }}</th>
+		        </tr>
+		        {% endif %}
+		        <tr>
+		          <th class="rp-title" colspan="4">Transactions with related parties</th>
+		          <th class="text-right rp-year-end">{{ date_end.year if date_end else '' }}</th>
+		          <th class="text-right rp-prior-year">{{ date_end.year - 1 if date_end else '' }}</th>
+		        </tr>
+		        <tr class="rp-subheads">
+		          <th class="text-left">Related party</th>
+		          <th class="text-left">Nature of relationship</th>
+		          <th class="text-left">Nature of transaction</th>
+		          <th class="rp-spacer"></th>
+		          <th></th>
+		          <th></th>
+		        </tr>
+		      </thead>
+		      <tbody>
+		        {% for related_party_row in related_party_rows %}
+		        <tr>
+		          <td class="text-left">{{ related_party_row.get('name') or '-' }}</td>
+		          <td class="text-left">{{ (related_party_row.get('relationship') or '-')|rcase }}</td>
+		          <td class="text-left">{{ (related_party_row.get('transaction') or '-')|rcase }}</td>
+		          <td class="rp-spacer"></td>
+		          <td class="text-right">{{ "%.0f"|format(related_party_row.get('amount') or 0.0) }}</td>
+		          <td class="text-right">{{ "%.0f"|format(related_party_row.get('amount_prior') or 0.0) }}</td>
+		        </tr>
+		        {% endfor %}
+		      </tbody>
+		    </table>
+		  {% else %}
+		    <table class="share-capital-table related-parties-table related-parties-1y">
+		      <thead>
+		        <tr>
+		          <th class="text-left bold">Related party</th>
+		          <th class="text-right bold">Nature of relationship</th>
+		          <th class="text-right bold">Nature of transaction</th>
+		          <th class="text-right bold rp-amount-head" style="text-align: right !important;">{{ date_end.year if date_end else '' }}</th>
+		        </tr>
+		      </thead>
+		      <tbody>
+		        {% for related_party_row in related_party_rows %}
+		        <tr>
+		          <td class="text-left">{{ related_party_row.get('name') or '-' }}</td>
+		          <td class="text-right">{{ (related_party_row.get('relationship') or '-')|rcase }}</td>
+		          <td class="text-right">{{ (related_party_row.get('transaction') or '-')|rcase }}</td>
+		          <td class="text-right rp-amount" style="text-align: right !important; font-weight: bold;">{{ "%.0f"|format(related_party_row.get('amount') or 0.0) }}</td>
+		        </tr>
+		        {% endfor %}
+		      </tbody>
+		    </table>
+		  {% endif %}
+		{% endif %}
+		
+		
+		{% set risk_management_note_number = note_numbers.get('risk_management') %}
+		<p class="note-number-title">
+		  {% if risk_management_note_number %}
+		    <span class="note-title-num">{{ risk_management_note_number }}</span>
+		  {% endif %}
+		  <span class="note-title-text">Risk management</span>
+		</p>
+		{% if usd_statement %}
+		<p class="gap">
+		The Entity does not have any significant exposure to currency risk, as most of its assets and liabilities are denominated in United States Dollar. There are no assets and liabilities which expose it to interest rate risk and other price risks.
+		</p>
+		{% else %}
+<p class="gap">
+		The Entity monitors and manages the financial risks relating to its
+		business and operations. These risks include market, credit risk,
+		liquidity risk.
+		</p>
+		
+		<p class="gap">
+		It maintains timely reports about its risks management function and
+		monitors risks and policies implemented to mitigate risk exposures.
+		</p>
+		{% endif %}
+		
+		<p class="just_underline">Market risk</p>
+		<p class="gap">
+		The market risk is the risk that the fair value or cash flows of a
+		financial instrument will fluctuate due to changes in market prices.
+		Market risk reflects interest rate risk, currency risk and other price
+		risks.
+		</p>
+		{% if not usd_statement %}
+<p class="gap">
+		The Entity does not have any significant exposure to currency risk, as
+		most of its assets and liabilities are denominated in UAE Dirham. There
+		are no assets and liabilities which expose it to interest rate risk and
+		other price risks.
+		</p>
+		{% endif %}
+		<p class="just_underline">Credit risk</p>
+		<p class="gap">
+		Credit risk is the risk that counter party will not meet its obligations
+		under a financial instrument or customer contract, leading to a financial
+		loss.
+		</p>
+		
+		<p class="gap">
+		The Entity does not have any significant exposure to currency risk, as its
+		assets include receivables which are timely recovered and liabilities
+		which mostly comprise of expenses in normal course of its business.
+		<br> Entity has sufficient funds to settle its financial liabilities.</p>
+		
+		
+		<p class="just_underline">Liquidity risk</p>
+		<p class="gap">
+		Liquidity risk is the risk that an entity will have difficulties in paying
+		its financial liabilities. Entity has sufficient funds to pay off its
+		current liabilities.
+		</p>
+		
+    <!-- {% if not show_related_parties_note %}
+      <div class="page-break"></div>
+    {% endif %} -->
+
+			{% set financial_assets_liabilities_note_number = note_numbers.get('financial_assets_liabilities') %}
+			<div class="note-section-keep">
+			  <p class="note-number-title">
+			    {% if financial_assets_liabilities_note_number %}
+			      <span class="note-title-num">{{ financial_assets_liabilities_note_number }}</span>
+			    {% endif %}
+			    <span class="note-title-text">Financial assets and liabilities</span>
+			  </p>
+			  <p class="gap note-section-intro">The item consists of the following:</p>
+			  {% set fa_accounts_receivable = current_group_totals.get('1202', 0.0) %}
+			  {% set fa_accounts_receivable_prev = prev_group_totals.get('1202', 0.0) if show_prior_year else 0.0 %}
+			  {% set fa_other_receivables = (fa_other_receivables_current + current_group_totals.get('1205', 0.0)) - fa_note_vat_receivable_current %}
+              {% set fa_other_receivables_prev = ((fa_other_receivables_prev + prev_group_totals.get('1205', 0.0)) - fa_note_vat_receivable_prev) if show_prior_year else 0.0 %}
+			  {% set fa_cash = current_group_totals.get('1204', 0.0) + current_group_totals.get('1206', 0.0) %}
+			  {% set fa_cash_prev = (prev_group_totals.get('1204', 0.0) + prev_group_totals.get('1206', 0.0)) if show_prior_year else 0.0 %}
+			  {% set fa_has_lines = (fa_accounts_receivable or fa_accounts_receivable_prev) or (fa_other_receivables or fa_other_receivables_prev) or (fa_cash or fa_cash_prev) %}
+			  {% set fa_total_current = (fa_accounts_receivable|abs) + (fa_other_receivables|abs) + (fa_cash|abs) %}
+			  {% set fa_total_prev = (fa_accounts_receivable_prev|abs) + (fa_other_receivables_prev|abs) + (fa_cash_prev|abs) %}
+			  {% set fl_other_payables = (current_group_totals.get('2201', 0.0) + current_group_totals.get('2202', 0.0) + current_group_totals.get('2203', 0.0) + current_group_totals.get('2204', 0.0)) - fa_note_vat_payable_current %}
+			  {% set fl_other_payables_prev = ((prev_group_totals.get('2201', 0.0) + prev_group_totals.get('2202', 0.0) + prev_group_totals.get('2203', 0.0) + prev_group_totals.get('2204', 0.0)) - fa_note_vat_payable_prev) if show_prior_year else 0.0 %}
+			  {% set fl_has_lines = fl_other_payables or fl_other_payables_prev %}
+			  {% set fl_total_current = fl_other_payables|abs %}
+			  {% set fl_total_prev = fl_other_payables_prev|abs %}
+			  <table class="note-financial-table">
+			  <thead>
+                {% if show_prior_year_marker %}
+			    <tr class="note-financial-restated-row">
+			      <th class="text-left"></th>
+			      <th class="text-right"></th>
+			      <th class="text-right note-restated-marker">{{ prior_year_marker_label }}</th>
+		        </tr>
+                {% endif %}
+			    <tr>
+			      <th class="text-left"></th>
+			      <th class="text-right">{{ date_end.year if date_end else '' }}</th>
+			      <th class="text-right">{{ date_end.year - 1 if date_end else '' }}</th>
+		    </tr>
+		  </thead>
+			  <tbody>
+{% if fa_has_lines %}
+			    <tr class="section-row">
+			      <td class="text-left">Financial assets </td>
+			      <td></td>
+			      <td></td>
+			    </tr>
+{% endif %}
+		    {% if fa_accounts_receivable or fa_accounts_receivable_prev %}
+		      <tr>
+		        <td class="text-left">Accounts receivable</td>
+		        <td class="text-right">{{ "%.0f"|format(fa_accounts_receivable|abs) }}</td>
+		        <td class="text-right">{{ "%.0f"|format(fa_accounts_receivable_prev|abs) }}</td>
+		      </tr>
+		    {% endif %}
+		    {% if fa_other_receivables or fa_other_receivables_prev %}
+		      <tr>
+		        <td class="text-left">Other receivables</td>
+		        <td class="text-right">{{ "%.0f"|format(fa_other_receivables|abs) }}</td>
+		        <td class="text-right">{{ "%.0f"|format(fa_other_receivables_prev|abs) }}</td>
+		      </tr>
+		    {% endif %}
+		    {% if fa_cash or fa_cash_prev %}
+		      <tr>
+		        <td class="text-left">Cash and bank balances</td>
+		        <td class="text-right"><span class="amount-line amount-line-single">{{ "%.0f"|format(fa_cash|abs) }}</span></td>
+		        <td class="text-right"><span class="amount-line amount-line-single">{{ "%.0f"|format(fa_cash_prev|abs) }}</span></td>
+		      </tr>
+		    {% endif %}
+		    {% if fa_has_lines %}
+		      <tr class="total-row">
+		        <td class="text-left"></td>
+		        <td class="text-right"><span class="amount-line amount-line-double">{{ "%.0f"|format(fa_total_current) }}</span></td>
+		        <td class="text-right"><span class="amount-line amount-line-double">{{ "%.0f"|format(fa_total_prev) }}</span></td>
+		      </tr>
+		    {% endif %}
+{% if fl_has_lines %}
+		    <tr class="section-row">
+		      <td class="text-left">Financial liabilities</td>
+		      <td></td>
+		      <td></td>
+		    </tr>
+{% endif %}
+		    {% if fl_has_lines %}
+		      <tr>
+		        <td class="text-left">Other payables</td>
+		        <td class="text-right"><span class="amount-line amount-line-single">{{ "%.0f"|format(fl_other_payables|abs) }}</span></td>
+		        <td class="text-right"><span class="amount-line amount-line-single">{{ "%.0f"|format(fl_other_payables_prev|abs) }}</span></td>
+		      </tr>
+		      <tr class="total-row">
+		        <td class="text-left"></td>
+		        <td class="text-right"><span class="amount-line amount-line-double">{{ "%.0f"|format(fl_total_current) }}</span></td>
+		        <td class="text-right"><span class="amount-line amount-line-double">{{ "%.0f"|format(fl_total_prev) }}</span></td>
+		      </tr>
+			    {% endif %}
+			  </tbody>
+			  </table>
+			</div>
+		<p class="gap">
+		The fair value of the financial assets and liabilities is included at the
+		amount at which the instrument could be exchanged in a current transaction
+		between knowledgeable and willing parties. <br>
+		As at reporting date financial assets and financial liabilities are
+		approximates their carrying values.
+		</p>
+		
+		{% set contingent_liabilities_note_number = note_numbers.get('contingent_liabilities') %}
+		<p class="note-number-title">
+		  {% if contingent_liabilities_note_number %}
+		    <span class="note-title-num">{{ contingent_liabilities_note_number }}</span>
+		  {% endif %}
+		  <span class="note-title-text">Contingent liabilities</span>
+		</p>
+		<p class="gap">
+		There were no contingent liabilities as at the date of the financial
+		statements.
+		</p>
+		{% set general_note_number = note_numbers.get('general_notes') %}
+		<p class="note-number-title">
+		  {% if general_note_number %}
+		    <span class="note-title-num">{{ general_note_number }}</span>
+		  {% endif %}
+		  <span class="note-title-text">General</span>
+		</p>
+		<p>
+		Amounts shown in the financial statements are rounded to the nearest UAE
+		Dirham.{% if show_prior_year %}<br> Prior period figures have been re-adjusted wherever necessary for
+		comparison.{% endif %}
+		</p>
+		
+		
+    <div class="notes-signature-area">
+    {% for _ in range(signature_break_lines_notes or 0) %}
+        <br>
+    {% endfor %}
+    <div class="signature-blocks notes-signature-blocks">
+		  {% if signature_names %}
+		    {% for name in signature_names %}
+		      <div class="signature-block">
+		        {% if loop.first %}
+		          <p>…………………………</p>
+		          <p class="uppercase">{{ name }}</p>
+			          <p class="uppercase">{{ company_name|upper }}</p>
+		          <p>Date: {{ generated_date_display }}</p>
+		        {% else %}
+		          <p>…………………………</p>
+		          <p class="uppercase">{{ name }}</p>
+		        {% endif %}
+		      </div>
+		    {% endfor %}
+		  {% else %}
+		    <div class="signature-block">
+		      <p>…………………………</p>
+		      <p class="uppercase"></p>
+			      <p class="uppercase">{{ company_name|upper }}</p>
+		      <p>Date: {{ generated_date_display }}</p>
+		    </div>
+		  {% endif %}
+		</div>
+    </div>
+	</section>
+  {% endif %}
+  {% if is_dmcc_company_freezone and (not sections_to_render or 'dmcc_sheet' in sections_to_render) %}
+  {% set dmcc = dmcc_sheet_data or {} %}
+  <section class="dmcc_sheet page">
+    <p class="bold_ dmcc-header-title">DMCC Summary Sheet</p>
+    <p class="dmcc-header-subtitle">For the {{ report_ended_label }} {{ report_period_end }} (in AED)</p>
+    <table class="dmcc-sheet-table">
+      <colgroup>
+        <col style="width: 28%;">
+        <col style="width: 22%;">
+        <col style="width: 28%;">
+        <col style="width: 22%;">
+      </colgroup>
+      <tbody>
+        <tr class="dmcc-section-title">
+          <td colspan="4">Company Information</td>
+        </tr>
+        <tr>
+          <td class="dmcc-label">Company Name</td>
+          <td colspan="3">{{ (dmcc.get('company_name') or company_name)|upper }}</td>
+        </tr>
+        <tr>
+          <td class="dmcc-label">Portal Account</td>
+          <td colspan="3">{{ dmcc.get('portal_account_no') or '' }}</td>
+        </tr>
+        <tr>
+          <td class="dmcc-label dmcc-nowrap">Customer License No.</td>
+          <td colspan="3">{{ dmcc.get('customer_license_no') or license }}</td>
+        </tr>
+
+        <tr class="dmcc-section-title">
+          <td colspan="4">Financial Information (Amount in UAE - Dirham)</td>
+        </tr>
+        <tr>
+          <td class="dmcc-label">Year Start Date</td>
+          <td class="dmcc-text">{{ dmcc.get('year_start_date') or '' }}</td>
+          <td class="dmcc-label">Year End Date</td>
+          <td class="dmcc-text">{{ dmcc.get('year_end_date') or '' }}</td>
+        </tr>
+        <tr>
+          <td class="dmcc-label">Total Share Capital</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('total_share_capital') or 0.0) }}</td>
+          <td class="dmcc-label">Reserves</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('reserves') or 0.0) }}</td>
+        </tr>
+        <tr>
+          <td class="dmcc-label">Retained Earnings / (Accumulated Losses)</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('retained_earnings') or 0.0) }}</td>
+          <td class="dmcc-label">Shareholders Current Account / Loans</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('shareholders_current_account_loans') or 0.0) }}</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="dmcc-label">Total Equity (System Calculated)</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('total_equity_system') or 0.0) }}</td>
+        </tr>
+        <tr>
+          <td class="dmcc-label">Fixed Assets (Net)</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('fixed_assets_net') or 0.0) }}</td>
+          <td class="dmcc-label">Total Depreciation</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('total_depreciation') or 0.0) }}</td>
+        </tr>
+        <tr>
+          <td class="dmcc-label">Current Assets</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('current_assets') or 0.0) }}</td>
+          <td class="dmcc-label">Non-Current Assets excluding Fixed Assets</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('non_current_assets_excl_fixed_assets') or 0.0) }}</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="dmcc-label">Total Assets (System Calculated)</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('total_assets_system') or 0.0) }}</td>
+        </tr>
+        <tr>
+          <td class="dmcc-label">Current Liabilities</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('current_liabilities') or 0.0) }}</td>
+          <td class="dmcc-label">Non-Current Liabilities</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('non_current_liabilities') or 0.0) }}</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="dmcc-label">Total Liabilities (System Calculated)</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('total_liabilities_system') or 0.0) }}</td>
+        </tr>
+        <tr>
+          <td class="dmcc-label">Annual Sales / Annual Turnover</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('annual_sales_turnover') or 0.0) }}</td>
+          <td class="dmcc-label">Cost of Revenue / Goods Sold</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('cost_of_revenue_goods_sold') or 0.0) }}</td>
+        </tr>
+        <tr>
+          <td class="dmcc-label">Total Salaries</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('total_salaries') or 0.0) }}</td>
+          <td class="dmcc-label">All Other Expenses</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('all_other_expenses') or 0.0) }}</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="dmcc-label">All Other Income</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('all_other_income') or 0.0) }}</td>
+        </tr>
+        <tr>
+          <td class="dmcc-label">Gross Profit / Loss (System Calculated)</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('gross_profit_loss_system') or 0.0) }}</td>
+          <td class="dmcc-label">Net Profit / Loss (System Calculated)</td>
+          <td class="dmcc-value">{{ "%.0f"|format(dmcc.get('net_profit_loss_system') or 0.0) }}</td>
+        </tr>
+
+        <tr class="dmcc-section-title">
+          <td colspan="4">Auditor's Information</td>
+        </tr>
+        <tr>
+          <td class="dmcc-label">Audit Firm Name</td>
+          <td colspan="3">{{ dmcc.get('audit_firm_name') or 'Assurance Corp Audit and Accounting' }}</td>
+        </tr>
+        <tr>
+          <td class="dmcc-label">Auditor's Signature</td>
+          <td>{{ dmcc.get('auditor_signature') or '' }}</td>
+          <td class="dmcc-label">Date</td>
+          <td>{{ dmcc.get('auditor_date') or generated_date_display }}</td>
+        </tr>
+        <tr class="dmcc-seal-row">
+          <td class="dmcc-label">Auditor's Seal</td>
+          <td colspan="3">{{ dmcc.get('auditor_seal') or '' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+  </body>
+</html>

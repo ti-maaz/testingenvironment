@@ -1,0 +1,24 @@
+Line,Activity,Main Head(s),Code group(s)
+Cash flows from operating activities,,,
+Net profit for the year,Operating,Net profit before tax,Profit and loss
+Adjustments for:,Operating,,
+Depreciation,Operating,Depreciation Expense,511401
+End of service benefits,Operating,Employee Benefits,21040101
+Operating cash flows before changes in working capital,Operating,,
+Changes in working capital,Operating,,
+(Increase)/decrease in current assets,Operating (working capital),Inventory; Trade Receivables; Prepayments,1201;1202;1203
+Increase/(decrease) in current liabilities,Operating (working capital),Trade payables; Other payables,2202;2203
+Corporate tax paid,Operating,Corporate tax liability / expense,2204;512701
+End of service benefits paid,Operating,Employee Benefits,21040101
+Net cash generated from operations,Operating,,
+Cash flows from investing activities,,,
+"Property, plant and equipment",Investing,Property Plant And Equipment,1101
+Net cash generated from investing activities,Investing,,
+Cash flows from financing activities,,,
+Paid up capital,Financing,Share capital,310101
+Dividend,Financing,Dividend paid,31010202
+Owner current account,Financing,Owner current account,12040101
+Net cash generated from financing activities,Financing,,
+Net increase in cash and cash equivalents,Summary,,
+"Cash and cash equivalents, beginning of the period",Summary,,
+"Cash and cash equivalents, end of the period",Summary,,

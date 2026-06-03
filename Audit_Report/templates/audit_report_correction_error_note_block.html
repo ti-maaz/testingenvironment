@@ -1,0 +1,73 @@
+<tbody class="note-block correction-error-note">
+  <tr class="note-block-title">
+    <td colspan="{{ notes_colspan }}"><span class="note-heading-num">{{ note.number }}</span><span class="note-heading-text">Correction of Error</span></td>
+  </tr>
+  {% for paragraph in note.paragraphs or [] %}
+  <tr class="correction-error-paragraph-row">
+    <td colspan="{{ notes_colspan }}" class="correction-error-paragraph-cell">{{ paragraph }}</td>
+  </tr>
+  {% endfor %}
+  {% if note.correction_rows %}
+  <tr class="correction-error-table-shell-row">
+    <td colspan="{{ notes_colspan }}">
+      <table class="correction-error-note-table">
+        <colgroup>
+          <col class="correction-error-col-description">
+          <col class="correction-error-col-value">
+          <col class="correction-error-col-value">
+          <col class="correction-error-col-value">
+        </colgroup>
+        <thead>
+          <tr class="correction-error-date-row">
+            <th class="text-left"></th>
+            <th class="text-center correction-error-date-heading" colspan="3">{{ note.correction_header_date_display }}</th>
+          </tr>
+          <tr class="correction-error-subheads-row">
+            <th class="text-left"></th>
+            <th class="text-center correction-error-col-head">As reported</th>
+            <th class="text-center correction-error-col-head">As re-stated</th>
+            <th class="text-center correction-error-col-head">Re-statement</th>
+          </tr>
+          <tr class="correction-error-currency-row">
+            <th class="text-left correction-error-description-head">Description</th>
+            <th class="text-center correction-error-currency-head" colspan="3">AED</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in note.correction_rows %}
+            {% if row.row_type == 'section' %}
+            <tr class="correction-error-row correction-error-row-section">
+              <td class="text-left correction-error-description-cell">{{ row.description|trim }}</td>
+              <td class="correction-error-empty-cell"></td>
+              <td class="correction-error-empty-cell"></td>
+              <td class="correction-error-empty-cell"></td>
+            </tr>
+            {% elif row.row_type == 'subheading' %}
+            <tr class="correction-error-row correction-error-row-subheading">
+              <td class="text-left correction-error-description-cell">{{ row.description|trim }}</td>
+              <td class="correction-error-empty-cell"></td>
+              <td class="correction-error-empty-cell"></td>
+              <td class="correction-error-empty-cell"></td>
+            </tr>
+            {% elif row.row_type == 'text' %}
+            <tr class="correction-error-row correction-error-row-text">
+              <td class="text-left correction-error-description-cell">{{ row.description|trim }}</td>
+              <td class="correction-error-empty-cell"></td>
+              <td class="correction-error-empty-cell"></td>
+              <td class="correction-error-empty-cell"></td>
+            </tr>
+            {% else %}
+            <tr class="correction-error-row correction-error-row-line">
+              <td class="text-left correction-error-description-cell">{{ row.description|trim }}</td>
+              <td class="text-right correction-error-amount-cell">{{ "%.0f"|format(row.amount_as_reported) }}</td>
+              <td class="text-right correction-error-amount-cell">{{ "%.0f"|format(row.amount_as_restated) }}</td>
+              <td class="text-right correction-error-amount-cell">{{ "%.0f"|format(row.amount_restatement) }}</td>
+            </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </td>
+  </tr>
+  {% endif %}
+</tbody>

@@ -1,0 +1,24 @@
+Section,Line Label,Variable,Calculation,Accounts/Source,Notes
+Operating,Net profit for the year (before tax),net_profit_before_tax,"gross_profit - operating_expenses_total - investment_gain_loss_total + other_income_total","Revenue 4101 4102; Other income 4103; Cost of revenue 5101; Investment gain/loss 5201; Corporate tax expense 51270101; Operating expenses = 51xx less cost and tax","Period totals (date_start to date_end)."
+Operating,Prior year adjustment,prior_year_adjustment,-period_prefix_totals[8][31010501],31010501,"Prior year adjustment equity account movement added back in operating cash flows."
+Operating,Bad debt expense,bad_debt_expense_addback,period_prefix_totals[8][51220101],51220101,"Bad debt expense added back in operating cash flows."
+Operating,Gain on disposal,gain_on_disposal_adjustment,period_prefix_totals[8][41031101],41031101,"Gain on disposal income movement is shown under adjustments; credit gains reduce operating cash flows."
+Operating,Depreciation,current_depreciation_total,period_prefix_totals[6][511401],511401,Period totals for depreciation expense accounts.
+Operating,End of service benefits,end_service_benefits_adjustment,"max(0, -period_prefix_totals[8][21040101])",21040101,"Uses EOSB liability movement: increase is non-cash expense added back."
+Operating,Finance cost,interest_paid_addback,period_prefix_totals[6][512401],512401,"Interest paid accounts added back because the cash outflow is shown in financing activities."
+Operating,Operating cash flows before changes in working capital,operating_cashflow_before_working_capital,"net_profit_before_tax + prior_year_adjustment + bad_debt_expense_addback + gain_on_disposal_adjustment + current_depreciation_total + end_service_benefits_adjustment + interest_paid_addback",,Derived.
+Operating,(Increase)/decrease in current assets,change_in_current_assets,"-(current_wc_assets - opening_wc_assets)","1201 1202 1203","Working capital assets only; excludes cash, wallets, interbank."
+Operating,Increase/(decrease) in current liabilities,change_in_current_liabilities,"current_wc_liabilities - opening_wc_liabilities","2202 2203 220101 220103","Corporate tax liability and other borrowings excluded; bank overdraft and credit card included."
+Operating,Corporate tax paid,corporate_tax_paid,"-(opening_tax_liability + current_tax_expense - current_tax_liability)","22040101; 51270101","Cash outflow; standard tax paid formula."
+Operating,End of service benefits paid,end_service_benefits_paid,"min(0, -period_prefix_totals[8][21040101])",21040101,"Shows decreases in EOSB liability as cash paid."
+Operating,Net cash generated from operations,net_cash_generated_from_operations,"operating_cashflow_before_working_capital + change_in_current_assets + change_in_current_liabilities + corporate_tax_paid + end_service_benefits_paid",,Sum of operating lines.
+Investing,"Property, plant and equipment",current_property,"-_sum_period_cost_balances(period_rows, '1101')","1101 cost accounts only","Period totals excluding accumulated depreciation accounts."
+Investing,Net cash generated from investing activities,net_cash_generated_from_investing_activities,current_property,,Sum of investing lines.
+Financing,Paid up capital,paid_up_capital,"sum(company.total_share_1..10)",res.company,"Uses share capital totals from res.company (shareholder inputs)."
+Financing,Dividend,dividend_paid,"-(current_dividend - opening_dividend)",31010202,Cash outflow.
+Financing,Owner current account,owner_current_account,-period_prefix_totals[8][12040101],12040101,"Uses the net period movement for the owner current account; reclassified to equity and treated as financing."
+Financing,Interest paid,interest_paid,-period_prefix_totals[6][512401],512401,"Interest paid on loan and credit facilities shown as financing cash outflow."
+Financing,Net cash generated from financing activities,net_cash_generated_from_financing_activities,"paid_up_capital + dividend_paid + owner_current_account + related_party_loan + interest_paid",,Sum of financing lines.
+Summary,Net increase in cash and cash equivalents,net_cash_and_cash_equivalents,"net_cash_generated_from_operations + net_cash_generated_from_investing_activities + net_cash_generated_from_financing_activities",,Sum of section totals.
+Summary,"Cash and cash equivalents, beginning of the period",cash_beginning_year,opening_cash_equivalents,"1204 (excluding 12040101) 1205 - 1206","Cash equivalents include wallets; exclude interbank. Owner current account is reclassified to equity."
+Summary,"Cash and cash equivalents, end of the period",cash_end_of_year,current_cash_equivalents,"1204 (excluding 12040101) 1205 - 1206","Cash equivalents include wallets; exclude interbank. Owner current account is reclassified to equity."
