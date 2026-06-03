@@ -122,6 +122,7 @@ class AccountKnockoffSettlement(models.Model):
         required=True,
         currency_field='currency_id',
         tracking=True,
+        default=0.0,
     )
     customer_residual_total = fields.Monetary(
         string='Customer Residual Total',
