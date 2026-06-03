@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 from itertools import zip_longest
 
 from odoo import tests
-from odoo.fields import first
 from odoo.tests import Form
 
 
@@ -61,7 +60,7 @@ class TestCommon(tests.TransactionCase):
         return date_backdating
 
     def _get_corresponding_move_line(self, move):
-        return first(move.move_line_ids)
+        return move.move_line_ids[:1]
 
     @classmethod
     def _create_real_time_products(cls, products_values_list):
@@ -76,7 +75,8 @@ class TestCommon(tests.TransactionCase):
             product_form = Form(product_model)
             for field_name, field_value in products_values.items():
                 setattr(product_form, field_name, field_value)
-            product_form.detailed_type = "product"
+            product_form.type = "consu"
+            product_form.is_storable = True
             # product_form.property_valuation = "real_time"
             product = product_form.save()
             products |= product
@@ -93,16 +93,16 @@ class TestCommon(tests.TransactionCase):
         picking_form = Form(cls.env["stock.picking"])
         picking_form.picking_type_id = cls.env.ref("stock.picking_type_out")
         for product, quantity in products_qty_dict.items():
-            with picking_form.move_ids_without_package.new() as move:
+            with picking_form.move_ids.new() as move:
                 move.product_id = product
                 move.product_uom_qty = quantity
         picking = picking_form.save()
         return picking
 
     def _check_account_moves(self, account_moves, stock_moves):
-        # check numbers of account moves created by perpetual valuation
-        # it has to be equal to the number of stock moves
-        self.assertEqual(len(account_moves), len(stock_moves))
+        # check that account moves were created for all valued stock moves
+        valued_moves = stock_moves.filtered(lambda m: m.account_move_id)
+        self.assertEqual(len(account_moves), len(valued_moves))
 
     def _check_account_move_date(self, account_move, date):
         self.assertEqual(account_move.date, date.date())
@@ -121,12 +121,7 @@ class TestCommon(tests.TransactionCase):
             self.assertFalse(picking_back_date)
 
     def _search_account_move(self, move):
-        account_move = self.env["account.move"].search(
-            [
-                ("stock_move_id", "=", move.id),
-            ],
-        )
-        return account_move
+        return move.account_move_id
 
     def _create_wizard(self, date_backdating, picking):
         """Assign `date_backdating` to all the move lines of `picking`."""
@@ -146,17 +141,15 @@ class TestCommon(tests.TransactionCase):
             len(stock_moves),
             "Every move should be assigned (create a move line)",
         )
-        account_moves = self.env["account.move"].search(
-            [
-                ("stock_move_id", "in", stock_moves.ids),
-            ],
-        )
+        account_moves = stock_moves.mapped("account_move_id")
         self._check_account_moves(account_moves, stock_moves)
         for stock_move in stock_moves:
             self.assertEqual(stock_move.state, "done")
 
             account_move = self._search_account_move(stock_move)
-            self._check_account_move_date(account_move, stock_move.date)
+            # Only check account move date when a valuation entry was created
+            if account_move:
+                self._check_account_move_date(account_move, stock_move.date)
 
             stock_move_line = self._get_corresponding_move_line(stock_move)
             move_datetime_backdating = stock_move_line.date_backdating

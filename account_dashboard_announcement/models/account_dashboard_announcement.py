@@ -1,5 +1,4 @@
 from odoo import api, fields, models
-from odoo.osv import expression
 
 
 class AccountDashboardAnnouncement(models.Model):
@@ -32,11 +31,11 @@ class AccountDashboardAnnouncement(models.Model):
             return False
 
         today = fields.Date.context_today(self)
-        domain = expression.AND([
-            [("active", "=", True)],
-            ["|", ("date_start", "=", False), ("date_start", "<=", today)],
-            ["|", ("date_end", "=", False), ("date_end", ">=", today)],
-        ])
+        domain = [
+            ("active", "=", True),
+            "|", ("date_start", "=", False), ("date_start", "<=", today),
+            "|", ("date_end", "=", False), ("date_end", ">=", today),
+        ]
         announcement = self.sudo().search(
             domain,
             order="sequence asc, id desc",

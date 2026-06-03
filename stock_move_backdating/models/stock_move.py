@@ -5,8 +5,7 @@
 # Copyright 2023 Simone Rubino - TAKOBI
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import models
-from odoo.fields import first
+from odoo import fields, models
 
 from .stock_move_line import check_date
 
@@ -41,40 +40,39 @@ class StockMove(models.Model):
         return price_unit
 
     def _backdating_stock_valuation_layers(self):
-        """Set date on linked stock.valuation.layer same for each move in `self`."""
+        """Set date on linked product.value records for each move in `self`."""
         self = self.sudo()
-        picking_stock_valuation_layers = self.env["stock.valuation.layer"].search(
+        product_values = self.env["product.value"].search(
             [
-                ("stock_move_id", "in", self.ids),
+                ("move_id", "in", self.ids),
             ],
         )
         for stock_move in self:
-            current_stock_move = stock_move
-            stock_valuation_layers = picking_stock_valuation_layers.filtered(
-                lambda svl, move=current_stock_move: svl.stock_move_id == move
+            current_move = stock_move
+            move_product_values = product_values.filtered(
+                lambda pv, move=current_move: pv.move_id == move
             )
-            for svl in stock_valuation_layers:
-                self._cr.execute(
-                    """
-                    update stock_valuation_layer set create_date = %s where id = %s
-                """,
-                    (stock_move.date, svl.id),
-                )
+            move_product_values.write({"date": stock_move.date})
 
     def _backdating_action_done(self, moves_todo, cancel_backorder=False):
         """Process the moves, backdating the ones that need to."""
         moves_todo_ids = set(moves_todo.ids)
-        move_line = first(self.mapped("move_line_ids"))
+        move_line = self.mapped("move_line_ids")[:1]
         date_backdating = move_line.date_backdating
+        ctx = {}
         if date_backdating:
-            self = self.with_context(
-                date_backdating=date_backdating,
-            )
+            # force_period_date is used by _create_account_move() to set the
+            # accounting entry date; it expects a Date (not Datetime).
+            ctx = {
+                "date_backdating": date_backdating,
+                "force_period_date": fields.Date.to_date(date_backdating),
+            }
+            self = self.with_context(**ctx)
         move_todo = super()._action_done(cancel_backorder=cancel_backorder)
         moves_todo_ids.update(move_todo.ids)
 
         # overwrite date field where applicable
-        move_line = first(self.mapped("move_line_ids"))
+        move_line = self.mapped("move_line_ids")[:1]
         date_backdating = move_line.date_backdating
         if date_backdating:
             check_date(date_backdating)
@@ -99,12 +97,3 @@ class StockMove(models.Model):
             )
             moves_todo._backdating_stock_valuation_layers()
         return moves_todo
-
-    def _account_entry_move(self, qty, description, svl_id, cost):
-        """Accounting Valuation Entries"""
-        self.ensure_one()
-        am_vals = super()._account_entry_move(qty, description, svl_id, cost)
-        date_backdating = self.env.context.get("date_backdating", False)
-        if date_backdating:
-            am_vals[0]["date"] = date_backdating
-        return am_vals
