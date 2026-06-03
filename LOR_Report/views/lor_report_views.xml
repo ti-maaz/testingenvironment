@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="lor_report_wizard_form" model="ir.ui.view">
+        <field name="name">lor.report.wizard.form</field>
+        <field name="model">lor.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Letter of Representation">
+                <sheet>
+                    <notebook>
+                        <page string="LOR Settings">
+                            <group>
+                                <group string="Letter Settings">
+                                    <field name="audit_report_id" invisible="1"/>
+                                    <field name="company_id" readonly="1"/>
+                                    <field name="date_end"/>
+                                    <field name="signature_date_mode"/>
+                                    <field name="signature_manual_date"
+                                           invisible="signature_date_mode != 'manual'"
+                                           required="signature_date_mode == 'manual'"/>
+                                    <field name="manager_name_display" readonly="1"/>
+                                </group>
+                                <group string="Template Source">
+                                    <separator string="Maintain the HTML and CSS source on the selected company under the LOR Template tab. Company and shareholder values below stay in sync with the selected company, and the LOR end date is sourced from the latest/current Audit Report."/>
+                                </group>
+                            </group>
+                            <group string="Append Main List Items at End" col="1">
+                                <field name="extra_item_line_ids" nolabel="1">
+                                    <list editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="item_text" string="Main List Item"/>
+                                    </list>
+                                </field>
+                            </group>
+                        </page>
+                        <page string="Company Information">
+                            <group>
+                                <group string="Company and Free Zone Information">
+                                    <field name="company_name"/>
+                                    <field name="company_street" string="Address"/>
+                                    <field name="company_street2"/>
+                                    <field name="company_city"/>
+                                    <field name="company_state_id"/>
+                                    <field name="company_zip"/>
+                                    <field name="company_country_id"/>
+                                    <field name="company_free_zone"/>
+                                    <field name="company_license_number"/>
+                                    <field name="trade_license_activities"/>
+                                    <field name="incorporation_date"/>
+                                </group>
+                                <group string="Tax Information">
+                                    <field name="corporate_tax_registration_number"/>
+                                    <field name="vat_registration_number"/>
+                                    <field name="corporate_tax_start_date"/>
+                                    <field name="corporate_tax_end_date"/>
+                                </group>
+                                <group string="Free Zone Regulations">
+                                    <field name="implementing_regulations_freezone"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Shareholder Information">
+                            <group col="1">
+                                <group string="Share Capital Status" col="1">
+                                    <group col="2">
+                                        <field name="share_capital_paid_status"/>
+                                    </group>
+                                </group>
+                                <group string="Shareholders" col="1">
+                                    <group col="1">
+                                        <div class="table-responsive">
+                                            <table class="o_list_table table table-sm o_list_view">
+                                                <colgroup>
+                                                    <col style="width: 29%;"/>
+                                                    <col style="width: 19%;"/>
+                                                    <col style="width: 14%;"/>
+                                                    <col style="width: 13%;"/>
+                                                    <col style="width: 13%;"/>
+                                                    <col style="width: 12%;"/>
+                                                </colgroup>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Company Shareholder</th>
+                                                        <th>Nationality</th>
+                                                        <th class="text-end">No. of Shares</th>
+                                                        <th class="text-end">Share Value</th>
+                                                        <th class="text-end">Total Share</th>
+                                                        <th class="text-center">Signature</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><field name="shareholder_1" nolabel="1" class="w-100"/></td>
+                                                        <td><field name="nationality_1" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="number_of_shares_1" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="share_value_1" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="total_share_1" readonly="1" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-center"><field name="signature_include_1" nolabel="1" readonly="not shareholder_1"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><field name="shareholder_2" nolabel="1" class="w-100"/></td>
+                                                        <td><field name="nationality_2" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="number_of_shares_2" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="share_value_2" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="total_share_2" readonly="1" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-center"><field name="signature_include_2" nolabel="1" readonly="not shareholder_2"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><field name="shareholder_3" nolabel="1" class="w-100"/></td>
+                                                        <td><field name="nationality_3" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="number_of_shares_3" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="share_value_3" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="total_share_3" readonly="1" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-center"><field name="signature_include_3" nolabel="1" readonly="not shareholder_3"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><field name="shareholder_4" nolabel="1" class="w-100"/></td>
+                                                        <td><field name="nationality_4" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="number_of_shares_4" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="share_value_4" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="total_share_4" readonly="1" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-center"><field name="signature_include_4" nolabel="1" readonly="not shareholder_4"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><field name="shareholder_5" nolabel="1" class="w-100"/></td>
+                                                        <td><field name="nationality_5" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="number_of_shares_5" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="share_value_5" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="total_share_5" readonly="1" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-center"><field name="signature_include_5" nolabel="1" readonly="not shareholder_5"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><field name="shareholder_6" nolabel="1" class="w-100"/></td>
+                                                        <td><field name="nationality_6" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="number_of_shares_6" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="share_value_6" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="total_share_6" readonly="1" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-center"><field name="signature_include_6" nolabel="1" readonly="not shareholder_6"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><field name="shareholder_7" nolabel="1" class="w-100"/></td>
+                                                        <td><field name="nationality_7" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="number_of_shares_7" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="share_value_7" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="total_share_7" readonly="1" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-center"><field name="signature_include_7" nolabel="1" readonly="not shareholder_7"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><field name="shareholder_8" nolabel="1" class="w-100"/></td>
+                                                        <td><field name="nationality_8" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="number_of_shares_8" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="share_value_8" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="total_share_8" readonly="1" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-center"><field name="signature_include_8" nolabel="1" readonly="not shareholder_8"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><field name="shareholder_9" nolabel="1" class="w-100"/></td>
+                                                        <td><field name="nationality_9" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="number_of_shares_9" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="share_value_9" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="total_share_9" readonly="1" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-center"><field name="signature_include_9" nolabel="1" readonly="not shareholder_9"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><field name="shareholder_10" nolabel="1" class="w-100"/></td>
+                                                        <td><field name="nationality_10" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="number_of_shares_10" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="share_value_10" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-end"><field name="total_share_10" readonly="1" nolabel="1" class="w-100"/></td>
+                                                        <td class="text-center"><field name="signature_include_10" nolabel="1" readonly="not shareholder_10"/></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </group>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button name="action_generate_docx" type="object" string="Generate LOR" class="btn btn-primary"/>
+                    <button string="Cancel" class="btn btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="lor_report_wizard_action" model="ir.actions.act_window">
+        <field name="name">Generate LOR</field>
+        <field name="res_model">lor.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'form_view_initial_mode': 'edit', 'dialog_size': 'extra-large'}</field>
+    </record>
+
+    <record id="lor_report_menu" model="ir.ui.menu">
+        <field name="name">Letter of Representation</field>
+        <field name="active" eval="False"/>
+    </record>
+
+    <menuitem id="lor_report_generate_menu"
+              name="Generate LOR"
+              parent="accountant.menu_accounting"
+              action="lor_report_wizard_action"
+              sequence="96"/>
+
+    <function model="lor.report.wizard" name="_sync_generate_lor_menu_parent"/>
+</odoo>

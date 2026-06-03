@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_account_bank_recode_wizard_form" model="ir.ui.view">
+            <field name="name">account.bank.recode.wizard.form</field>
+            <field name="model">account.bank.recode.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Recode Transactions">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>Recode Bank Transactions</h1>
+                            <div class="text-muted">
+                                Update the account or label on the selected bank transactions.
+                            </div>
+                        </div>
+                        <group string="Selection Summary" col="3">
+                            <field name="line_count" readonly="1"/>
+                            <field name="applicable_count" readonly="1"/>
+                            <field name="ignored_count" readonly="1"/>
+                        </group>
+                        <div class="alert alert-warning" role="alert" invisible="not selection_note">
+                            <field name="selection_note" nolabel="1" readonly="1" class="oe_inline"/>
+                        </div>
+                        <group string="Recode Options" col="2">
+                            <group>
+                                <field name="transaction_state" widget="radio" invisible="recode_target == 'unreconcile'"/>
+                                <field name="recode_target" widget="radio"/>
+                            </group>
+                            <group>
+                                <field
+                                    name="mode"
+                                    widget="radio"
+                                    invisible="recode_target != 'account' or transaction_state != 'reconciled'"
+                                />
+                                <field
+                                    name="target_account_id"
+                                    invisible="recode_target != 'account' or (transaction_state == 'reconciled' and mode != 'all')"
+                                    required="recode_target == 'account' and (transaction_state == 'unreconciled' or mode == 'all')"
+                                    options="{'no_create': True, 'no_open': True}"
+                                />
+                                <field
+                                    name="new_label"
+                                    invisible="recode_target != 'label'"
+                                    required="recode_target == 'label'"
+                                />
+                            </group>
+                        </group>
+                        <div class="alert alert-info" role="alert" invisible="recode_target != 'unreconcile'">
+                            <strong>Unreconcile:</strong> This will remove the reconciliation and move counterpart journal items back to the suspense account. The transactions will need to be reconciled again.
+                        </div>
+                        <separator
+                            string="Per-Line Account Mapping"
+                            invisible="recode_target != 'account' or transaction_state != 'reconciled' or mode != 'per_line'"
+                        />
+                        <div
+                            class="text-muted"
+                            invisible="recode_target != 'account' or transaction_state != 'reconciled' or mode != 'per_line'"
+                        >
+                            Choose the replacement account for each counterpart journal item.
+                        </div>
+                        <field
+                            name="line_ids"
+                            nolabel="1"
+                            invisible="recode_target != 'account' or transaction_state != 'reconciled' or mode != 'per_line'"
+                            force_save="1"
+                        >
+                            <list editable="bottom" create="0" delete="0">
+                                <field name="date"/>
+                                <field name="statement_line_id" force_save="1"/>
+                                <field name="move_line_id" column_invisible="1" force_save="1"/>
+                                <field name="label"/>
+                                <field name="current_account_id"/>
+                                <field name="amount" sum="Total"/>
+                                <field name="new_account_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                            </list>
+                        </field>
+                    </sheet>
+                    <footer>
+                        <button name="action_recode" string="Recode" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_open_bank_recode_wizard" model="ir.actions.act_window">
+            <field name="name">Recode Transactions</field>
+            <field name="res_model">account.bank.recode.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_account_bank_recode_wizard_form"/>
+            <field name="target">new</field>
+            <field name="group_ids" eval="[Command.link(ref('account.group_account_user'))]"/>
+        </record>
+    </data>
+</odoo>

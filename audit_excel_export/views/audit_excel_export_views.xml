@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_audit_excel_export_wizard_form" model="ir.ui.view">
+            <field name="name">audit.excel.export.wizard.form</field>
+            <field name="model">audit.excel.export.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Audit Excel Export">
+                    <sheet>
+                        <group>
+                            <group string="Core Filters">
+                                <field name="use_previous_settings"/>
+                                <field name="export_sheet_key"/>
+                                <field name="company_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
+                                <field name="date_from"/>
+                                <field name="date_to" string="Year End Date"/>
+                                <field name="year_span"/>
+                                <field name="balance_sheet_date_mode"/>
+                                <field name="prior_year_mode"
+                                       invisible="year_span == '1y'"/>
+                                <field name="prior_balance_sheet_date_mode"
+                                       invisible="year_span == '1y'"/>
+                                <field name="prior_date_start"
+                                       invisible="year_span == '1y' or prior_year_mode != 'manual'"
+                                       required="year_span == '2y' and prior_year_mode == 'manual'"/>
+                                <field name="prior_date_end"
+                                       invisible="year_span == '1y' or prior_year_mode != 'manual'"
+                                       required="year_span == '2y' and prior_year_mode == 'manual'"/>
+                            </group>
+                            <group string="Report Behavior">
+                                <field name="include_draft_entries"/>
+                                <field name="unfold_all"/>
+                                <field name="hide_zero_lines"/>
+                                <field name="include_dynamic_columns"/>
+                                <field name="include_refunds"/>
+                                <field name="invoice_bill_scope"/>
+                                <field name="aging_based_on"/>
+                                <field name="aging_interval"/>
+                                <field name="show_currency"/>
+                                <field name="show_account"/>
+                            </group>
+                        </group>
+                        <group string="Advanced JSON Overrides">
+                            <field name="gl_options_json" placeholder="{&quot;unfold_all&quot;: true}"/>
+                            <field name="aged_receivable_options_json" placeholder="{&quot;show_currency&quot;: true}"/>
+                            <field name="aged_payable_options_json" placeholder="{&quot;show_currency&quot;: true}"/>
+                        </group>
+                        <group string="Last Generated File" invisible="not file_data">
+                            <field name="file_name" readonly="1"/>
+                            <field name="file_data" filename="file_name" readonly="1"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="action_export_xlsx" type="object" string="Export to Excel" class="btn btn-primary"/>
+                        <button string="Close" class="btn btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_audit_excel_export_wizard" model="ir.actions.act_window">
+            <field name="name">Audit Excel Export</field>
+            <field name="res_model">audit.excel.export.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_audit_excel_export_wizard_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_audit_excel_export"
+                  name="Audit Excel Export"
+                  parent="Audit_Report.account_report_menu"
+                  action="action_audit_excel_export_wizard"
+                  sequence="110"/>
+    </data>
+</odoo>
