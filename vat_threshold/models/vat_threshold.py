@@ -13,13 +13,11 @@ class VatThreshold(models.Model):
     _name = 'vat.threshold'
     _description = 'VAT Threshold Management'
     _order = 'last_check_date desc'
-    _sql_constraints = [
-        (
-            'vat_threshold_company_unique',
-            'unique(company_id)',
-            'A VAT threshold record already exists for this company.',
-        ),
-    ]
+
+    _vat_threshold_company_unique = models.Constraint(
+        'unique(company_id)',
+        'A VAT threshold record already exists for this company.',
+    )
 
     currency_id = fields.Many2one(
         'res.currency',

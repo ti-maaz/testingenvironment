@@ -8,7 +8,7 @@ class AccountAccount(models.Model):
     def _check_custom_module_manage_coa_permission(self, operation_label):
         if self.env.context.get('skip_custom_module_manage_coa_check'):
             return
-        if self.env.is_superuser() or self.env.user.has_group(
+        if self.env.is_superuser() or self.env.is_admin() or self.env.user.has_group(
             'custom_module_permissions.group_custom_module_manage_chart_of_accounts'
         ):
             return

@@ -52,7 +52,7 @@ class AccountBankRecodeWizard(models.TransientModel):
         required=True,
     )
     line_count = fields.Integer(
-        string='Selected Transactions',
+        string='Transaction Count',
         compute='_compute_line_count',
     )
     applicable_count = fields.Integer(
