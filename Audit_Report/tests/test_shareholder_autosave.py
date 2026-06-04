@@ -31,7 +31,7 @@ class TestAuditReportShareholderAutosave(TransactionCase):
             'email': f'{login}@example.com',
             'company_id': self.company.id,
             'company_ids': [(6, 0, self.company.ids)],
-            'groups_id': [(6, 0, [self.env.ref('base.group_user').id])],
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])],
         })
 
     def test_previous_settings_are_shared_across_users_for_company(self):
