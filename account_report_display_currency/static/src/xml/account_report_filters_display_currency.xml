@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+    <t
+        t-name="account_report_display_currency.AccountReportFiltersDisplayCurrency"
+        t-inherit="account_reports.AccountReportFiltersCustomizable"
+        t-inherit-mode="extension"
+    >
+        <xpath expr="//div[@id='filter_rounding_unit']" position="after">
+            <t
+                t-if="'display_currency_options' in controller.cachedFilterOptions and controller.cachedFilterOptions.display_currency_options.length > 0"
+            >
+                <div id="filter_display_currency">
+                    <Dropdown>
+                        <button class="btn btn-secondary">
+                            <t t-out="'In ' + controller.cachedFilterOptions.display_currency_name"/>
+                        </button>
+
+                        <t t-set-slot="content">
+                            <t
+                                t-foreach="controller.cachedFilterOptions.display_currency_options"
+                                t-as="currency"
+                                t-key="currency.id"
+                            >
+                                <DropdownItem
+                                    class="{ 'selected': controller.cachedFilterOptions.display_currency_id === currency.id }"
+                                    onSelected="() => this.filterClicked({ optionKey: 'display_currency_id', optionValue: currency.id, reload: true })"
+                                >
+                                    <t t-out="currency.name"/>
+                                </DropdownItem>
+                            </t>
+                        </t>
+                    </Dropdown>
+                </div>
+            </t>
+        </xpath>
+    </t>
+</templates>
