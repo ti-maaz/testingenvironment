@@ -1,3 +1,6 @@
+# Pending modules (not ready yet)
+vendor_bill_import_tax_percent/
+
 # Python
 __pycache__/
 *.py[cod]
