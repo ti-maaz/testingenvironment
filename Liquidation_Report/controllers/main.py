@@ -148,6 +148,20 @@ class LiquidationReportController(http.Controller):
             run_properties.remove(highlight)
 
     @staticmethod
+    def _strip_all_highlights(root):
+        """Remove every w:highlight element anywhere in the tree.
+
+        Per-run removal misses highlights carried by the paragraph-mark run
+        properties (w:pPr/w:rPr/w:highlight), so sweep the whole document to
+        guarantee no yellow placeholder shading survives.
+        """
+        highlight_tag = f'{{{W_NS}}}highlight'
+        for parent in root.iter():
+            for child in list(parent):
+                if child.tag == highlight_tag:
+                    parent.remove(child)
+
+    @staticmethod
     def _set_text_node_value(text_node, value):
         value = str(value or '')
         if value and (value[:1].isspace() or value[-1:].isspace()):
@@ -285,6 +299,7 @@ class LiquidationReportController(http.Controller):
                 cls._apply_ifza_paragraph_replacements(paragraph, values)
             else:
                 cls._apply_all_freezones_paragraph_replacements(paragraph, values)
+        cls._strip_all_highlights(root)
         return ET.tostring(root, encoding='utf-8', xml_declaration=True)
 
     @classmethod
