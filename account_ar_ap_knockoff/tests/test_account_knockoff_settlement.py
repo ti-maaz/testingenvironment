@@ -377,9 +377,16 @@ class TestAccountKnockoffSettlement(AccountTestInvoicingCommon):
             invoice_date='2026-05-01',
         )
 
-        # Create settlement in EUR
-        settlement = self._create_settlement(invoice, bill)
-        settlement.currency_id = currency_eur.id
+        # Create settlement in EUR from the start so _sync_amount_from_documents uses EUR
+        settlement = self.env['account.knockoff.settlement'].create({
+            'company_id': self.company.id,
+            'journal_id': self.misc_journal.id,
+            'settlement_type': 'same_partner',
+            'settlement_date': fields.Date.to_date('2026-05-05'),
+            'currency_id': currency_eur.id,
+            'customer_invoice_ids': [Command.set(invoice.ids)],
+            'vendor_bill_ids': [Command.set(bill.ids)],
+        })
         
         # In EUR, invoice residual should be 100.0 (110 USD / 1.1)
         self._assert_open_amount(settlement, invoice, 'customer_invoice', 100.0)
