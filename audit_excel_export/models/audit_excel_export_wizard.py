@@ -4909,11 +4909,17 @@ class AuditExcelExportWizard(NativeTrialBalanceMixin, models.TransientModel):
 
     @staticmethod
     def _build_flat_prefix_totals(rows):
-        """Build a single dict mapping every prefix (2/4/6/8-digit) to its balance sum."""
+        """Build a dict mapping every prefix (2/4/6/8-digit) to its period movement sum.
+
+        These are P&L-style period totals, so use the period movement explicitly
+        rather than the (possibly cumulative) ``balance`` field. Movement rows set
+        ``balance == movement_balance``, so this is unchanged for real data while
+        being robust to rows that also carry an ending balance.
+        """
         totals = {}
         for row in (rows or []):
             code = row.get('code') or ''
-            balance = row.get('balance', 0.0)
+            balance = row.get('movement_balance', row.get('balance', 0.0))
             for length in (2, 4, 6, 8):
                 if len(code) >= length:
                     key = code[:length]
