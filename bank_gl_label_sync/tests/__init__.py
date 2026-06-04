@@ -1,1 +1,0 @@
-from . import test_bank_gl_label_sync

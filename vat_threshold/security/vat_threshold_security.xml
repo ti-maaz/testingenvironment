@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <record id="vat_threshold_active_company_rule" model="ir.rule">
-        <field name="name">VAT Threshold Active Company</field>
-        <field name="model_id" ref="model_vat_threshold"/>
-        <field name="domain_force">[('company_id', 'in', user.company_ids.ids)]</field>
-        <field name="groups" eval="[(4, ref('vat_threshold.group_custom_module_vat_threshold'))]"/>
-    </record>
-</odoo>
