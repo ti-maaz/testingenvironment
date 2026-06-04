@@ -1529,7 +1529,7 @@ class TestAuditReportNoteRendering(TransactionCase):
             )
 
             self.assertIn('intangible-note-block', html)
-            self.assertIn('Software & Licences', html)
+            self.assertIn('Software &amp; Licences', html)
             self.assertIn('Accumulated amortization', html)
             self.assertIn('Amortization for the year', html)
             self.assertIn('Carrying value as at 31 December 2024', html)
