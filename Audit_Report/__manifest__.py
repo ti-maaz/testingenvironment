@@ -11,7 +11,6 @@
     'license': 'LGPL-3',
     'depends': [
         'account_reports',
-        'account_accountant',
     ],
     'data': [
         'security/ir.model.access.csv',

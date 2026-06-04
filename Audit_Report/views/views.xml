@@ -517,7 +517,7 @@
         <!-- Menu Item under Accounting > Reporting -->
         <menuitem id="menu_custom_modules"
                   name="Custom Modules"
-                  parent="accountant.menu_accounting"
+                  parent="account.menu_finance_entries"
                   sequence="95"/>
 
         <menuitem id="account_report_menu"
