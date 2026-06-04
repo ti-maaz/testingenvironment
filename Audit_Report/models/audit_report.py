@@ -4981,7 +4981,6 @@ class AuditReport(models.TransientModel):
             'Long term investment': ['1104', '1108'],
             'Long term deposits': ['1105'],
             'Long term loans receivable': ['1106'],
-            'Intangible assets': ['1107'],
             'Deferred tax': ['1109'],
             'Investing activities': ['1110'],
             'Non current assets': ['1111'],
