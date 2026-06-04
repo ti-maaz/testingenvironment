@@ -728,7 +728,11 @@ class AuditExcelExportWizard(NativeTrialBalanceMixin, models.TransientModel):
     def _stage_b_create_workbook_and_write_data_sheets(self, stage_a_payload):
         self._ensure_openpyxl_available()
 
-        workbook, template_sheet_map = self._load_formatted_template_workbook()
+        # Build the template-backed sheets in code rather than loading the on-disk
+        # .xlsx. The code builder is the source of truth for layout/formatting (and
+        # stays in sync with the statement<->Trial Balance linking stage); the xlsx
+        # file is kept only as a visual reference and can drift when edited offline.
+        workbook, template_sheet_map = self._build_formatted_template_workbook()
 
         used_sheet_names = set(workbook.sheetnames)
         for insert_index, payload in enumerate(stage_a_payload['data_sheets']):
