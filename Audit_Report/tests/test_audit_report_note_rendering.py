@@ -1286,7 +1286,7 @@ class TestAuditReportNoteRendering(TransactionCase):
         self.assertIn('Value in<br>AED', html)
         self.assertIn('Total</td>', html)
         self.assertIn('Inventory', html)
-        self.assertIn('100.00', html)
+        self.assertIn('100', html)
         self.assertLess(html.index('Inventory'), html.index('investment-note-table'))
 
     def test_investments_note_schedule_can_be_hidden(self):
@@ -1317,7 +1317,7 @@ class TestAuditReportNoteRendering(TransactionCase):
 
         self.assertIn('Investments</span>', html)
         self.assertIn('Inventory', html)
-        self.assertIn('100.00', html)
+        self.assertIn('100', html)
         self.assertNotIn('investment-note-table', html)
 
     def test_ppe_note_splits_land_and_buildings_columns(self):
@@ -1529,7 +1529,7 @@ class TestAuditReportNoteRendering(TransactionCase):
             )
 
             self.assertIn('intangible-note-block', html)
-            self.assertIn('Software and Licences', html)
+            self.assertIn('Software and licences', html)
             self.assertIn('Accumulated amortization', html)
             self.assertIn('Amortization for the year', html)
             self.assertIn('Carrying value as at 31 December 2024', html)

@@ -3299,6 +3299,14 @@
 			    <span class="note-title-text">Financial assets and liabilities</span>
 			  </p>
 			  <p class="gap note-section-intro">The item consists of the following:</p>
+			  {% set current_group_totals = current_group_totals|default({}, true) %}
+			  {% set prev_group_totals = prev_group_totals|default({}, true) %}
+			  {% set fa_other_receivables_current = fa_other_receivables_current|default(0.0, true) %}
+			  {% set fa_note_vat_receivable_current = fa_note_vat_receivable_current|default(0.0, true) %}
+			  {% set fa_other_receivables_prev = fa_other_receivables_prev|default(0.0, true) %}
+			  {% set fa_note_vat_receivable_prev = fa_note_vat_receivable_prev|default(0.0, true) %}
+			  {% set fa_note_vat_payable_current = fa_note_vat_payable_current|default(0.0, true) %}
+			  {% set fa_note_vat_payable_prev = fa_note_vat_payable_prev|default(0.0, true) %}
 			  {% set fa_accounts_receivable = current_group_totals.get('1202', 0.0) %}
 			  {% set fa_accounts_receivable_prev = prev_group_totals.get('1202', 0.0) if show_prior_year else 0.0 %}
 			  {% set fa_other_receivables = (fa_other_receivables_current + current_group_totals.get('1205', 0.0)) - fa_note_vat_receivable_current %}
