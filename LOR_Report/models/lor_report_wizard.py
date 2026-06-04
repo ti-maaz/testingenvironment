@@ -81,7 +81,10 @@ class LorReportWizard(models.TransientModel):
     share_capital_paid_status = fields.Selection(
         SHARE_CAPITAL_PAID_STATUS_SELECTION,
         string='Share capital status',
-        default='paid',
+        compute='_compute_share_capital_paid_status',
+        inverse='_inverse_share_capital_paid_status',
+        store=False,
+        readonly=False,
     )
     company_license_number = fields.Char(string='Company License Number', compute='_compute_company_exte_scalar_fields', inverse='_inverse_company_license_number', store=False)
     trade_license_activities = fields.Text(string='Trade License Activities', compute='_compute_company_exte_scalar_fields', inverse='_inverse_trade_license_activities', store=False)
@@ -185,6 +188,23 @@ class LorReportWizard(models.TransientModel):
         for rec in self:
             if hasattr(rec.company_id, 'free_zone'):
                 rec.company_id.free_zone = rec.company_free_zone
+
+    @api.depends('audit_report_id.share_capital_paid_status', 'company_id.company_share')
+    def _compute_share_capital_paid_status(self):
+        for wizard in self:
+            wizard.share_capital_paid_status = (
+                (wizard.audit_report_id.share_capital_paid_status if wizard.audit_report_id else False)
+                or (wizard.company_id.company_share if wizard.company_id else False)
+                or 'paid'
+            )
+
+    def _inverse_share_capital_paid_status(self):
+        for wizard in self:
+            status = wizard.share_capital_paid_status or 'paid'
+            if wizard.company_id and hasattr(wizard.company_id, 'company_share'):
+                wizard.company_id.company_share = status
+            if wizard.audit_report_id:
+                wizard.audit_report_id.share_capital_paid_status = status
 
     @api.depends('company_id')
     def _compute_company_exte_scalar_fields(self):
@@ -549,6 +569,7 @@ class LorReportWizard(models.TransientModel):
         return result
 
     @api.depends(
+        'audit_report_id.lor_manager_name_display',
         'shareholder_1',
         'shareholder_2',
         'shareholder_3',
@@ -587,6 +608,11 @@ class LorReportWizard(models.TransientModel):
 
     def _get_lor_manager_names(self):
         self.ensure_one()
+        # When linked to an audit report, mirror its manager names: the audit
+        # wizard owns the live signature flags/shareholders, so the LOR wizard's
+        # own (possibly stale) copies should not override it.
+        if self.audit_report_id:
+            return self.audit_report_id.lor_manager_name_display or ''
         manager_names = []
         for index in range(1, 11):
             if not getattr(self, f'signature_include_{index}', False):

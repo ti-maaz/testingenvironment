@@ -109,7 +109,9 @@ class TestLorReportDocx(TransactionCase):
         self.assertIn('Page Numbers (Bottom of Page)', footer_xml)
         self.assertIn('<w:pStyle w:val="Footer"/>', footer_xml)
         self.assertNotIn(' NUMPAGES ', footer_xml)
-        self.assertNotIn('Page ', footer_xml)
+        # 'Page Numbers (Bottom of Page)' metadata legitimately contains 'Page ';
+        # only assert there is no visible literal 'Page ' run text in the footer.
+        self.assertNotIn('<w:t>Page ', footer_xml)
         self.assertNotIn(' of ', footer_xml)
         self.assertIn('w:fldCharType="begin" w:dirty="true"', footer_xml)
         self.assertNotIn('<w:pict>', footer_xml)
@@ -144,7 +146,9 @@ class TestLorReportDocx(TransactionCase):
         self.assertIn('\\* MERGEFORMAT', footer_xml)
         self.assertIn('<w:pStyle w:val="Footer"/>', footer_xml)
         self.assertNotIn(' NUMPAGES ', footer_xml)
-        self.assertNotIn('Page ', footer_xml)
+        # 'Page Numbers (Bottom of Page)' metadata legitimately contains 'Page ';
+        # only assert there is no visible literal 'Page ' run text in the footer.
+        self.assertNotIn('<w:t>Page ', footer_xml)
         self.assertNotIn(' of ', footer_xml)
         self.assertNotIn('<w:pict>', footer_xml)
         self.assertNotIn('<v:rect', footer_xml)
