@@ -120,6 +120,7 @@ class AccountKnockoffSettlement(models.Model):
     amount = fields.Monetary(
         string='Knock-Off Amount',
         required=True,
+        default=0.0,
         currency_field='currency_id',
         tracking=True,
     )
