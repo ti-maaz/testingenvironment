@@ -2375,6 +2375,11 @@ class AuditReport(models.TransientModel):
             ('company_license_number', _("COMPANY LICENSE NUMBER REQUIRED"), _("Company License Number")),
             ('trade_license_activities', _("TRADE LICENSE NUMBER REQUIRED"), _("Trade License Activities")),
             ('incorporation_date', _("CORPORATE INCORPORATION NUMBER REQUIRED"), _("Company Incorporation Date")),
+            (
+                'corporate_tax_registration_number',
+                _("CORPORATE TAX REGISTRATION NUMBER REQUIRED"),
+                _("Corporate Tax Registration Number"),
+            ),
             ('corporate_tax_start_date', _("CORPORATE TAX START DATE REQUIRED"), _("Corporate Tax Start Date")),
             ('corporate_tax_end_date', _("CORPORATE TAX END DATE REQUIRED"), _("Corporate Tax End Date")),
             (
@@ -2544,7 +2549,19 @@ class AuditReport(models.TransientModel):
             show_prior_year = not period_category.endswith('_1y')
         if not show_prior_year:
             return False
-        return fields.Date.to_date(self.soce_prior_opening_label_date) if self.soce_prior_opening_label_date else False
+        if self.soce_prior_opening_label_date:
+            return fields.Date.to_date(self.soce_prior_opening_label_date)
+        # Fallback: derive the prior period opening (start) date so downstream
+        # calculations still have a usable date when the manual SOCE label date
+        # is empty. The displayed first-balance label stays manual-only.
+        if prior_year_mode is None:
+            prior_year_mode = self.prior_year_mode
+        if prior_year_mode == 'manual' and prior_date_start:
+            return fields.Date.to_date(prior_date_start)
+        effective_date_start = date_start or self.date_start
+        if effective_date_start:
+            return fields.Date.to_date(effective_date_start) - relativedelta(years=1)
+        return False
 
     @api.depends(
         'audit_period_category',
@@ -2559,7 +2576,8 @@ class AuditReport(models.TransientModel):
                 continue
 
             record.soce_warning_message = _(
-                "SOCE first balance date is empty; set it manually to display the first balance label."
+                "SOCE first balance date is empty; a fallback date (prior period opening) "
+                "is used for calculations — set it manually to display the first balance label."
             )
 
     @api.depends(
@@ -6036,8 +6054,10 @@ class AuditReport(models.TransientModel):
         )
         prior_opening_group_totals = dict(prior_opening_group_totals)
         prior_opening_group_totals['2204'] = _corporate_tax_liability_total(prior_opening_prefix_totals)
+        # The first-balance label is manual-only: it uses the raw wizard date and
+        # stays blank when unset, even though periods may carry a fallback date.
         soce_prior_opening_label_date = (
-            periods.get('soce_prior_opening_label_date') if show_prior_year else False
+            self.soce_prior_opening_label_date if show_prior_year else False
         )
 
         ###### Variables for Cash Flow Statement ######
