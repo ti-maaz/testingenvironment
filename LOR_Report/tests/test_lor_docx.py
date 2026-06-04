@@ -1,6 +1,7 @@
 import re
 from io import BytesIO
 from unittest.mock import patch
+from xml.etree import ElementTree as ET
 from zipfile import ZipFile
 
 from odoo.tests import TransactionCase, tagged
@@ -13,6 +14,14 @@ from odoo.addons.LOR_Report.models.res_company import get_default_lor_css_source
 
 @tagged('post_install', '-at_install')
 class TestLorReportDocx(TransactionCase):
+    @staticmethod
+    def _visible_footer_texts(footer_xml):
+        """Return only the visible <w:t> run text from a footer, excluding
+        Word metadata such as the 'Page Numbers (Bottom of Page)' gallery name."""
+        root = ET.fromstring(footer_xml)
+        ns = {'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
+        return ''.join(node.text or '' for node in root.findall('.//w:t', ns))
+
     def test_lor_template_render_accepts_extra_main_items_keyword(self):
         controller = LorReportController()
         html = '<html><body><ol class="list-level-0"><li>Base item</li></ol></body></html>'
@@ -109,10 +118,13 @@ class TestLorReportDocx(TransactionCase):
         self.assertIn('Page Numbers (Bottom of Page)', footer_xml)
         self.assertIn('<w:pStyle w:val="Footer"/>', footer_xml)
         self.assertNotIn(' NUMPAGES ', footer_xml)
-        # 'Page Numbers (Bottom of Page)' metadata legitimately contains 'Page ';
-        # only assert there is no visible literal 'Page ' run text in the footer.
-        self.assertNotIn('<w:t>Page ', footer_xml)
-        self.assertNotIn(' of ', footer_xml)
+        # The footer carries Word metadata ('Page Numbers (Bottom of Page)') that
+        # contains both 'Page ' and ' of '; assert only on the visible run text,
+        # which should be just the page number, not 'Page 1 of N'.
+        visible_footer_text = self._visible_footer_texts(footer_xml)
+        self.assertNotIn('Page ', visible_footer_text)
+        self.assertNotIn(' of ', visible_footer_text)
+        self.assertIn('1', visible_footer_text)
         self.assertIn('w:fldCharType="begin" w:dirty="true"', footer_xml)
         self.assertNotIn('<w:pict>', footer_xml)
         self.assertNotIn('<v:rect', footer_xml)
@@ -146,10 +158,11 @@ class TestLorReportDocx(TransactionCase):
         self.assertIn('\\* MERGEFORMAT', footer_xml)
         self.assertIn('<w:pStyle w:val="Footer"/>', footer_xml)
         self.assertNotIn(' NUMPAGES ', footer_xml)
-        # 'Page Numbers (Bottom of Page)' metadata legitimately contains 'Page ';
-        # only assert there is no visible literal 'Page ' run text in the footer.
-        self.assertNotIn('<w:t>Page ', footer_xml)
-        self.assertNotIn(' of ', footer_xml)
+        # The footer carries Word metadata ('Page Numbers (Bottom of Page)') that
+        # contains both 'Page ' and ' of '; assert only on the visible run text.
+        visible_footer_text = self._visible_footer_texts(footer_xml)
+        self.assertNotIn('Page ', visible_footer_text)
+        self.assertNotIn(' of ', visible_footer_text)
         self.assertNotIn('<w:pict>', footer_xml)
         self.assertNotIn('<v:rect', footer_xml)
         self.assertNotIn('<w:textAlignment w:val="bottom"/>', footer_xml)
