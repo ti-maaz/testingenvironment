@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+    <t
+        t-name="account_bank_recode.BankRecButtonListPatch"
+        t-inherit="account_accountant.BankRecButtonList"
+        t-inherit-mode="extension"
+    >
+        <xpath expr="//DropdownItem[@onSelected.bind='deleteTransaction']" position="before">
+            <DropdownItem
+                class="'btn btn-link'"
+                onSelected.bind="openRecodeWizard"
+            >
+                Recode
+            </DropdownItem>
+        </xpath>
+    </t>
+</templates>
