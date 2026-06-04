@@ -204,10 +204,10 @@ class TestAccountBankRecode(TestBankRecWidgetCommon):
         statement_line.invalidate_recordset(['is_reconciled'])
         _liquidity_lines, suspense_lines, other_lines = statement_line._seek_for_lines()
         self.assertFalse(statement_line.is_reconciled)
-        # Counterpart line should now be in suspense account
-        self.assertEqual(other_lines.account_id, suspense_account)
-        # No suspense lines should exist after unreconcile
-        self.assertFalse(suspense_lines)
+        # Counterpart line should now be back in suspense account
+        self.assertEqual(suspense_lines.account_id, suspense_account)
+        # No other (reconciled counterpart) lines should remain
+        self.assertFalse(other_lines)
 
     def test_unreconcile_bulk_transactions(self):
         """Test that unreconcile works for multiple transactions at once."""
@@ -232,7 +232,7 @@ class TestAccountBankRecode(TestBankRecWidgetCommon):
             statement_line.invalidate_recordset(['is_reconciled'])
             _liquidity_lines, suspense_lines, other_lines = statement_line._seek_for_lines()
             self.assertFalse(statement_line.is_reconciled)
-            self.assertEqual(other_lines.account_id, suspense_account)
+            self.assertEqual(suspense_lines.account_id, suspense_account)
 
     def test_unreconcile_requires_reconciled_transactions(self):
         """Test that unreconcile only works on reconciled transactions."""
@@ -274,7 +274,7 @@ class TestAccountBankRecode(TestBankRecWidgetCommon):
         reconciled_line.invalidate_recordset(['is_reconciled'])
         _liquidity_lines, suspense_lines, other_lines = reconciled_line._seek_for_lines()
         self.assertFalse(reconciled_line.is_reconciled)
-        self.assertEqual(other_lines.account_id, suspense_account)
+        self.assertEqual(suspense_lines.account_id, suspense_account)
 
         # Unreconciled line should remain unchanged
         unreconciled_line.invalidate_recordset(['is_reconciled'])

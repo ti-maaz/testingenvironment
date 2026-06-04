@@ -52,7 +52,7 @@ class AccountBankRecodeWizard(models.TransientModel):
         required=True,
     )
     line_count = fields.Integer(
-        string='Selected Transactions',
+        string='Number of Transactions',
         compute='_compute_line_count',
     )
     applicable_count = fields.Integer(
@@ -330,13 +330,13 @@ class AccountBankRecodeWizard(models.TransientModel):
         statement_lines = self.env['account.bank.statement.line'].browse(list(changes_by_statement_line.keys()))
         for statement_line in statement_lines:
             changes = changes_by_statement_line[statement_line.id]
-            changes_text = '\n'.join(
-                _('%(label)s: %(old)s -> %(new)s',
-                  label=change['label'],
-                  old=change['old_account'],
-                  new=change['new_account'])
-                for change in changes
-            )
+            change_lines = []
+            for change in changes:
+                change_lines.append(_('%(label)s: %(old)s -> %(new)s',
+                    label=change['label'],
+                    old=change['old_account'],
+                    new=change['new_account']))
+            changes_text = '\n'.join(change_lines)
             statement_line.message_post(body=_(
                 'Recoded by %(user)s on %(date)s\n%(changes)s',
                 user=self.env.user.display_name,
