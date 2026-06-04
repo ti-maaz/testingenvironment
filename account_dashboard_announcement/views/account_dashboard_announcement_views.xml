@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_dashboard_announcement_list" model="ir.ui.view">
+        <field name="name">account.dashboard.announcement.list</field>
+        <field name="model">account.dashboard.announcement</field>
+        <field name="arch" type="xml">
+            <list string="Dashboard Announcements" decoration-muted="not active" default_order="sequence asc, id desc">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="style_type"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="dismissible"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_account_dashboard_announcement_form" model="ir.ui.view">
+        <field name="name">account.dashboard.announcement.form</field>
+        <field name="model">account.dashboard.announcement</field>
+        <field name="arch" type="xml">
+            <form string="Dashboard Announcement">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="style_type"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                            <field name="dismissible"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="message" nolabel="1" placeholder="Announcement message..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_account_dashboard_announcement_search" model="ir.ui.view">
+        <field name="name">account.dashboard.announcement.search</field>
+        <field name="model">account.dashboard.announcement</field>
+        <field name="arch" type="xml">
+            <search string="Dashboard Announcements">
+                <field name="name"/>
+                <field name="message"/>
+                <field name="style_type"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]" context="{'active_test': False}"/>
+                <separator/>
+                <filter string="Info" name="style_info" domain="[('style_type', '=', 'info')]"/>
+                <filter string="Warning" name="style_warning" domain="[('style_type', '=', 'warning')]"/>
+                <filter string="Success" name="style_success" domain="[('style_type', '=', 'success')]"/>
+                <filter string="Danger" name="style_danger" domain="[('style_type', '=', 'danger')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_account_dashboard_announcement" model="ir.actions.act_window">
+        <field name="name">Dashboard Announcements</field>
+        <field name="res_model">account.dashboard.announcement</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_account_dashboard_announcement_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create an announcement for the Accounting dashboard.
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_account_dashboard_announcement"
+        name="Dashboard Announcements"
+        parent="account.menu_finance_configuration"
+        action="action_account_dashboard_announcement"
+        sequence="5"
+        groups="base.group_system"/>
+</odoo>
