@@ -1447,6 +1447,10 @@ class AuditExcelExportWizard(NativeTrialBalanceMixin, models.TransientModel):
         return {}
 
     def _extract_tb_data_rows_from_worksheet(self, worksheet):
+        if worksheet is None:
+            # Prior/opening Trial Balance snapshots can be empty (no source sheet);
+            # treat a missing worksheet as "no rows" rather than crashing.
+            return {}, [], None
         layout = self._detect_trial_balance_layout(worksheet)
         if not layout:
             return {}, [], None
@@ -3718,6 +3722,12 @@ class AuditExcelExportWizard(NativeTrialBalanceMixin, models.TransientModel):
 
         if overrides:
             options = self._deep_merge_dict(options, overrides)
+
+        if aged and isinstance(options.get('date'), dict) and options['date'].get('date_to'):
+            # Aged reports are an "as at" snapshot on a single date. Odoo's
+            # get_options normalizes single-mode date_from to the period start,
+            # so realign date_from to the year-end date_to.
+            options['date']['date_from'] = options['date']['date_to']
 
         options['report_id'] = report.id
         return options
