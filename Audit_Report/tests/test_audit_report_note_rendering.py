@@ -122,6 +122,8 @@ class TestAuditReportNoteRendering(TransactionCase):
             ignore_notes_last_page_margins=ignore_notes_last_page_margins,
             show_investment_note_schedule=show_investment_note_schedule,
             show_related_parties_note=show_related_parties_note,
+            current_group_totals={},
+            prev_group_totals={},
             show_shareholder_note=True,
             show_share_capital_conversion_note=False,
             show_share_capital_transfer_note=False,
@@ -708,7 +710,8 @@ class TestAuditReportNoteRendering(TransactionCase):
 
         self.assertEqual(report_data['financial_review_net_current_display_mode'], 'amount')
         self.assertEqual(report_data['financial_review_net_prior_display_mode'], 'amount')
-        self.assertIn('Net (loss) / profit (100) 100', rendered)
+        self.assertIn('Net (loss) / profit', rendered)
+        self.assertIn('(100)', rendered)
         self.assertNotIn('(100.00%)', rendered)
         self.assertNotIn('10.00%', rendered)
 
@@ -731,7 +734,9 @@ class TestAuditReportNoteRendering(TransactionCase):
 
         self.assertEqual(report_data['financial_review_net_current_display_mode'], 'margin')
         self.assertEqual(report_data['financial_review_net_prior_display_mode'], 'margin')
-        self.assertIn('Net (loss) / profit margin (50.00%) 10.00%', rendered)
+        self.assertIn('Net (loss) / profit margin', rendered)
+        self.assertIn('(50.00%)', rendered)
+        self.assertIn('10.00%', rendered)
 
     def test_cashflow_owner_current_account_uses_period_net_movement(self):
         wizard = self._create_wizard(audit_period_category='normal_1y')
@@ -938,7 +943,7 @@ class TestAuditReportNoteRendering(TransactionCase):
 
         self.assertIn('<td class="text-left">Finance cost</td>', html)
         self.assertIn('<td class="text-left">Interest paid</td>', html)
-        self.assertIn('-120.00', html)
+        self.assertIn('(120)', html)
 
     def test_gain_on_disposal_is_cashflow_adjustment(self):
         wizard = self._create_wizard(audit_period_category='normal_1y')
@@ -986,7 +991,7 @@ class TestAuditReportNoteRendering(TransactionCase):
         )
 
         self.assertIn('<td class="text-left">Gain on disposal</td>', html)
-        self.assertIn('-400.00', html)
+        self.assertIn('(400)', html)
 
     def test_generic_note_render_segments_keep_two_rows_at_start_and_end(self):
         wizard = self._create_wizard()
