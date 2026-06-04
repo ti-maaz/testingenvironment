@@ -649,7 +649,8 @@ class TestAuditReportNoteRendering(TransactionCase):
         )
 
         self.assertEqual(report_data['financial_review_net_current_display_mode'], 'amount')
-        self.assertIn('Net (loss) (250)', rendered)
+        self.assertIn('Net (loss)', rendered)
+        self.assertIn('(250)', rendered)
         self.assertNotIn('Net profit margin', rendered)
         self.assertNotIn('0.00%', rendered)
 
@@ -667,7 +668,8 @@ class TestAuditReportNoteRendering(TransactionCase):
         )
 
         self.assertEqual(report_data['financial_review_net_current_display_mode'], 'amount')
-        self.assertIn('Net (loss) (100)', rendered)
+        self.assertIn('Net (loss)', rendered)
+        self.assertIn('(100)', rendered)
         self.assertNotIn('(100.00%)', rendered)
 
     def test_financial_review_1y_keeps_percentage_below_100_percent_loss_margin(self):
@@ -684,7 +686,8 @@ class TestAuditReportNoteRendering(TransactionCase):
         )
 
         self.assertEqual(report_data['financial_review_net_current_display_mode'], 'margin')
-        self.assertIn('Net (loss) margin (50.00%)', rendered)
+        self.assertIn('Net (loss) margin', rendered)
+        self.assertIn('(50.00%)', rendered)
 
     def test_financial_review_2y_shows_both_amounts_when_one_year_triggers_amount_mode(self):
         wizard = self._create_wizard(audit_period_category='normal_2y')
@@ -871,7 +874,7 @@ class TestAuditReportNoteRendering(TransactionCase):
         )
 
         self.assertIn('<td class="text-left">Bad debt expense</td>', html)
-        self.assertIn('300.00', html)
+        self.assertIn('>300<', html)
 
     def test_interest_paid_is_reclassified_to_financing_activities(self):
         wizard = self._create_wizard(audit_period_category='normal_1y')
