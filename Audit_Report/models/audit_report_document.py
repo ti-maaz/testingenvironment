@@ -1059,13 +1059,14 @@ class AuditReportRevision(models.Model):
                 continue
             self._set_toc_row_page_range(row, '')
 
-    def _prepare_revision_html(self, html_content, refresh_toc=False):
+    def _prepare_revision_html(self, html_content, refresh_toc=False, validate_required_sections=True):
         root = self._parse_html(html_content)
         root = self._normalize_document_root(root)
         root = self._sanitize_root(root)
         self._normalize_cashflow_multiline_detail_rows(root)
         self._ensure_report_style_block(root)
-        self._validate_required_sections(root)
+        if validate_required_sections:
+            self._validate_required_sections(root)
         self._ensure_toc_table_structure(root)
 
         if refresh_toc:
@@ -1080,10 +1081,14 @@ class AuditReportRevision(models.Model):
 
         return self._serialize_document_html(root)
 
-    def prepare_edited_html_for_storage(self, html_content):
+    def prepare_edited_html_for_storage(self, html_content, validate_required_sections=True):
         self.ensure_one()
         self._ensure_active_company()
-        return self._prepare_revision_html(html_content or '', refresh_toc=False)
+        return self._prepare_revision_html(
+            html_content or '',
+            refresh_toc=False,
+            validate_required_sections=validate_required_sections,
+        )
 
     def _build_render_ready_html(self, refresh_toc=True):
         self.ensure_one()

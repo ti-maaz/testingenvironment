@@ -2728,8 +2728,10 @@ class AuditReport(models.TransientModel):
         return trial_balance_report.get_options({
             'selected_variant_id': trial_balance_report.id,
             'date': {
-                'date_from': date_start or False,
-                'date_to': date_end,
+                # Store ISO strings: these options are JSON-serialized and Odoo's
+                # report options use string dates, not Python date objects.
+                'date_from': fields.Date.to_string(date_start) if date_start else False,
+                'date_to': fields.Date.to_string(date_end) if date_end else False,
                 'mode': 'range',
                 'filter': 'custom',
             },
@@ -8506,7 +8508,12 @@ class AuditReport(models.TransientModel):
         if not html_with_style:
             raise ValidationError("Unable to render report HTML while applying revision changes.")
 
-        prepared_html = revision.prepare_edited_html_for_storage(html_with_style)
+        # HTML here is freshly rendered from our own report template, so the
+        # required-section check (meant for manual user edits) is not needed.
+        prepared_html = revision.prepare_edited_html_for_storage(
+            html_with_style,
+            validate_required_sections=False,
+        )
         tb_overrides_json = self._sync_tb_overrides_json()
         lor_extra_items_json = self._sync_lor_extra_items_json()
         target_revision, _save_state = revision.persist_session_revision_changes(
