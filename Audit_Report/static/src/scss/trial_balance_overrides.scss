@@ -1,0 +1,505 @@
+.o_dialog .modal .modal-dialog.modal-xl:has(.o_form_view.o_audit_report_wizard_form) {
+    width: 92vw;
+    max-width: 1320px;
+}
+
+.o_dialog .modal .modal-dialog.modal-xl:has(.o_form_view.o_audit_report_wizard_form .o_audit_tb_page.active) {
+    width: 92vw;
+    max-width: 1380px;
+}
+
+.o_dialog .modal .modal-dialog.modal-xl:has(.o_form_view.o_audit_report_wizard_form .o_audit_lor_page.active) {
+    width: 90vw;
+    max-width: 980px;
+}
+
+.o_dialog .modal .modal-dialog.modal-xl:has(.o_form_view.o_audit_report_wizard_form) .modal-content {
+    max-height: 88vh;
+}
+
+.o_dialog .modal .modal-dialog.modal-xl:has(.o_form_view.o_audit_report_wizard_form) .modal-body {
+    overflow-y: auto;
+}
+
+.o_dialog .modal .modal-dialog.modal-xl:has(.o_form_view.o_audit_report_wizard_form .o_audit_lor_page.active) .modal-content {
+    height: 82vh;
+    max-height: 860px;
+}
+
+.o_dialog .modal .modal-dialog.modal-xl:has(.o_form_view.o_audit_report_wizard_form .o_audit_lor_page.active) .modal-body {
+    overflow-y: auto;
+}
+
+.o_form_view.o_audit_report_wizard_form .o_form_sheet_bg {
+    max-width: none;
+    padding: 0 12px 12px;
+}
+
+.o_form_view .o_audit_tb_shell {
+    gap: 14px;
+}
+
+.o_form_view .o_audit_tb_card {
+    border: 1px solid #d8e1ea;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #fbfdff 0%, #f5f8fc 100%);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+    padding: 12px 14px;
+}
+
+.o_form_view .o_audit_tb_section {
+    margin-top: 2px;
+}
+
+.o_form_view .o_audit_tb_section_title {
+    padding-bottom: 4px;
+    margin-bottom: 10px;
+    border-bottom: 0;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.o_form_view .o_audit_tb_switches {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 20px;
+}
+
+.o_form_view .o_audit_tb_switch_item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.o_form_view .o_audit_tb_switch_item > label {
+    margin: 0;
+    font-weight: 600;
+    color: #1f2937;
+    cursor: pointer;
+}
+
+.o_form_view .o_audit_tb_switch_item .o_field_widget {
+    margin-bottom: 0;
+}
+
+.o_form_view .o_audit_tb_rate_row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 430px;
+    margin-top: 4px;
+}
+
+.o_form_view .o_audit_tb_rate_row > label {
+    margin: 0;
+    min-width: 155px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.o_form_view .o_audit_tb_rate_row .o_field_widget {
+    flex: 1 1 auto;
+    margin-bottom: 0;
+}
+
+.o_form_view .o_audit_tb_help_text {
+    margin-top: 6px;
+    line-height: 1.4;
+    max-width: 900px;
+}
+
+.o_form_view .o_audit_tb_browser_card {
+    background: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+    padding: 6px;
+}
+
+.o_form_view .o_audit_tb_browser {
+    border: 1px solid #d9e2ec;
+    border-radius: 16px;
+    background: #fff;
+    overflow: hidden;
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.o_form_view .o_audit_tb_browser_primary_actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.o_form_view .o_audit_tb_browser_periods {
+    padding: 4px;
+    border-radius: 999px;
+    background: #e2e8f0;
+}
+
+.o_form_view .o_audit_tb_browser_periods .btn {
+    min-width: 98px;
+    border: 0;
+    border-radius: 999px !important;
+    font-weight: 600;
+}
+
+.o_form_view .o_audit_tb_apply_btn {
+    min-width: 210px;
+    font-weight: 700;
+}
+
+.o_form_view .o_audit_tb_browser > .overflow-hidden.d-flex.flex-row.h-100 {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.o_form_view .o_audit_tb_browser .o_content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    max-height: none;
+}
+
+.o_form_view .o_audit_tb_browser .o_control_panel {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 12px 14px 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid #edf2f7;
+}
+
+.o_form_view .o_audit_tb_browser_table_wrap {
+    width: 100%;
+    max-height: 42vh;
+    overflow: auto;
+    padding: 4px 10px 12px;
+}
+
+.o_form_view .o_audit_tb_browser_table_wrap .table {
+    min-width: 100%;
+}
+
+.o_form_view .o_audit_tb_browser .table {
+    margin-bottom: 0;
+}
+
+.o_form_view .o_audit_tb_browser_loading {
+    min-height: 180px;
+}
+
+.o_form_view .o_audit_tb_actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.o_form_view .o_audit_tb_actions > .btn {
+    width: auto;
+    flex: 0 0 auto;
+}
+
+.o_form_view .o_audit_tb_tools_card .o_audit_tb_switches {
+    justify-content: space-between;
+    gap: 10px 18px;
+}
+
+.o_form_view .o_audit_tb_tools_card .o_audit_tb_rate_row {
+    margin-top: 0;
+    max-width: 360px;
+}
+
+.o_form_view .o_audit_tb_mismatch_card {
+    background: linear-gradient(180deg, #fffdf8 0%, #fff8eb 100%);
+}
+
+.o_form_view .o_audit_tb_mismatch_grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-bottom: 4px;
+}
+
+.o_form_view .o_audit_tb_mismatch_item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.o_form_view .o_audit_tb_mismatch_item > label {
+    margin: 0;
+    font-weight: 600;
+    color: #334155;
+}
+
+.o_form_view .o_audit_tb_mismatch_item .o_field_widget {
+    min-width: 110px;
+    margin-bottom: 0;
+}
+
+.o_form_view .o_audit_tb_mismatch_card .o_field_widget {
+    margin-bottom: 2px;
+}
+
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer .o_list_table {
+    table-layout: auto;
+}
+
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer {
+    overflow-x: auto;
+}
+
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer .o_list_table > thead > tr > th,
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer .o_list_table > tbody > tr > td {
+    padding: 6px 10px;
+    vertical-align: middle;
+}
+
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer th[data-name="account_code"],
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer td[data-name="account_code"] {
+    min-width: 95px;
+}
+
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer th[data-name="account_name"],
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer td[data-name="account_name"] {
+    min-width: 240px;
+}
+
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer th[data-name="override_initial_balance"],
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer td[data-name="override_initial_balance"],
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer th[data-name="override_debit"],
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer td[data-name="override_debit"],
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer th[data-name="override_credit"],
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer td[data-name="override_credit"],
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer th[data-name="override_balance"],
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer td[data-name="override_balance"],
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer th[data-name="system_initial_balance"],
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer td[data-name="system_initial_balance"],
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer th[data-name="system_balance"],
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer td[data-name="system_balance"] {
+    min-width: 120px;
+}
+
+.o_form_view .o_audit_tb_section .o_field_x2many .o_list_renderer .o_data_row:nth-child(even) {
+    background: #fbfcfe;
+}
+
+.o_form_view .o_audit_shareholders_table_wrap {
+    overflow-x: auto;
+    border: 1px solid #d7dce1;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.o_form_view .o_audit_shareholders_table {
+    width: 100%;
+    min-width: 1120px;
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.o_form_view .o_audit_shareholders_table > thead > tr {
+    background: #f4f6f9 !important;
+}
+
+.o_form_view .o_audit_shareholders_table > thead > tr > th {
+    padding: 6px 8px !important;
+    color: #4b5563 !important;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    border-bottom: 1px solid #d7dce1 !important;
+}
+
+.o_form_view .o_audit_shareholders_table > tbody > tr > td {
+    padding: 4px 8px !important;
+    vertical-align: middle;
+    border-bottom: 1px solid #eceff3 !important;
+}
+
+.o_form_view .o_audit_shareholders_table > tbody > tr:nth-child(even) > td {
+    background: #fbfcfe;
+}
+
+.o_form_view .o_audit_shareholders_table > tbody > tr:last-child > td {
+    border-bottom: 0 !important;
+}
+
+.o_form_view .o_audit_shareholders_table .o_field_widget input,
+.o_form_view .o_audit_shareholders_table .o_field_widget select,
+.o_form_view .o_audit_shareholders_table .o_input {
+    min-height: 28px;
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
+.o_form_view .o_audit_shareholders_table .text-center .o_field_widget input[type="checkbox"] {
+    transform: scale(0.9);
+}
+
+.o_form_view .o_audit_share_capital_option_row,
+.o_form_view .o_audit_related_parties_option_row {
+    margin-top: 8px;
+}
+
+.o_form_view .o_audit_related_parties_card .o_field_x2many .o_list_renderer {
+    border: 1px solid #d7dce1;
+    border-radius: 8px;
+    background: #fff;
+    overflow-x: auto;
+}
+
+.o_form_view .o_audit_related_parties_card .o_field_x2many .o_list_renderer table {
+    width: 100%;
+    min-width: 860px;
+    table-layout: fixed;
+}
+
+.o_form_view .o_audit_related_parties_card .o_field_x2many .o_list_renderer .o_list_table > thead > tr > th,
+.o_form_view .o_audit_related_parties_card .o_field_x2many .o_list_renderer .o_list_table > tbody > tr > td {
+    white-space: normal;
+    word-break: break-word;
+}
+
+.o_form_view .o_audit_related_parties_card .o_field_x2many .o_list_renderer .o_list_table > thead > tr > th[data-name="sequence"],
+.o_form_view .o_audit_related_parties_card .o_field_x2many .o_list_renderer .o_list_table > tbody > tr > td[data-name="sequence"] {
+    width: 42px;
+}
+
+.o_form_view .o_audit_lor_page .o_audit_lor_shell {
+    max-width: none;
+}
+
+.o_form_view .o_audit_lor_page .o_audit_lor_card {
+    border: 1px solid #d9e2ec;
+    border-radius: 8px;
+    background: #f8fafc;
+    padding: 8px 10px;
+}
+
+.o_form_view .o_audit_lor_page .o_audit_lor_card > .o_horizontal_separator {
+    text-align: center;
+    justify-content: center;
+}
+
+.o_form_view .o_audit_lor_lines .o_list_renderer {
+    max-width: none;
+    border: 1px solid #d7dce1;
+    border-radius: 8px;
+    background: #fff;
+    overflow-x: auto;
+    min-height: 0 !important;
+}
+
+.o_form_view .o_audit_lor_lines .o_list_renderer .o_list_table {
+    table-layout: auto;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.o_form_view .o_audit_lor_lines .o_list_renderer .o_list_table > thead > tr > th,
+.o_form_view .o_audit_lor_lines .o_list_renderer .o_list_table > tbody > tr > td {
+    padding: 6px 8px;
+    vertical-align: middle;
+}
+
+.o_form_view .o_audit_lor_lines .o_list_renderer .o_list_table > thead > tr > th[data-name="sequence"],
+.o_form_view .o_audit_lor_lines .o_list_renderer .o_list_table > tbody > tr > td[data-name="sequence"] {
+    width: 46px;
+}
+
+
+.o_dialog .modal .modal-dialog.modal-xl:has(.o_form_view.o_audit_report_wizard_form .o_audit_correction_page.active) {
+    width: 88vw;
+    max-width: 1120px;
+}
+
+.o_form_view .o_audit_correction_page .o_audit_correction_shell {
+    max-width: none;
+    display: block !important;
+}
+
+.o_form_view .o_audit_correction_page .o_group.o_audit_correction_shell > .o_group.o_audit_correction_card,
+.o_form_view .o_audit_correction_page .o_audit_correction_shell > .o_audit_correction_card {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 12px 0 !important;
+}
+
+.o_form_view .o_audit_correction_page .o_group.o_audit_correction_shell > .o_group.o_audit_correction_card:last-child,
+.o_form_view .o_audit_correction_page .o_audit_correction_shell > .o_audit_correction_card:last-child {
+    margin-bottom: 0 !important;
+}
+
+.o_form_view .o_audit_correction_card {
+    border: 1px solid #d8e1ea;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fbfdff 0%, #f4f8fc 100%);
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+    padding: 10px 12px;
+}
+
+.o_form_view .o_audit_correction_note_body textarea,
+.o_form_view .o_audit_correction_note_body .o_input {
+    min-height: 96px;
+    line-height: 1.35;
+    resize: vertical;
+}
+
+.o_form_view .o_audit_correction_lines .o_list_renderer {
+    border: 1px solid #d7dce1;
+    border-radius: 10px;
+    background: #fff;
+    overflow-x: auto;
+}
+
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table {
+    width: 100%;
+    min-width: 940px;
+    table-layout: fixed;
+    margin-bottom: 0;
+}
+
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table > thead > tr > th,
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table > tbody > tr > td {
+    padding: 5px 8px;
+    vertical-align: middle;
+}
+
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table > thead > tr > th[data-name="sequence"],
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table > tbody > tr > td[data-name="sequence"] {
+    width: 42px;
+}
+
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table > thead > tr > th[data-name="row_type"],
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table > tbody > tr > td[data-name="row_type"] {
+    width: 120px;
+}
+
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table > thead > tr > th[data-name="description"],
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table > tbody > tr > td[data-name="description"] {
+    min-width: 260px;
+}
+
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table > thead > tr > th[data-name="amount_as_reported"],
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table > tbody > tr > td[data-name="amount_as_reported"],
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table > thead > tr > th[data-name="amount_as_restated"],
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table > tbody > tr > td[data-name="amount_as_restated"],
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table > thead > tr > th[data-name="amount_restatement"],
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_list_table > tbody > tr > td[data-name="amount_restatement"] {
+    min-width: 130px;
+}
+
+.o_form_view .o_audit_correction_lines .o_list_renderer .o_data_row:nth-child(even) {
+    background: #fbfcfe;
+}
