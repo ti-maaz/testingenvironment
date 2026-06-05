@@ -305,7 +305,9 @@ class TestVatAuditExcelPack(AccountTestInvoicingCommon):
 
     def test_bank_sale_uses_odoo_currency_rate_when_available(self):
         foreign_currency = self._make_currency('XRT', 'XRT')
-        self._create_currency_rate(foreign_currency, 1.2)
+        # Odoo res.currency.rate.rate is "foreign units per 1 company unit", so
+        # for a 1.2 company-per-foreign exchange rate the stored rate is 1/1.2.
+        self._create_currency_rate(foreign_currency, 1 / 1.2)
         self._create_bank_statement_line(
             amount=210.0,
             amount_currency=200.0,
@@ -334,7 +336,9 @@ class TestVatAuditExcelPack(AccountTestInvoicingCommon):
 
     def test_bank_sale_refund_uses_odoo_currency_rate_when_available(self):
         foreign_currency = self._make_currency('XRF', 'XRF')
-        self._create_currency_rate(foreign_currency, 1.2)
+        # Odoo res.currency.rate.rate is "foreign units per 1 company unit", so
+        # for a 1.2 company-per-foreign exchange rate the stored rate is 1/1.2.
+        self._create_currency_rate(foreign_currency, 1 / 1.2)
         self._create_bank_statement_line(
             amount=-105.0,
             amount_currency=-100.0,
