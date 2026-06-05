@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="Audit_Report.AuditTbBrowser" owl="1">
+        <div class="o_action account_report o_audit_tb_browser" t-att-class="cssCustomClass" t-ref="root" t-on-keydown="onKeydown">
+            <div class="overflow-hidden d-flex flex-row h-100">
+                <div class="o_content d-flex flex-column w-100">
+                    <ControlPanel>
+                        <t t-set-slot="control-panel-create-button">
+                            <div class="o_audit_tb_browser_primary_actions">
+                                <button
+                                    class="btn btn-primary o_audit_tb_apply_btn"
+                                    t-on-click="() => this.applyCurrentOptions()"
+                                    t-att-disabled="state.loading || !state.reportLoaded ? true : undefined"
+                                >
+                                    <t t-esc="applyButtonLabel"/>
+                                </button>
+                                <div class="o_audit_tb_browser_periods btn-group" role="group" aria-label="TB periods">
+                                    <button
+                                        class="btn"
+                                        t-att-class="state.activePeriod === 'current' ? 'btn-primary' : 'btn-secondary'"
+                                        t-on-click="() => this.switchPeriod('current')"
+                                    >
+                                        Current
+                                    </button>
+                                    <button
+                                        t-if="showPriorPeriod"
+                                        class="btn"
+                                        t-att-class="state.activePeriod === 'prior' ? 'btn-primary' : 'btn-secondary'"
+                                        t-on-click="() => this.switchPeriod('prior')"
+                                    >
+                                        Prior
+                                    </button>
+                                </div>
+                                <t t-if="state.reportLoaded">
+                                    <AccountReportButtonsBar/>
+                                </t>
+                            </div>
+                        </t>
+                        <t t-set-slot="control-panel-additional-actions">
+                            <t t-if="state.reportLoaded">
+                                <AccountReportCogMenu/>
+                            </t>
+                        </t>
+                        <t t-set-slot="layout-actions">
+                           <t t-if="state.reportLoaded">
+                               <div class="d-flex gap-1 flex-wrap">
+                                   <t t-if="controller.cachedFilterOptions &amp;&amp; controller.cachedFilterOptions.search_bar">
+                                       <AccountReportSearchBar initialQuery="initialQuery"/>
+                                       <br/>
+                                   </t>
+                                   <t t-component="env.component('AccountReportFilters')"/>
+                               </div>
+                           </t>
+                        </t>
+                    </ControlPanel>
+
+                    <t t-if="!state.loading and !state.reportLoaded">
+                        <div class="o_view_nocontent o_audit_tb_browser_loading">
+                            <div class="o_nocontent_help">
+                                <p class="o_view_nocontent_neutral_face">No data to display.</p>
+                                <p><t t-esc="state.emptyMessage || 'Set the report dates to load the embedded Trial Balance.'"/></p>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-elif="state.loading or controller.data === undefined">
+                        <div class="o_view_nocontent o_audit_tb_browser_loading">
+                            <div class="text-center mt-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <t t-if="controller.data and controller.warnings">
+                            <div id="warnings" class="warnings d-print-none">
+                                <t t-foreach="controller.warnings" t-as="warningTemplateRef" t-key="warningTemplateRef">
+                                    <t t-set="warningParams" t-value="controller.warnings[warningTemplateRef]"/>
+                                    <div t-att-class="`alert alert-${warningParams['alert_type'] || 'info'} text-center`">
+                                        <t t-call="{{ warningTemplateRef }}"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+
+                        <t t-if="controller.lines.length">
+                            <div class="o_audit_tb_browser_table_wrap">
+                                <div class="d-flex align-items-start w-100">
+                                    <t t-foreach="controller.options['horizontal_split'] ? ['left', 'right'] : [null]" t-as="splitSide" t-key="splitSide">
+                                        <table
+                                            class="table table-borderless table-hover w-100"
+                                            t-att-class="tableClasses"
+                                        >
+                                            <t t-component="env.component('AccountReportHeader')"/>
+                                            <tbody>
+                                                <t t-foreach="controller.lines" t-as="line" t-key="line.id">
+                                                    <t t-if="!splitSide || splitSide === (line.horizontal_split_side || 'left')">
+                                                        <t t-if="controller.areLinesOrdered()">
+                                                            <t t-set="orderedIndex" t-value="controller.linesOrder[line_index]"/>
+                                                            <t t-set="orderedLine" t-value="controller.lines[orderedIndex]"/>
+                                                            <t t-component="env.component('AccountReportLine')" t-props="{ lineIndex: orderedIndex, line: orderedLine }"/>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <t t-component="env.component('AccountReportLine')" t-props="{ lineIndex: line_index, line: line }"/>
+                                                        </t>
+                                                    </t>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="o_view_nocontent">
+                                <div class="o_nocontent_help">
+                                    <p class="o_view_nocontent_neutral_face">No data to display.</p>
+                                    <p>There is no data to display for the selected filters.</p>
+                                </div>
+                            </div>
+                        </t>
+                    </t>
+                </div>
+
+                <div t-att-class="{'o_account_report_chatter_hidden': !controller.chatterState.id or ui.isSmall}"
+                     class="o_account_report_chatter o-mail-ChatterContainer h-100 o-aside d-flex flex-column">
+                    <t t-if="controller.chatterState.model">
+                        <AccountReportChatter
+                            threadModel="controller.chatterState.model"
+                            threadId="controller.chatterState.id"
+                            isChatterAside="!ui.isSmall"
+                            reportController="controller"
+                            date_to="controller.options.date.date_to"
+                        />
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

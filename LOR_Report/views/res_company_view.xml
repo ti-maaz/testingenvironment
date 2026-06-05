@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_company_form_lor_template" model="ir.ui.view">
+        <field name="name">res.company.form.lor.template</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="company_exte.view_company_form_other_information"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='other_information']" position="after">
+                <page name="lor_template" string="LOR Template">
+                    <group col="1">
+                        <group col="1">
+                            <button name="action_reset_lor_template_defaults"
+                                    type="object"
+                                    string="Reset to Module Defaults"
+                                    class="btn btn-secondary"/>
+                        </group>
+                        <group string="HTML Source" col="1">
+                            <field name="lor_template_html_source" nolabel="1" widget="text"/>
+                        </group>
+                        <group string="CSS Source" col="1">
+                            <field name="lor_template_css_source" nolabel="1" widget="text"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <function model="res.company" name="_sync_lor_template_defaults_to_latest_source"/>
+</odoo>

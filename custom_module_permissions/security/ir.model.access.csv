@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_res_company_audit_company_info_editor,access.res.company.audit.company.info.editor,base.model_res_company,custom_module_permissions.group_custom_module_audit_company_info_editor,1,1,0,0

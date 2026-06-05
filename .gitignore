@@ -34,6 +34,10 @@ ENV/
 .DS_Store
 Thumbs.db
 
+# LibreOffice / Office lock files
+.~lock.*#
+~$*
+
 # Test / coverage
 .coverage
 htmlcov/

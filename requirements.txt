@@ -1,2 +1,45 @@
-weasyprint
-openpyxl
+# =============================================================================
+# Custom Modules — Python Requirements
+# Odoo 19 / Python 3.12
+# =============================================================================
+# Install with:  pip install -r requirements.txt
+#
+# Packages marked [Odoo core] are already pulled in by Odoo's own
+# requirements.txt.  They are listed here so you can verify the right
+# versions are present, or install them independently if needed.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# PDF generation  (Audit_Report — _html_to_pdf / _html_to_pdf_doc)
+# NOT included in Odoo core; must be installed separately.
+#
+# WeasyPrint on Windows also requires the GTK3 runtime:
+#   https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer
+#   (provides libcairo, libpango, libgdk-pixbuf — all required by WeasyPrint)
+# -----------------------------------------------------------------------------
+weasyprint>=62.0
+
+# -----------------------------------------------------------------------------
+# Excel generation  (audit_excel_export, vat_audit_excel_pack)
+# [Odoo core] — pinned here to match Odoo 19 / Python 3.12 constraint
+# -----------------------------------------------------------------------------
+openpyxl>=3.1.2
+
+# -----------------------------------------------------------------------------
+# HTML / XML templating  (Audit_Report controller, LOR_Report controller)
+# [Odoo core] — pinned here to match Odoo 19 / Python 3.12 constraint
+# -----------------------------------------------------------------------------
+Jinja2>=3.1.2
+
+# -----------------------------------------------------------------------------
+# XML / HTML parsing  (Audit_Report — audit_report_document.py)
+# [Odoo core] — on Python 3.12 the HTML cleaner was split into a separate pkg
+# -----------------------------------------------------------------------------
+lxml>=5.2.1
+lxml-html-clean
+
+# -----------------------------------------------------------------------------
+# Date arithmetic  (audit_report.py, audit_excel_export, LOR_Report, vat_threshold)
+# [Odoo core] — pinned here to match Odoo 19 / Python 3.12 constraint
+# -----------------------------------------------------------------------------
+python-dateutil>=2.8.2
