@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="Audit_Report.menu_custom_modules" model="ir.ui.menu">
+            <field name="group_ids" eval="[(6, 0, [
+                ref('custom_module_permissions.group_custom_module_audit_report'),
+                ref('custom_module_permissions.group_custom_module_audit_excel_export')
+            ])]"/>
+        </record>
+
         <record id="audit_excel_export.menu_audit_excel_export" model="ir.ui.menu">
             <field name="group_ids" eval="[(6, 0, [ref('custom_module_permissions.group_custom_module_audit_excel_export')])]"/>
         </record>

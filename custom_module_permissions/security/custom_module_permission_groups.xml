@@ -44,7 +44,8 @@
         <record id="group_custom_module_audit_company_info_editor" model="res.groups">
             <field name="name">Audit Company Info Editor</field>
             <field name="privilege_id" ref="custom_module_permissions.privilege_custom_module_audit_company_info_editor"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('custom_module_permissions.group_custom_module_audit_report'))]"/>
+            <!-- Contact Creation: editing res.company info cascades to the company's res.partner. -->
+            <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('custom_module_permissions.group_custom_module_audit_report')), (4, ref('base.group_partner_manager'))]"/>
         </record>
 
         <record id="privilege_custom_module_audit_excel_export" model="res.groups.privilege">
