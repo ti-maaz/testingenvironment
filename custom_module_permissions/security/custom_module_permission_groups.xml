@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="module_category_custom_module_access" model="ir.module.category">
+            <field name="name">Custom Module Access</field>
+            <field name="description">Visibility control for custom UI modules.</field>
+            <field name="sequence">80</field>
+        </record>
+
+        <record id="privilege_custom_module_manage_chart_of_accounts" model="res.groups.privilege">
+            <field name="name">Manage Chart of Accounts</field>
+            <field name="description">Allows create, edit, archive, delete, and import operations on Chart of Accounts.</field>
+            <field name="placeholder">No Access</field>
+            <field name="sequence">5</field>
+            <field name="category_id" ref="custom_module_permissions.module_category_custom_module_access"/>
+        </record>
+
+        <record id="group_custom_module_manage_chart_of_accounts" model="res.groups">
+            <field name="name">Manage Chart of Accounts</field>
+            <field name="privilege_id" ref="custom_module_permissions.privilege_custom_module_manage_chart_of_accounts"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="privilege_custom_module_audit_report" model="res.groups.privilege">
+            <field name="name">Audit Report</field>
+            <field name="description">Controls visibility for Audit Report UI.</field>
+            <field name="placeholder">No Access</field>
+            <field name="sequence">10</field>
+            <field name="category_id" ref="custom_module_permissions.module_category_custom_module_access"/>
+        </record>
+        <record id="group_custom_module_audit_report" model="res.groups">
+            <field name="name">Audit Report</field>
+            <field name="privilege_id" ref="custom_module_permissions.privilege_custom_module_audit_report"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="privilege_custom_module_audit_company_info_editor" model="res.groups.privilege">
+            <field name="name">Audit Company Info Editor</field>
+            <field name="description">Allows updating company information fields used by Audit Report.</field>
+            <field name="placeholder">No Access</field>
+            <field name="sequence">15</field>
+            <field name="category_id" ref="custom_module_permissions.module_category_custom_module_access"/>
+        </record>
+        <record id="group_custom_module_audit_company_info_editor" model="res.groups">
+            <field name="name">Audit Company Info Editor</field>
+            <field name="privilege_id" ref="custom_module_permissions.privilege_custom_module_audit_company_info_editor"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('custom_module_permissions.group_custom_module_audit_report'))]"/>
+        </record>
+
+        <record id="privilege_custom_module_audit_excel_export" model="res.groups.privilege">
+            <field name="name">Audit Excel Export</field>
+            <field name="description">Controls visibility for Audit Excel Export UI.</field>
+            <field name="placeholder">No Access</field>
+            <field name="sequence">20</field>
+            <field name="category_id" ref="custom_module_permissions.module_category_custom_module_access"/>
+        </record>
+        <record id="group_custom_module_audit_excel_export" model="res.groups">
+            <field name="name">Audit Excel Export</field>
+            <field name="privilege_id" ref="custom_module_permissions.privilege_custom_module_audit_excel_export"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="privilege_custom_module_account_bank_recode" model="res.groups.privilege">
+            <field name="name">Bank Transaction Recode</field>
+            <field name="description">Controls visibility for Bank Transaction Recode UI.</field>
+            <field name="placeholder">No Access</field>
+            <field name="sequence">25</field>
+            <field name="category_id" ref="custom_module_permissions.module_category_custom_module_access"/>
+        </record>
+        <record id="group_custom_module_account_bank_recode" model="res.groups">
+            <field name="name">Bank Transaction Recode</field>
+            <field name="privilege_id" ref="custom_module_permissions.privilege_custom_module_account_bank_recode"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="privilege_custom_module_account_move_bulk_reset_to_draft" model="res.groups.privilege">
+            <field name="name">Bulk Reset to Draft</field>
+            <field name="description">Controls visibility for bulk reset or delete journal-entry actions.</field>
+            <field name="placeholder">No Access</field>
+            <field name="sequence">30</field>
+            <field name="category_id" ref="custom_module_permissions.module_category_custom_module_access"/>
+        </record>
+        <record id="group_custom_module_account_move_bulk_reset_to_draft" model="res.groups">
+            <field name="name">Bulk Reset to Draft</field>
+            <field name="privilege_id" ref="custom_module_permissions.privilege_custom_module_account_move_bulk_reset_to_draft"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+    </data>
+</odoo>
