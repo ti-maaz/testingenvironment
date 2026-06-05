@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_bank_statement_line_tree_vat" model="ir.ui.view">
+        <field name="name">account.bank.statement.line.list.vat</field>
+        <field name="model">account.bank.statement.line</field>
+        <field name="arch" type="xml">
+            <list string="Bank Transactions" create="false" edit="true" editable="bottom">
+                <field name="date"/>
+                <field name="payment_ref"/>
+                <field name="partner_id"/>
+                <field name="amount"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="vat_category" widget="badge"
+                       decoration-info="vat_category == 'zero_rated'"
+                       decoration-success="vat_category == 'standard'"
+                       decoration-muted="vat_category == 'exempt'"/>
+                <field name="journal_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_bank_statement_line_form_vat" model="ir.ui.view">
+        <field name="name">account.bank.statement.line.form.vat</field>
+        <field name="model">account.bank.statement.line</field>
+        <field name="arch" type="xml">
+            <form string="Bank Transaction">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="payment_ref"/>
+                            <field name="partner_id"/>
+                            <field name="journal_id"/>
+                        </group>
+                        <group>
+                            <field name="amount"/>
+                            <field name="currency_id"/>
+                            <field name="vat_category"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_bank_statement_line_vat" model="ir.actions.act_window">
+        <field name="name">Bank Transactions (VAT)</field>
+        <field name="res_model">account.bank.statement.line</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_bank_statement_line_tree_vat')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_bank_statement_line_form_vat')})]"/>
+    </record>
+
+    <menuitem id="menu_bank_statement_line_vat"
+              name="Bank Transactions"
+              parent="account.menu_finance_reports"
+              action="action_bank_statement_line_vat"
+              sequence="90"/>
+</odoo>
