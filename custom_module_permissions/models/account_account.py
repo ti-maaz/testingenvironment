@@ -8,8 +8,17 @@ class AccountAccount(models.Model):
     def _check_custom_module_manage_coa_permission(self, operation_label):
         if self.env.context.get('skip_custom_module_manage_coa_check'):
             return
-        if self.env.is_superuser() or self.env.user.has_group(
-            'custom_module_permissions.group_custom_module_manage_chart_of_accounts'
+        # Never block system-level account creation: module install / chart of
+        # accounts loading (registry not ready), the superuser, and system
+        # administrators must always be able to manage accounts. Only regular
+        # users are gated behind the explicit Manage Chart of Accounts group.
+        if (
+            not self.env.registry.ready
+            or self.env.is_superuser()
+            or self.env.user.has_group('base.group_system')
+            or self.env.user.has_group(
+                'custom_module_permissions.group_custom_module_manage_chart_of_accounts'
+            )
         ):
             return
         raise AccessError(_(
