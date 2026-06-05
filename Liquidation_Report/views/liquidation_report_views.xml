@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="liquidation_report_wizard_form" model="ir.ui.view">
+        <field name="name">liquidation.report.wizard.form</field>
+        <field name="model">liquidation.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Liquidation Report">
+                <sheet>
+                    <notebook>
+                        <page string="Liquidation Settings">
+                            <group>
+                                <group string="Report Settings">
+                                    <field name="audit_report_id" invisible="1"/>
+                                    <field name="company_id"/>
+                                    <field name="report_type"/>
+                                    <field name="liquidation_date"/>
+                                    <field name="letter_date"
+                                           invisible="report_type != 'all_freezones'"
+                                           required="report_type == 'all_freezones'"/>
+                                    <field name="contact_person"
+                                           invisible="report_type != 'ifza'"
+                                           required="report_type == 'ifza'"/>
+                                </group>
+                                <group string="Template">
+                                    <separator string="IFZA uses the IFZA DOCX template. Meydan is treated as IFZA. All other free zones use the All Freezones DOCX template."/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Company Information">
+                            <group>
+                                <group string="Company and Free Zone Information">
+                                    <field name="company_name"/>
+                                    <field name="company_free_zone"/>
+                                    <field name="company_license_number"/>
+                                </group>
+                                <group string="Address">
+                                    <field name="company_street" string="Address"/>
+                                    <field name="company_street2"/>
+                                    <field name="company_city"/>
+                                    <field name="company_state_id"/>
+                                    <field name="company_zip"/>
+                                    <field name="company_country_id"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button name="action_generate_docx"
+                            type="object"
+                            string="Generate Liquidation Report"
+                            class="btn btn-primary"/>
+                    <button string="Cancel" class="btn btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="liquidation_report_wizard_action" model="ir.actions.act_window">
+        <field name="name">Generate Liquidation Report</field>
+        <field name="res_model">liquidation.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'form_view_initial_mode': 'edit', 'dialog_size': 'extra-large'}</field>
+    </record>
+
+    <menuitem id="liquidation_report_generate_menu"
+              name="Generate Liquidation Report"
+              parent="Audit_Report.menu_custom_modules"
+              action="liquidation_report_wizard_action"
+              sequence="120"/>
+
+    <function model="liquidation.report.wizard" name="_sync_generate_liquidation_menu_parent"/>
+</odoo>

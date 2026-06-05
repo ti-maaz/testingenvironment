@@ -1,0 +1,160 @@
+/* LOR DOCX styling.
+   Supported selectors: page, body, .title, p/.paragraph,
+   .address-line, .salutation, .intro, .closing, .signature-line, .date-line,
+   .spacer-line, .spacer-sm, .spacer-lg, .list-level-0, .list-level-1,
+   .list-item-0/.list-item-1 or .list-level-0 li/.list-level-1 li
+*/
+
+page {
+  page-width: 595.28pt;
+  page-height: 841.89pt;
+  page-orientation: portrait;
+  margin-top: 3.4cm;
+  margin-right: 2.54cm;
+  margin-bottom: 1.5cm;
+  margin-left: 2.54cm;
+  header: 1.2cm;
+  footer: 0.2cm;
+  gutter: 0pt;
+  gutter-position: left;
+  column-space: 36pt;
+  line-pitch: 18pt;
+  default-header-text: "ON COMPANY LETTERHEAD";
+  first-page-header-text: "ON COMPANY LETTERHEAD";
+  header-font-family: "Times New Roman";
+  header-font-size: 11pt;
+  header-font-weight: normal;
+  header-text-align: center;
+  header-margin-top: 0pt;
+  header-margin-bottom: 6pt;
+  page-numbering: true;
+  page-number-align: center;
+  page-number-position: 0pt;
+  page-number-font-size: 9pt;
+  page-number-line-height: 9pt;
+}
+
+body {
+  font-family: "Times New Roman";
+  font-size: 11pt;
+  font-weight: normal;
+  line-height: 12pt;
+}
+
+.title {
+  font-family: "Times New Roman";
+  font-size: 12pt;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 0pt;
+  margin-bottom: 0pt;
+  line-height: 12pt;
+}
+
+p,
+.paragraph {
+  text-align: justify;
+  margin-top: 0pt;
+  margin-bottom: 0pt;
+  line-height: 12pt;
+}
+
+.address-line {
+  text-align: left;
+  margin-top: 0pt;
+  margin-bottom: 0pt;
+  line-height: 12pt;
+}
+
+.salutation {
+  text-align: left;
+  margin-top: 0pt;
+  margin-bottom: 0pt;
+  line-height: 12pt;
+}
+
+.intro {
+  text-align: justify;
+  margin-top: 0pt;
+  margin-bottom: 0pt;
+  line-height: 12pt;
+}
+
+.closing {
+  text-align: left;
+  margin-top: 0pt;
+  margin-bottom: 0pt;
+  line-height: 12pt;
+}
+
+.signature-line {
+  text-align: left;
+  margin-top: 0pt;
+  margin-bottom: 0pt;
+  line-height: 12pt;
+}
+
+.date-line {
+  text-align: left;
+  margin-top: 0pt;
+  margin-bottom: 0pt;
+  line-height: 12pt;
+}
+
+.spacer-line {
+  margin-top: 0pt;
+  margin-bottom: 0pt;
+  line-height: 12pt;
+}
+
+.spacer-sm {
+  margin-top: 0pt;
+  margin-bottom: 0pt;
+  line-height: 12pt;
+}
+
+.spacer-lg {
+  margin-top: 0pt;
+  margin-bottom: 0pt;
+  line-height: 12pt;
+}
+
+.list-level-0 {
+  margin-left: 18pt;
+  hanging-indent: 18pt;
+  restart: false;
+}
+
+.list-level-1 {
+  margin-left: 36pt;
+  hanging-indent: 18pt;
+  restart: true;
+}
+
+.list-item-0,
+.list-level-0 li {
+  text-align: justify;
+  margin-top: 0pt;
+  margin-bottom: 0pt;
+  line-height: 12pt;
+}
+
+.list-item-1,
+.list-level-1 li {
+  text-align: justify;
+  margin-top: 0pt;
+  margin-bottom: 0pt;
+  line-height: 12pt;
+}
+
+.list-item-1-last {
+  text-align: justify;
+  margin-top: 0pt;
+  margin-bottom: 12pt;
+  line-height: 12pt;
+}
+
+.gap {
+  margin-top: 0pt;
+  margin-bottom: 12pt;
+}
