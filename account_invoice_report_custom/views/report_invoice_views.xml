@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_account_invoices_html" model="ir.actions.report">
+        <field name="name">Invoice HTML</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">account.report_invoice_with_payments</field>
+        <field name="report_file">account.report_invoice_with_payments</field>
+        <field name="print_report_name">(object._get_report_base_filename())</field>
+        <field name="attachment"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+        <field name="domain" eval="[('move_type', '!=', 'entry')]"/>
+        <field name="group_ids" eval="[(4, ref('account.group_account_invoice')), (4, ref('account.group_account_readonly'))]"/>
+    </record>
+
+    <template id="report_invoice_document_custom" inherit_id="l10n_ae.l10n_ae_report_invoice_document">
+        <xpath expr="//t[@t-set='has_long_desc']" position="before">
+            <style type="text/css">
+                .header,
+                .header *,
+                .footer,
+                .footer *,
+                .address,
+                .address *,
+                .page,
+                .page * {
+                    color: #000000 !important;
+                }
+
+                thead th,
+                thead th * {
+                    color: #000000 !important;
+                    font-weight: 700 !important;
+                }
+            </style>
+        </xpath>
+
+        <xpath expr="//th[@name='th_vat_amount']" position="replace"/>
+        <xpath expr="//td[@name='td_vat_amount']" position="replace"/>
+        <xpath expr="//td[@name='td_vat_amount_grouped']" position="replace"/>
+
+        <xpath expr="//span[@t-out='section_subtotal']/.." position="attributes">
+            <attribute name="colspan">1</attribute>
+        </xpath>
+    </template>
+</odoo>
