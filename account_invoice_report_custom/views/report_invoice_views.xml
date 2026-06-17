@@ -33,15 +33,101 @@
                     color: #000000 !important;
                     font-weight: 700 !important;
                 }
+
+                .o_folder_adaptative_shape rect {
+                    fill: transparent !important;
+                }
+
+                .article.o_report_layout_folder {
+                    margin-top: 174px !important;
+                }
+
+                table[name='invoice_line_table'] thead th,
+                table[name='invoice_line_table'] tbody tr td,
+                table[name='invoice_line_table'] tbody tr:nth-child(odd) td,
+                #total .o_total_table tr td,
+                #total .o_total_table tr:nth-child(odd) td {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                }
+
+                .o_bank_details_block {
+                    width: 52%;
+                }
+
+                .o_bank_details_rows {
+                    display: table;
+                    width: 100%;
+                }
+
+                .o_bank_details_row {
+                    display: table-row;
+                }
+
+                .o_bank_details_label,
+                .o_bank_details_value {
+                    display: table-cell;
+                    vertical-align: top;
+                    padding: 0 0 8px 0;
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    border: 0 !important;
+                }
+
+                .o_bank_details_label {
+                    width: 180px;
+                    white-space: nowrap;
+                    padding-right: 24px;
+                }
+
+                .o_bank_details_row:last-child .o_bank_details_label,
+                .o_bank_details_row:last-child .o_bank_details_value {
+                    padding-bottom: 0;
+                }
             </style>
         </xpath>
+
+        <xpath expr="//div[@name='delivery_date']" position="replace"/>
 
         <xpath expr="//th[@name='th_vat_amount']" position="replace"/>
         <xpath expr="//td[@name='td_vat_amount']" position="replace"/>
         <xpath expr="//td[@name='td_vat_amount_grouped']" position="replace"/>
-
+        <xpath expr="//t[@t-foreach='payments_vals']" position="replace"/>
         <xpath expr="//span[@t-out='section_subtotal']/.." position="attributes">
             <attribute name="colspan">1</attribute>
         </xpath>
+
+        <xpath expr="//div[@id='right-elements']" position="before">
+            <div name="payment_communication" class="o_bank_details_block d-inline-block align-top mt-5">
+                <div class="o_bank_details_rows mb-0">
+                    <div class="o_bank_details_row">
+                        <div class="o_bank_details_label">Account Title:</div>
+                        <div class="o_bank_details_value">ACCOUNTING</div>
+                    </div>
+                    <div class="o_bank_details_row">
+                        <div class="o_bank_details_label">IBAN Account No:</div>
+                        <div class="o_bank_details_value">AE600030012323886820001</div>
+                    </div>
+                    <div class="o_bank_details_row">
+                        <div class="o_bank_details_label">Swift Code:</div>
+                        <div class="o_bank_details_value">ADCBAEAA</div>
+                    </div>
+                    <div class="o_bank_details_row">
+                        <div class="o_bank_details_label">Purpose Code:</div>
+                        <div class="o_bank_details_value">PMS</div>
+                    </div>
+                    <div class="o_bank_details_row">
+                        <div class="o_bank_details_label">Branch Address:</div>
+                        <div class="o_bank_details_value">ADCB Building, Al Nahyan Camp Area, Dalma Street, Abu Dhabi - United Arab Emirates</div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+
+        <xpath expr="//p[@name='payment_communication']" position="replace"/>
+    </template>
+
+    <template id="external_layout_folder_custom" inherit_id="web.external_layout_folder">
+        <xpath expr="//span[@class='page']/.." position="replace"/>
     </template>
 </odoo>
